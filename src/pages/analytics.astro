@@ -1,0 +1,360 @@
+---
+import { Icon } from "astro-icon/components";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { analyticsConfig } from "@/config";
+
+const umami = analyticsConfig.umamiAnalytics ?? {};
+const shareId = umami.shareId ?? "";
+const shareApiBase = (umami.shareApiBase ?? "").replace(/\/+$/, "");
+const historicalVisitors = umami.historicalStats?.visitors ?? 0;
+const historicalPageviews = umami.historicalStats?.pageviews ?? 0;
+const hasPublicStats = Boolean(umami.websiteId && shareId && shareApiBase);
+---
+
+<MainGridLayout title="站点统计" description="基于 Umami 公开数据的站点访问统计">
+  <div
+    id="analytics-page"
+    class="card-base analytics-page onload-animation"
+    data-share-id={shareId}
+    data-api-base={shareApiBase}
+    data-historical-visitors={historicalVisitors}
+    data-historical-pageviews={historicalPageviews}
+    data-ready={hasPublicStats ? "true" : "false"}
+  >
+    <!-- 页头 -->
+    <header class="analytics-head">
+      <div class="analytics-head__copy">
+        <div class="analytics-kicker">
+          <span class="analytics-kicker__dot" aria-hidden="true"></span>
+          <span>UMAMI · PUBLIC TELEMETRY</span>
+        </div>
+        <h1>站点统计</h1>
+        <p class="analytics-head__lead">本站整体趋势，不记录任何可识别个人身份的信息。</p>
+        <div class="analytics-head__notes">
+          <span><Icon is:inline name="material-symbols:lock-open-rounded" aria-hidden="true" />公开只读</span>
+          <span><Icon is:inline name="material-symbols:calendar-today-rounded" aria-hidden="true" />按北京时间汇总</span>
+        </div>
+      </div>
+      <div class="analytics-head__status">
+        <span id="analytics-status" class="analytics-status analytics-status--loading" role="status" aria-live="polite">
+          <span class="analytics-status__dot" aria-hidden="true"></span>
+          <span id="analytics-status-text">正在连接 Umami</span>
+        </span>
+        <div class="analytics-source">
+          <span>DATA SOURCE</span>
+          <strong>{shareApiBase.includes("cloud.umami.is") ? "Umami Cloud" : "Umami"}</strong>
+          <small id="analytics-last-update">公开分享数据 · 自动刷新</small>
+        </div>
+        <button type="button" id="analytics-refresh" class="analytics-refresh" title="刷新数据" aria-label="刷新数据">
+          <Icon is:inline name="material-symbols:refresh-rounded" aria-hidden="true" />
+        </button>
+      </div>
+    </header>
+
+    <!-- 概览四卡：data-umami-stat 由全局 UmamiMetrics 注入真实数据 -->
+    <section class="analytics-summary" aria-label="站点概览">
+      <article class="analytics-stat analytics-stat--blue">
+        <span class="analytics-stat__label">累计访客 <Icon is:inline name="material-symbols:group-rounded" aria-hidden="true" /></span>
+        <strong data-umami-stat="visitors">加载中</strong>
+        <span class="analytics-stat__name">ALL-TIME VISITORS</span>
+        <small>含迁移前历史累计</small>
+      </article>
+      <article class="analytics-stat analytics-stat--mint">
+        <span class="analytics-stat__label">累计浏览 <Icon is:inline name="material-symbols:visibility-rounded" aria-hidden="true" /></span>
+        <strong data-umami-stat="pageviews">加载中</strong>
+        <span class="analytics-stat__name">ALL-TIME VIEWS</span>
+        <small>含迁移前历史累计</small>
+      </article>
+      <article class="analytics-stat analytics-stat--gold">
+        <span class="analytics-stat__label">今日访客 <Icon is:inline name="material-symbols:person-search-rounded" aria-hidden="true" /></span>
+        <strong data-umami-stat="todayVisitors">加载中</strong>
+        <span class="analytics-stat__name">TODAY VISITORS</span>
+        <small>北京时间 00:00 起</small>
+      </article>
+      <article class="analytics-stat analytics-stat--violet">
+        <span class="analytics-stat__label">今日浏览 <Icon is:inline name="material-symbols:trending-up-rounded" aria-hidden="true" /></span>
+        <strong data-umami-stat="todayPageviews">加载中</strong>
+        <span class="analytics-stat__name">TODAY VIEWS</span>
+        <small>实时公开数据</small>
+      </article>
+    </section>
+
+    <!-- 流量趋势 -->
+    <section class="analytics-panel" aria-labelledby="analytics-traffic-title">
+      <header class="analytics-panel__head">
+        <div>
+          <h2 id="analytics-traffic-title">访问趋势</h2>
+          <p>按天汇总的访客与浏览量</p>
+        </div>
+        <div class="analytics-range" role="group" aria-label="时间范围">
+          <button type="button" data-range="7" class="analytics-range__btn">7 天</button>
+          <button type="button" data-range="30" class="analytics-range__btn is-active">30 天</button>
+          <button type="button" data-range="90" class="analytics-range__btn">90 天</button>
+        </div>
+      </header>
+      <div class="analytics-chart" id="analytics-chart">
+        <div class="analytics-chart__empty">正在加载趋势数据…</div>
+      </div>
+      <div class="analytics-chart-legend">
+        <span><i class="legend-dot legend-dot--views"></i>浏览量</span>
+        <span><i class="legend-dot legend-dot--visitors"></i>访客数</span>
+        <span class="analytics-chart-hint" id="analytics-chart-hint"></span>
+      </div>
+    </section>
+
+    <!-- 热门页面 -->
+    <section class="analytics-panel" aria-labelledby="analytics-pages-title">
+      <header class="analytics-panel__head">
+        <div>
+          <h2 id="analytics-pages-title">热门页面</h2>
+          <p>按浏览量排序的受欢迎内容</p>
+        </div>
+      </header>
+      <ol class="analytics-pages" id="analytics-pages">
+        <li class="analytics-pages__empty">正在加载页面数据…</li>
+      </ol>
+    </section>
+
+    <footer class="analytics-foot">
+      <span><Icon is:inline name="material-symbols:info-rounded" aria-hidden="true" />数据来自 Umami 公开分享接口，缓存 60 秒，页面刷新时自动更新。</span>
+    </footer>
+  </div>
+</MainGridLayout>
+
+<script is:inline define:vars={{ shareId, shareApiBase, historicalVisitors, historicalPageviews }}>
+(() => {
+  const root = document.getElementById("analytics-page");
+  if (!root) return;
+  const apiBase = String(shareApiBase || "").replace(/\/+$/, "");
+  const statusEl = document.getElementById("analytics-status");
+  const statusText = document.getElementById("analytics-status-text");
+  const lastUpdate = document.getElementById("analytics-last-update");
+  const chartEl = document.getElementById("analytics-chart");
+  const hintEl = document.getElementById("analytics-chart-hint");
+  const pagesEl = document.getElementById("analytics-pages");
+  const refreshBtn = document.getElementById("analytics-refresh");
+  const rangeBtns = [...document.querySelectorAll(".analytics-range__btn")];
+  const SHARE_CACHE = "pipi:analytics:share";
+  const localHosts = new Set(["localhost", "127.0.0.1", "::1", "0.0.0.0"]);
+  const isLocal = localHosts.has(location.hostname.toLowerCase()) || location.protocol === "file:";
+  let range = 30;
+  let shareCache = null;
+
+  const fmt = (n) => new Intl.NumberFormat("zh-CN").format(Number(n) || 0);
+  const setStatus = (state, text) => {
+    if (!statusEl) return;
+    statusEl.className = `analytics-status analytics-status--${state}`;
+    if (statusText) statusText.textContent = text;
+  };
+
+  function readShare() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(SHARE_CACHE) || "null");
+      if (cached && cached.tag === shareId && cached.value?.websiteId && cached.value?.token) return cached.value;
+    } catch (_) {}
+    return null;
+  }
+
+  async function getShare() {
+    const cached = readShare();
+    if (cached) return cached;
+    if (!shareId || !apiBase) throw new Error("no share config");
+    const res = await fetch(`${apiBase}/api/share/${encodeURIComponent(shareId)}`);
+    if (!res.ok) throw new Error(`share ${res.status}`);
+    const data = await res.json();
+    if (!data?.websiteId || !data?.token) throw new Error("invalid share");
+    try { localStorage.setItem(SHARE_CACHE, JSON.stringify({ tag: shareId, value: data })); } catch (_) {}
+    return data;
+  }
+
+  async function getMetrics(share, path, params) {
+    const url = new URL(`${apiBase}/api/websites/${share.websiteId}/${path}`);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v)));
+    const res = await fetch(url, {
+      headers: { "x-umami-share-token": share.token, "x-umami-share-context": "1" },
+    });
+    if (!res.ok) throw new Error(`${path} ${res.status}`);
+    return res.json();
+  }
+
+  function dayStart(ts) { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }
+
+  function renderChart(rows) {
+    if (!chartEl) return;
+    const points = Array.isArray(rows) ? rows.map((r) => ({ t: Number(r.t), v: Number(r.views ?? r.y ?? 0), u: Number(r.visitors ?? 0) })) : [];
+    if (!points.length) {
+      chartEl.innerHTML = '<div class="analytics-chart__empty">暂无趋势数据</div>';
+      if (hintEl) hintEl.textContent = "";
+      return;
+    }
+    const W = 720, H = 240, PAD = { l: 8, r: 8, t: 16, b: 28 };
+    const maxV = Math.max(1, ...points.map((p) => p.v));
+    const maxU = Math.max(1, ...points.map((p) => p.u));
+    const innerW = W - PAD.l - PAD.r;
+    const innerH = H - PAD.t - PAD.b;
+    const x = (i) => PAD.l + (points.length === 1 ? innerW / 2 : (i / (points.length - 1)) * innerW);
+    const yV = (v) => PAD.t + innerH - (v / maxV) * innerH;
+    const yU = (v) => PAD.t + innerH - (v / maxU) * innerH;
+    const line = (key, yFn) => points.map((p, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${yFn(p[key]).toFixed(1)}`).join(" ");
+    const areaPath = `${line("v", yV)} L${x(points.length - 1).toFixed(1)},${PAD.t + innerH} L${x(0).toFixed(1)},${PAD.t + innerH} Z`;
+    const grid = [0, 0.5, 1].map((r) => `<line x1="${PAD.l}" x2="${W - PAD.r}" y1="${(PAD.t + innerH * r).toFixed(1)}" y2="${(PAD.t + innerH * r).toFixed(1)}" class="analytics-grid" />`).join("");
+    const step = Math.max(1, Math.ceil(points.length / 6));
+    const labels = points.map((p, i) => (i % step === 0 || i === points.length - 1)
+      ? `<text x="${x(i).toFixed(1)}" y="${H - 8}" class="analytics-xlabel" text-anchor="middle">${new Date(p.t).getMonth() + 1}/${new Date(p.t).getDate()}</text>` : "").join("");
+    chartEl.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="访问趋势图">
+      <defs><linearGradient id="anArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--primary)" stop-opacity="0.35"/><stop offset="1" stop-color="var(--primary)" stop-opacity="0"/></linearGradient></defs>
+      ${grid}
+      <path d="${areaPath}" fill="url(#anArea)" />
+      <path d="${line("v", yV)}" class="analytics-line analytics-line--views" />
+      <path d="${line("u", yU)}" class="analytics-line analytics-line--visitors" />
+      ${labels}
+    </svg>`;
+    if (hintEl) {
+      const sum = points.reduce((a, p) => a + p.v, 0);
+      hintEl.textContent = `近 ${range} 天共 ${fmt(sum)} 次浏览`;
+    }
+  }
+
+  function renderPages(rows) {
+    if (!pagesEl) return;
+    const list = (Array.isArray(rows) ? rows : [])
+      .map((r) => ({ path: String(r.x || "/"), views: Number(r.y) || 0 }))
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 8);
+    if (!list.length) { pagesEl.innerHTML = '<li class="analytics-pages__empty">暂无页面数据</li>'; return; }
+    const max = Math.max(1, ...list.map((p) => p.views));
+    pagesEl.innerHTML = list.map((p, i) => {
+      const label = p.path === "/" ? "首页" : (decodeURIComponent(p.path).replace(/\/+$/, "") || "/");
+      return `<li class="analytics-pages__item">
+        <span class="analytics-pages__rank">${String(i + 1).padStart(2, "0")}</span>
+        <span class="analytics-pages__path" title="${label.replace(/"/g, "&quot;")}">${label}</span>
+        <span class="analytics-pages__bar"><i style="width:${(p.views / max * 100).toFixed(1)}%"></i></span>
+        <span class="analytics-pages__views">${fmt(p.views)}</span>
+      </li>`;
+    }).join("");
+  }
+
+  async function load(force = false) {
+    if (!apiBase || !shareId) {
+      setStatus("offline", "未配置 Umami 公开分享");
+      if (chartEl) chartEl.innerHTML = '<div class="analytics-chart__empty">请在配置中填写 Umami shareId 与 shareApiBase</div>';
+      return;
+    }
+    setStatus("loading", "正在连接 Umami");
+    try {
+      const share = await getShare();
+      if (force) {
+        try { localStorage.removeItem("pipi:analytics:series"); } catch (_) {}
+      }
+      const now = Date.now();
+      const start = dayStart(now) - (range - 1) * 86400000;
+      const [series, pages] = await Promise.all([
+        getMetrics(share, "metrics", { startAt: start, endAt: now, type: "visitors", unit: "day" }),
+        getMetrics(share, "metrics", { startAt: 0, endAt: now, type: "path", limit: 1000 }),
+      ]);
+      renderChart(series);
+      renderPages(pages);
+      setStatus("online", "Umami 数据已同步");
+      if (lastUpdate) lastUpdate.textContent = `更新于 ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`;
+    } catch (err) {
+      setStatus("offline", isLocal ? "本地预览不统计／外网不可达" : "数据暂时不可用");
+      if (chartEl && chartEl.querySelector(".analytics-chart__empty")) {
+        chartEl.innerHTML = `<div class="analytics-chart__empty">${isLocal ? "本地预览环境，部署上线后显示真实趋势" : "Umami 公开数据暂时不可用"}</div>`;
+      }
+      if (pagesEl && pagesEl.querySelector(".analytics-pages__empty")) {
+        pagesEl.innerHTML = `<li class="analytics-pages__empty">${isLocal ? "本地预览不统计" : "暂无数据"}</li>`;
+      }
+    }
+  }
+
+  rangeBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      rangeBtns.forEach((b) => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      range = Number(btn.dataset.range) || 30;
+      load();
+    });
+  });
+  refreshBtn?.addEventListener("click", () => load(true));
+
+  const start = () => load();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
+  else start();
+  document.addEventListener("astro:page-load", load);
+  document.addEventListener("swup:contentReplaced", load);
+})();
+</script>
+
+<style>
+  .analytics-page { padding: 2rem; }
+  .analytics-head { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: flex-start; padding-bottom: 1.5rem; border-bottom: 1px solid var(--line-divider); }
+  .analytics-kicker { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em; color: var(--primary); }
+  .analytics-kicker__dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent); }
+  .analytics-head h1 { font-size: 2rem; font-weight: 800; margin: 0.5rem 0 0.35rem; }
+  .analytics-head__lead { color: var(--content-meta); font-size: 0.9rem; margin: 0; }
+  .analytics-head__notes { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.75rem; font-size: 0.75rem; color: var(--content-meta); }
+  .analytics-head__notes span { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .analytics-head__status { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
+  .analytics-status { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 999px; }
+  .analytics-status__dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
+  .analytics-status--loading { color: #d97706; background: color-mix(in srgb, #d97706 12%, transparent); }
+  .analytics-status--online { color: #059669; background: color-mix(in srgb, #059669 12%, transparent); }
+  .analytics-status--offline { color: #dc2626; background: color-mix(in srgb, #dc2626 12%, transparent); }
+  .analytics-source { display: flex; flex-direction: column; align-items: flex-end; font-size: 0.72rem; color: var(--content-meta); }
+  .analytics-source strong { font-size: 0.9rem; color: var(--primary); }
+  .analytics-refresh { width: 2rem; height: 2rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 0.5rem; border: 1px solid var(--line-divider); color: var(--primary); cursor: pointer; transition: transform 0.2s; }
+  .analytics-refresh:hover { transform: rotate(90deg); }
+
+  .analytics-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .analytics-stat { display: flex; flex-direction: column; gap: 0.25rem; padding: 1.1rem 1.25rem; border-radius: 0.9rem; border: 1px solid var(--line-divider); position: relative; overflow: hidden; }
+  .analytics-stat::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--accent); }
+  .analytics-stat--blue { --accent: #3b82f6; }
+  .analytics-stat--mint { --accent: #10b981; }
+  .analytics-stat--gold { --accent: #f59e0b; }
+  .analytics-stat--violet { --accent: #8b5cf6; }
+  .analytics-stat__label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: var(--content-meta); }
+  .analytics-stat strong { font-size: 1.9rem; font-weight: 800; line-height: 1.2; }
+  .analytics-stat__name { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); }
+  .analytics-stat small { font-size: 0.68rem; color: var(--content-meta); opacity: 0.75; }
+
+  .analytics-panel { padding: 1.25rem 0; border-top: 1px solid var(--line-divider); }
+  .analytics-panel__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .analytics-panel__head h2 { font-size: 1.1rem; font-weight: 700; margin: 0; }
+  .analytics-panel__head p { font-size: 0.75rem; color: var(--content-meta); margin: 0.2rem 0 0; }
+  .analytics-range { display: inline-flex; gap: 0.25rem; padding: 0.2rem; border-radius: 0.6rem; background: color-mix(in srgb, var(--primary) 8%, transparent); }
+  .analytics-range__btn { border: none; background: transparent; color: var(--content-meta); font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.7rem; border-radius: 0.45rem; cursor: pointer; }
+  .analytics-range__btn.is-active { background: var(--primary); color: white; }
+  .analytics-chart { width: 100%; min-height: 260px; }
+  .analytics-chart svg { width: 100%; height: 250px; display: block; overflow: visible; }
+  .analytics-chart__empty { display: flex; align-items: center; justify-content: center; min-height: 240px; color: var(--content-meta); font-size: 0.85rem; }
+  :global(.analytics-grid) { stroke: var(--line-divider); stroke-width: 1; stroke-dasharray: 4 4; }
+  :global(.analytics-xlabel) { fill: var(--content-meta); font-size: 10px; }
+  :global(.analytics-line) { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  :global(.analytics-line--views) { stroke: var(--primary); }
+  :global(.analytics-line--visitors) { stroke: #10b981; stroke-width: 2; stroke-dasharray: 5 4; }
+  .analytics-chart-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 0.5rem; font-size: 0.72rem; color: var(--content-meta); }
+  .analytics-chart-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .legend-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; display: inline-block; }
+  .legend-dot--views { background: var(--primary); }
+  .legend-dot--visitors { background: #10b981; }
+  .analytics-chart-hint { margin-left: auto; }
+
+  .analytics-pages { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+  .analytics-pages__item { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr) minmax(80px, 2fr) 3.5rem; align-items: center; gap: 0.75rem; font-size: 0.8rem; }
+  .analytics-pages__rank { font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; }
+  .analytics-pages__path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .analytics-pages__bar { height: 0.45rem; border-radius: 999px; background: color-mix(in srgb, var(--primary) 12%, transparent); overflow: hidden; }
+  .analytics-pages__bar i { display: block; height: 100%; border-radius: 999px; background: var(--primary); }
+  .analytics-pages__views { text-align: right; font-variant-numeric: tabular-nums; color: var(--content-meta); }
+  .analytics-pages__empty { color: var(--content-meta); font-size: 0.85rem; padding: 1rem 0; }
+
+  .analytics-foot { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line-divider); font-size: 0.72rem; color: var(--content-meta); }
+  .analytics-foot span { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+  @media (max-width: 640px) {
+    .analytics-page { padding: 1.25rem; }
+    .analytics-head__status { align-items: flex-start; }
+    .analytics-pages__item { grid-template-columns: 1.4rem minmax(0, 1fr) 3rem; }
+    .analytics-pages__bar { display: none; }
+  }
+</style>

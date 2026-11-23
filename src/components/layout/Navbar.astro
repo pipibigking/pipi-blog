@@ -7,6 +7,7 @@ import DisplaySettings from "@/components/controls/DisplaySettingsIntegrated.sve
 import FontSwitch from "@/components/controls/FontSwitch.svelte";
 import LightDarkSwitch from "@/components/controls/LightDarkSwitch.svelte";
 import Search from "@/components/controls/Search.svelte";
+import SiteThemeSwitch from "@/components/controls/SiteThemeSwitch.svelte";
 import MusicPlayer from "@/components/features/MusicPlayer.astro";
 import { backgroundWallpaper, navBarConfig, siteConfig } from "@/config";
 import { musicPlayerConfig } from "@/config/musicConfig";
@@ -134,9 +135,6 @@ if (isLocalSrcLogo) {
         className,
         "firefly-nav-shell relative overflow-visible! h-18 px-4"
     ]}>
-		<div id="progress-track" aria-hidden="true">
-			<div id="progress-bar"></div>
-		</div>
         <div class="nav-container mx-auto h-full w-full grid grid-cols-[auto_minmax(0,1fr)_auto] items-center">
             <a href={url('/')} class="nav-brand btn-plain scale-animation rounded-lg h-13 px-5 font-bold active:scale-95">
                 <span class:list={[
@@ -203,6 +201,7 @@ if (isLocalSrcLogo) {
                 )}
                 {/* @ts-ignore */}
                 <LightDarkSwitch client:load></LightDarkSwitch>
+                <SiteThemeSwitch client:load></SiteThemeSwitch>
                 <button aria-label="Menu" aria-controls="nav-menu-panel" aria-expanded="false" name="Nav Menu" class="menu-btn btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90" id="nav-menu-switch">
                     <span></span>
                     <span></span>
@@ -448,9 +447,19 @@ function loadButtonScript() {
         };
     }
 
+    let siteThemeSwitchBtn = document.getElementById("site-theme-switch");
+    if (siteThemeSwitchBtn) {
+        siteThemeSwitchBtn.onclick = function () {
+            let siteThemePanel = document.getElementById("site-theme-panel");
+            if (siteThemePanel) {
+                siteThemePanel.classList.toggle("float-panel-closed");
+            }
+        };
+    }
+
     document.addEventListener("click", function(event) {
-        const panels = ["display-setting", "nav-menu-panel", "music-nav-panel", "theme-mode-panel", "bg-player-panel"];
-        const buttons = ["display-settings-switch", "nav-menu-switch", "music-player-switch", "scheme-switch", "bg-player-toggle"];
+        const panels = ["display-setting", "nav-menu-panel", "music-nav-panel", "theme-mode-panel", "bg-player-panel", "site-theme-panel"];
+        const buttons = ["display-settings-switch", "nav-menu-switch", "music-player-switch", "scheme-switch", "bg-player-toggle", "site-theme-switch"];
 
         panels.forEach((id, index) => {
             const panel = document.getElementById(id);

@@ -213,6 +213,7 @@ if (entry.id === "monthly-2026-08") {
   headings={headings}
   bannerPostMeta={bannerPostMeta}
   bannerPostAiSummary={entry.data.aiSummary}
+  imageColor={entry.data.imageColor}
 >
   <!-- KaTeX 按需加载 - 仅在文章页面 -->
   <KatexManager slot="head" />
@@ -233,105 +234,119 @@ if (entry.id === "monthly-2026-08") {
         {},
       ]}
     >
-      <!-- word count and reading time -->
-      <div
-        class="flex flex-row text-black/30 dark:text-white/30 gap-5 mb-3 transition onload-animation"
-      >
-        <div class="flex flex-row items-center">
-          <div
-            class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
-          >
-            <Icon is:inline name="material-symbols:notes-rounded" />
-          </div>
-          <div class="text-sm">
-            {remarkPluginFrontmatter.words}
-            {" " + i18n(I18nKey.wordsCount)}
-          </div>
-        </div>
-        <div class="flex flex-row items-center">
-          <div
-            class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
-          >
-            <Icon is:inline name="material-symbols:schedule-outline-rounded" />
-          </div>
-          <div class="text-sm">
-            {remarkPluginFrontmatter.minutes}
-            {
-              " " +
-                i18n(
-                  remarkPluginFrontmatter.minutes === 1
-                    ? I18nKey.minuteCount
-                    : I18nKey.minutesCount
-                )
-            }
-          </div>
-        </div>
-        {entry.data.password && (
-          <div class="flex flex-row items-center">
-            <div
-              class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
-            >
-              <Icon is:inline name="material-symbols:lock-outline" />
-            </div>
-            <div class="text-sm">
-              {i18n(I18nKey.postEncrypted)}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <!-- title -->
-      <div class="relative onload-animation">
-        <div
-          data-pagefind-body
-          data-pagefind-weight="10"
-          data-pagefind-meta="title"
-          class:list={[
-            "transition w-full block font-bold mb-3 text-3xl md:text-[2.25rem]/[2.75rem] text-black/90 dark:text-white/90 md:before:w-1 before:h-5 before:rounded-md before:bg-(--primary) before:absolute before:top-3 before:-left-4.5",
-            forcePostTitleBreak && "post-title-force-break",
-          ]}
-        >
-          {entry.data.title}
-        </div>
-      </div>
-
-      <!-- metadata -->
-      <div class="onload-animation">
-        <PostMetadata
-          className="mb-5"
-          published={entry.data.published}
-          updated={entry.data.updated}
-          tags={entry.data.tags}
-          category={entry.data.category || undefined}
-          id={entry.id}
-        />
+      <!-- 文章头图 Hero：封面 → 元信息 → 标题 → 简介 → 正文 -->
+      <div class="post-hero onload-animation">
         {
-          !processedImage && (
-            <div class="border-(--line-divider) border-dashed border-b mt-3 mb-5" />
+          processedImage && coverImageConfig.enableInPost && (
+            <div class="post-hero-media" data-post-hero-media>
+              {/* 模糊副图：24px 模糊、60% 初始透明、右偏 16px、随滚动渐隐 */}
+              <div
+                class="post-hero-halo"
+                aria-hidden="true"
+                data-post-hero-halo
+                style={`background-image:url('${posterCoverUrl}')`}
+              />
+              {/* 前景封面：左对齐、最大宽 65ch */}
+              <div class="post-hero-cover">
+                <CoverImage
+                  id="post-cover"
+                  src={processedImage}
+                  basePath={getFileDirFromPath(entry.filePath || '')}
+                  class:list={[
+                    "banner-container",
+                    preservePostCoverRatio ? "post-cover-preserve-ratio" : "",
+                  ]}
+                  preview={false}
+                  preserveAspectRatio={preservePostCoverRatio}
+                  apiUrls={apiUrls}
+                />
+              </div>
+            </div>
           )
         }
-      </div>
 
-      <!-- always show cover as long as it has one -->
-
-      {
-        processedImage && coverImageConfig.enableInPost && (
-          <div style="margin-top:1rem;">
-            <CoverImage
-              id="post-cover"
-              src={processedImage}
-              basePath={getFileDirFromPath(entry.filePath || '')}
-              class:list={[
-                "mb-8 rounded-xl banner-container onload-animation",
-                preservePostCoverRatio ? "post-cover-preserve-ratio" : "",
-              ]}
-              preview={false}
-              preserveAspectRatio={preservePostCoverRatio}
-              apiUrls={apiUrls}
-            />
+        <!-- word count and reading time + metadata -->
+        <div class="post-hero-info">
+          <div
+            class="flex flex-row text-black/30 dark:text-white/30 gap-5 mb-3 transition"
+          >
+            <div class="flex flex-row items-center">
+              <div
+                class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
+              >
+                <Icon is:inline name="material-symbols:notes-rounded" />
+              </div>
+              <div class="text-sm">
+                {remarkPluginFrontmatter.words}
+                {" " + i18n(I18nKey.wordsCount)}
+              </div>
+            </div>
+            <div class="flex flex-row items-center">
+              <div
+                class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
+              >
+                <Icon is:inline name="material-symbols:schedule-outline-rounded" />
+              </div>
+              <div class="text-sm">
+                {remarkPluginFrontmatter.minutes}
+                {
+                  " " +
+                    i18n(
+                      remarkPluginFrontmatter.minutes === 1
+                        ? I18nKey.minuteCount
+                        : I18nKey.minutesCount
+                    )
+                }
+              </div>
+            </div>
+            {entry.data.password && (
+              <div class="flex flex-row items-center">
+                <div
+                  class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
+                >
+                  <Icon is:inline name="material-symbols:lock-outline" />
+                </div>
+                <div class="text-sm">
+                  {i18n(I18nKey.postEncrypted)}
+                </div>
+              </div>
+            )}
           </div>
-        )
-      }
+
+          <PostMetadata
+            className="mb-3"
+            published={entry.data.published}
+            updated={entry.data.updated}
+            tags={entry.data.tags}
+            category={entry.data.category || undefined}
+            id={entry.id}
+          />
+        </div>
+
+        <!-- title -->
+        <div class="relative post-hero-title-wrap">
+          <div
+            data-pagefind-body
+            data-pagefind-weight="10"
+            data-pagefind-meta="title"
+            class:list={[
+              "post-hero-title transition w-full block font-bold mb-3 text-3xl md:text-[2.25rem]/[2.75rem] text-black/90 dark:text-white/90 md:before:w-1 before:h-5 before:rounded-md before:bg-(--primary) before:absolute before:top-3 before:-left-4.5",
+              forcePostTitleBreak && "post-title-force-break",
+            ]}
+          >
+            {entry.data.title}
+          </div>
+        </div>
+
+        <!-- description -->
+        {entry.data.description && (
+          <p class="post-hero-description" data-pagefind-meta="description">
+            “{entry.data.description}”
+          </p>
+        )}
+
+        <div class="post-hero-divider" aria-hidden="true" />
+      </div>
 
       {
         entry.id === "monthly-2026-08" && (
@@ -591,6 +606,41 @@ if (entry.id === "monthly-2026-08") {
     }
   </script>
 
+  <!-- 头图模糊副图随滚动渐隐：从 60% 线性淡出到 0 -->
+  <script is:inline>
+    (() => {
+      let halo = null;
+      let ticking = false;
+      const sync = () => {
+        ticking = false;
+        halo ??= document.querySelector("[data-post-hero-halo]");
+        if (!halo) return;
+        const y = window.scrollY || document.documentElement.scrollTop || 0;
+        const fadeAt = Math.max(320, window.innerHeight * 0.6);
+        const opacity = Math.max(0, 0.6 * (1 - Math.min(1, y / fadeAt)));
+        halo.style.opacity = opacity.toFixed(3);
+      };
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(sync);
+      };
+      const init = () => {
+        halo = document.querySelector("[data-post-hero-halo]");
+        sync();
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+      document.addEventListener("astro:page-load", init);
+      document.addEventListener("swup:contentReplaced", init);
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init, { once: true });
+      } else {
+        init();
+      }
+    })();
+  </script>
+
   <div
     class="flex flex-col md:flex-row justify-between mb-4 gap-4 overflow-hidden w-full"
   >
@@ -632,6 +682,167 @@ if (entry.id === "monthly-2026-08") {
 </MainGridLayout>
 
 <style is:global>
+  /* ===========================================================================
+     文章头图 Hero（仿 Aemeath / Astro Theme Pure）
+     封面 → 元信息 → 标题 → 简介 → 正文
+     =========================================================================== */
+  #post-container .post-hero {
+    position: relative;
+    /* 同一份 DOM，按站点主题切换视觉顺序（仿上游双 Header） */
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* --------------------------------------------------------------------------
+     双主题 Hero 排版（对照上游 Aemeath 的双 Header 逻辑）
+     - Aemeath（缺省/无 JS）：元信息(字数/日期/标签) → 标题 → 全宽封面
+     - Pure（?siteTheme=pure）：封面 + 模糊副图 → 元信息 → 标题 → 简介 → 分隔线
+     用 CSS order 代替两套重复 DOM，既保持上游的视觉逻辑，又避免重复封面请求
+     和重复的 pagefind 元数据。
+     -------------------------------------------------------------------------- */
+  html:not([data-site-theme="pure"]) #post-container .post-hero-info {
+    order: 1;
+    /* 比上游更实底一点：元信息压在亮色壁纸/封面上依然清晰可读 */
+    padding: 0.7rem 0.9rem;
+    margin-bottom: 0.9rem;
+    border: 1px solid color-mix(in oklab, var(--primary) 20%, var(--line-divider));
+    border-radius: 0.85rem;
+    background: color-mix(in oklab, var(--card-bg) 90%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  /* 标题外层 .relative 才是 flex 直接子元素，order 必须落在这个包裹层上 */
+  html:not([data-site-theme="pure"]) #post-container .post-hero-title-wrap {
+    order: 2;
+    margin-top: 0.25rem;
+  }
+  html:not([data-site-theme="pure"]) #post-container .post-hero-media {
+    order: 3;
+    max-width: 100%;
+  }
+  html:not([data-site-theme="pure"]) #post-container .post-hero-description,
+  html:not([data-site-theme="pure"]) #post-container .post-hero-divider {
+    display: none;
+  }
+
+  html[data-site-theme="pure"] #post-container .post-hero-media {
+    order: 1;
+    max-width: 65ch;
+  }
+  html[data-site-theme="pure"] #post-container .post-hero-info {
+    order: 2;
+  }
+  html[data-site-theme="pure"] #post-container .post-hero-title-wrap {
+    order: 3;
+    margin-top: 0;
+  }
+  html[data-site-theme="pure"] #post-container .post-hero-description {
+    order: 4;
+    display: block;
+  }
+  html[data-site-theme="pure"] #post-container .post-hero-divider {
+    order: 5;
+    display: block;
+  }
+
+  /* 降低动效偏好下不做 halo 渐隐过渡 */
+  @media (prefers-reduced-motion: reduce) {
+    #post-container .post-hero-halo {
+      transition: none;
+    }
+  }
+
+  /* 前景封面左对齐，最大宽 65ch；模糊副图从封面后方透出 */
+  #post-container .post-hero-media {
+    position: relative;
+    width: 100%;
+    max-width: 65ch;
+    margin: 0 0 1.6rem;
+  }
+
+  #post-container .post-hero-media .post-hero-cover {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+  }
+
+  /* 模糊副图：与前景同尺寸、右偏 16px、24px 模糊、60% 初始透明、随滚动渐隐 */
+  #post-container .post-hero-halo {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    transform: translateX(16px) scale(1.02);
+    background-size: cover;
+    background-position: center;
+    filter: blur(24px);
+    opacity: 0.6;
+    border-radius: 1rem;
+    pointer-events: none;
+    transition: opacity 120ms linear;
+    will-change: opacity;
+  }
+
+  /* 元信息区 */
+  #post-container .post-hero-info {
+    position: relative;
+    z-index: 3;
+  }
+
+  /* 标题：为副图透出留出呼吸空间 */
+  #post-container .post-hero-title {
+    position: relative;
+    z-index: 3;
+  }
+
+  /* 简介：引号包裹、次级文字 */
+  #post-container .post-hero-description {
+    position: relative;
+    z-index: 3;
+    margin: 0 0 1.4rem;
+    max-width: 65ch;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--content-meta);
+    font-style: italic;
+  }
+
+  /* 头图与正文之间的分隔线 */
+  #post-container .post-hero-divider {
+    height: 1px;
+    margin: 0 0 1.5rem;
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--primary) 55%, transparent),
+      transparent 85%
+    );
+  }
+
+  /* 文章顶部一屏渐变背景：高 100vh、25% 透明、随文档滚动、底端平滑回到底色 */
+  #swup-container > .post-hero-colorwash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--post-hero-color, var(--primary)) 25%, transparent) 0%,
+      color-mix(in oklab, var(--post-hero-color, var(--primary)) 12%, transparent) 45%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  }
+
+  /* 手机窄屏：副图与前景同宽，去掉右偏移避免溢出 */
+  @media (max-width: 768px) {
+    #post-container .post-hero-halo {
+      transform: translateX(6px) scale(1.01);
+    }
+  }
+
   /* Keep selected 2:1 article covers complete at every viewport size. */
   #post-cover.post-cover-preserve-ratio.banner-container {
     aspect-ratio: 2 / 1;

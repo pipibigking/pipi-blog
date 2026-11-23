@@ -1,0 +1,116 @@
+/*
+ * Pure 站点主题 —— 简洁留白阅读风
+ * --------------------------------------------------------------------------
+ * 与 Aemeath（花哨壁纸风）并列，由 <html data-site-theme="pure"> 驱动。
+ * 设计目标：去掉壁纸 / 视频 / 樱花 / 渐变高光等装饰，改为纯色底、实心卡片、
+ * 细边框、充足留白的阅读界面。浅色 / 深色（.dark）继续独立工作：所有颜色均
+ * 复用站内已有的 CSS 变量，因此深浅色不受站点主题影响。
+ *
+ * 无 JS 时不会添加 data-site-theme="pure"，页面自然是 Aemeath 风格。
+ * 只在文章 / 普通内容区收敛宽度与留白；首页保留清爽的列表但去掉大图 banner。
+ */
+
+html[data-site-theme="pure"] {
+  /* 纯色背景，去除壁纸透出的半透明卡片 */
+  --card-bg-transparent: var(--card-bg);
+  --card-transparent-opacity: 1;
+  color-scheme: light;
+}
+html[data-site-theme="pure"].dark {
+  color-scheme: dark;
+}
+
+/* ---------- 去掉花哨装饰层 ---------- */
+html[data-site-theme="pure"] #page-background-decoration,
+html[data-site-theme="pure"] .top-gradient-highlight,
+html[data-site-theme="pure"] .wave-wrapper,
+html[data-site-theme="pure"] #header-waves,
+html[data-site-theme="pure"] .sakura-canvas,
+html[data-site-theme="pure"] .home-portfolio-intro,
+html[data-site-theme="pure"] .recommend-particle,
+html[data-site-theme="pure"] .banner-carousel-nav,
+html[data-site-theme="pure"] #scroll-down-indicator,
+html[data-site-theme="pure"] .scroll-down-indicator {
+  display: none !important;
+}
+
+/* 壁纸层由 JS 写入内联 `display:block !important`，同级的 `display:none !important`
+   会被内联样式压过。改用 opacity + visibility（不与 display 冲突）彻底隐藏。 */
+html[data-site-theme="pure"] #wallpaper-wrapper,
+html[data-site-theme="pure"] #wallpaper-video {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* 背景固定为纯色，不铺图（不影响文章封面的 <img>，仅收敛页面级背景容器） */
+html[data-site-theme="pure"] body,
+html[data-site-theme="pure"] #page-background {
+  background-image: none !important;
+  background-color: var(--page-bg) !important;
+  backdrop-filter: none !important;
+}
+
+/* ---------- 卡片：实心、细边框、无阴影 ---------- */
+html[data-site-theme="pure"] .card-base,
+html[data-site-theme="pure"] .bg-\(--card-bg-transparent\),
+html[data-site-theme="pure"] .bg-\(--card-bg\) {
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--line-divider) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* ---------- 文章页：去掉大 banner，正文居中留白 ---------- */
+html[data-site-theme="pure"] .enable-banner #banner-wrapper,
+html[data-site-theme="pure"] .enable-banner #top-row:not(.sticky-navbar) {
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+/* 文章容器增加上下留白，给阅读更多呼吸空间 */
+html[data-site-theme="pure"] #post-container {
+  padding-top: 2.5rem !important;
+  padding-bottom: 2.5rem !important;
+  background: var(--card-bg) !important;
+}
+
+/* 正文行宽与字号：接近阅读排版 */
+html[data-site-theme="pure"] .markdown-body,
+html[data-site-theme="pure"] .markdown-body > * {
+  line-height: 1.9;
+}
+
+/* ---------- 导航栏：纯色底 + 细分隔线 ---------- */
+html[data-site-theme="pure"] #navbar,
+html[data-site-theme="pure"] .navbar {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--line-divider) !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* ---------- 悬浮控件：简洁方形浅边框 ---------- */
+html[data-site-theme="pure"] .floating-btn {
+  border-radius: 0.85rem !important;
+  border: 1px solid var(--line-divider) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* ---------- 进度环：收进纯色卡 ---------- */
+html[data-site-theme="pure"] #scroll-progress-circle {
+  border-radius: 0.85rem;
+  background-color: var(--card-bg);
+  border-color: var(--line-divider);
+}
+
+/* ---------- 无障碍 / 降低动效 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html[data-site-theme="pure"] *,
+  html[data-site-theme="pure"] *::before,
+  html[data-site-theme="pure"] *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

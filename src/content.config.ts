@@ -11,6 +11,7 @@ type PostData = {
 	description: string;
 	aiSummary: string;
 	image: string;
+	imageColor?: string;
 	tags: string[];
 	category: string | null;
 	lang: string;
@@ -42,6 +43,8 @@ const postsCollection: PostsCollection = defineCollection({
 		description: z.string().optional().default(""),
 		aiSummary: z.string().optional().default(""),
 		image: z.string().optional().default(""),
+		// 文章顶部渐变背景强调色（如 "#d58388"），未填写时回退到站点主题色
+		imageColor: z.string().optional().default(""),
 		tags: z.array(z.string()).optional().default([]),
 		category: z.string().optional().nullable().default(""),
 		lang: z.string().optional().default(""),

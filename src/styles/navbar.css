@@ -83,13 +83,17 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
     }
 
     /* "semifull" (static) */
+    /* 原作者此处为全透明，压在亮色壁图上文字几乎看不清；提高实底比例与模糊，
+       保证 Hero 区域的导航文字/图标始终可读（仍保留毛玻璃层次，不是死白条）。 */
     #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]>div,
     body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]>div {
-        backdrop-filter: blur(0) !important;
-        background: transparent !important;
+        backdrop-filter: blur(var(--navbar-glass-blur, 16px)) saturate(1.12) !important;
+        -webkit-backdrop-filter: blur(var(--navbar-glass-blur, 16px)) saturate(1.12) !important;
+        background: color-mix(in oklab, var(--card-bg) 72%, transparent) !important;
         border: none !important;
+        border-bottom: 1px solid color-mix(in oklab, var(--nav-accent-primary) 18%, transparent) !important;
         border-radius: 0 0 0.75rem 0.75rem !important;
-        box-shadow: none !important;
+        box-shadow: 0 6px 22px rgb(0 0 0 / 0.08) !important;
     }
 
     /* "semifull" (scrolled) */
@@ -170,9 +174,12 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
     /* "semifull" (static) */
     :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]>div,
     :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]>div {
-        background: transparent !important;
+        background: color-mix(in oklab, var(--card-bg) 76%, transparent) !important;
         border: none !important;
-        box-shadow: none !important;
+        border-bottom: 1px solid color-mix(in oklab, var(--nav-accent-primary) 22%, transparent) !important;
+        box-shadow: 0 6px 22px rgb(0 0 0 / 0.28) !important;
+        backdrop-filter: blur(var(--navbar-glass-blur, 16px)) saturate(1.12) !important;
+        -webkit-backdrop-filter: blur(var(--navbar-glass-blur, 16px)) saturate(1.12) !important;
     }
 
     /* "semifull" (scrolled) */
@@ -373,20 +380,20 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
 #wallpaper-wrapper~* #navbar.firefly-navbar > .firefly-nav-shell,
 body:has(#wallpaper-wrapper) #navbar.firefly-navbar > .firefly-nav-shell,
 body.wallpaper-transparent #navbar.firefly-navbar > .firefly-nav-shell {
-    background: color-mix(in oklab, var(--card-bg) 14%, transparent) !important;
-    border-bottom: 1px solid color-mix(in oklab, var(--nav-accent-primary) 7%, transparent) !important;
-    box-shadow: 0 4px 14px rgb(0 0 0 / 0.025) !important;
-    backdrop-filter: blur(6px) saturate(1.06) !important;
-    -webkit-backdrop-filter: blur(6px) saturate(1.06) !important;
+    background: color-mix(in oklab, var(--card-bg) 68%, transparent) !important;
+    border-bottom: 1px solid color-mix(in oklab, var(--nav-accent-primary) 18%, transparent) !important;
+    box-shadow: 0 6px 22px rgb(0 0 0 / 0.08) !important;
+    backdrop-filter: blur(14px) saturate(1.12) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(1.12) !important;
 }
 
 #wallpaper-wrapper~* #navbar.firefly-navbar.scrolled > .firefly-nav-shell,
 body:has(#wallpaper-wrapper) #navbar.firefly-navbar.scrolled > .firefly-nav-shell,
 body.wallpaper-transparent #navbar.firefly-navbar.scrolled > .firefly-nav-shell,
 body:has(#wallpaper-wrapper) #navbar.firefly-navbar.navbar-sticky-shadow > .firefly-nav-shell {
-    background: color-mix(in oklab, var(--card-bg) 68%, transparent) !important;
-    border-bottom-color: color-mix(in oklab, var(--nav-accent-primary) 22%, transparent) !important;
-    box-shadow: 0 8px 28px rgb(0 0 0 / 0.12) !important;
+    background: color-mix(in oklab, var(--card-bg) 82%, transparent) !important;
+    border-bottom-color: color-mix(in oklab, var(--nav-accent-primary) 28%, transparent) !important;
+    box-shadow: 0 8px 28px rgb(0 0 0 / 0.14) !important;
     backdrop-filter: blur(var(--navbar-glass-blur, 18px)) saturate(1.2) !important;
     -webkit-backdrop-filter: blur(var(--navbar-glass-blur, 18px)) saturate(1.2) !important;
 }

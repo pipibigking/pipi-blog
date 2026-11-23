@@ -75,6 +75,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 
 			// 博客更新日志
 			LinkPresets.BlogChangelog,
+
+			// 站点统计
+			LinkPresets.Analytics,
 		],
 	});
 
@@ -161,6 +164,11 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		name: "博客日志",
 		url: "/blog-changelog/",
 		icon: "material-symbols:history-edu-rounded",
+	},
+	Analytics: {
+		name: "站点统计",
+		url: "/analytics/",
+		icon: "material-symbols:monitoring-rounded",
 	},
 	Bangumi: {
 		name: "我看过的作品",
