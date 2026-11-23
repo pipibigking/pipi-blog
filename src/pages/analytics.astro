@@ -286,7 +286,8 @@ const hasPublicStats = Boolean(umami.websiteId && shareId && shareApiBase);
 </script>
 
 <style>
-  .analytics-page { padding: 2rem; }
+  /* 跟随主题文字色：亮色下深色、暗色下浅色，避免暗色主题出现黑字 */
+  .analytics-page { padding: 2rem; color: var(--text-color); }
   .analytics-head { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: flex-start; padding-bottom: 1.5rem; border-bottom: 1px solid var(--line-divider); }
   .analytics-kicker { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em; color: var(--primary); }
   .analytics-kicker__dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent); }
@@ -297,13 +298,9 @@ const hasPublicStats = Boolean(umami.websiteId && shareId && shareApiBase);
   .analytics-head__status { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
   .analytics-status { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 999px; }
   .analytics-status__dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
-  /* 状态色随明暗主题切换：暗色下用更亮的版本保证对比度 */
-  .analytics-status--loading { --status-tone: #b45309; color: var(--status-tone); background: color-mix(in srgb, var(--status-tone) 12%, transparent); }
-  .analytics-status--online { --status-tone: #047857; color: var(--status-tone); background: color-mix(in srgb, var(--status-tone) 12%, transparent); }
-  .analytics-status--offline { --status-tone: #b91c1c; color: var(--status-tone); background: color-mix(in srgb, var(--status-tone) 12%, transparent); }
-  :global(.dark) .analytics-status--loading { --status-tone: #fbbf24; }
-  :global(.dark) .analytics-status--online { --status-tone: #34d399; }
-  :global(.dark) .analytics-status--offline { --status-tone: #f87171; }
+  .analytics-status--loading { color: #d97706; background: color-mix(in srgb, #d97706 12%, transparent); }
+  .analytics-status--online { color: #059669; background: color-mix(in srgb, #059669 12%, transparent); }
+  .analytics-status--offline { color: #dc2626; background: color-mix(in srgb, #dc2626 12%, transparent); }
   .analytics-source { display: flex; flex-direction: column; align-items: flex-end; font-size: 0.72rem; color: var(--content-meta); }
   .analytics-source strong { font-size: 0.9rem; color: var(--primary); }
   .analytics-refresh { width: 2rem; height: 2rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 0.5rem; border: 1px solid var(--line-divider); color: var(--primary); cursor: pointer; transition: transform 0.2s; }
@@ -316,11 +313,6 @@ const hasPublicStats = Boolean(umami.websiteId && shareId && shareApiBase);
   .analytics-stat--mint { --accent: #10b981; }
   .analytics-stat--gold { --accent: #f59e0b; }
   .analytics-stat--violet { --accent: #8b5cf6; }
-  /* 暗色下强调色整体提亮，保证竖条与英文标签清晰 */
-  :global(.dark) .analytics-stat--blue { --accent: #60a5fa; }
-  :global(.dark) .analytics-stat--mint { --accent: #34d399; }
-  :global(.dark) .analytics-stat--gold { --accent: #fbbf24; }
-  :global(.dark) .analytics-stat--violet { --accent: #a78bfa; }
   .analytics-stat__label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: var(--content-meta); }
   .analytics-stat strong { font-size: 1.9rem; font-weight: 800; line-height: 1.2; }
   .analytics-stat__name { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); }
@@ -332,8 +324,7 @@ const hasPublicStats = Boolean(umami.websiteId && shareId && shareApiBase);
   .analytics-panel__head p { font-size: 0.75rem; color: var(--content-meta); margin: 0.2rem 0 0; }
   .analytics-range { display: inline-flex; gap: 0.25rem; padding: 0.2rem; border-radius: 0.6rem; background: color-mix(in srgb, var(--primary) 8%, transparent); }
   .analytics-range__btn { border: none; background: transparent; color: var(--content-meta); font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.7rem; border-radius: 0.45rem; cursor: pointer; }
-  /* 激活态：primary 在暗色下偏亮，用深色文字保证对比度 */
-  .analytics-range__btn.is-active { background: var(--primary); color: var(--card-bg); }
+  .analytics-range__btn.is-active { background: var(--primary); color: white; }
   .analytics-chart { width: 100%; min-height: 260px; }
   .analytics-chart svg { width: 100%; height: 250px; display: block; overflow: visible; }
   .analytics-chart__empty { display: flex; align-items: center; justify-content: center; min-height: 240px; color: var(--content-meta); font-size: 0.85rem; }
@@ -342,13 +333,11 @@ const hasPublicStats = Boolean(umami.websiteId && shareId && shareApiBase);
   :global(.analytics-line) { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
   :global(.analytics-line--views) { stroke: var(--primary); }
   :global(.analytics-line--visitors) { stroke: #10b981; stroke-width: 2; stroke-dasharray: 5 4; }
-  :global(.dark .analytics-line--visitors) { stroke: #34d399; }
   .analytics-chart-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 0.5rem; font-size: 0.72rem; color: var(--content-meta); }
   .analytics-chart-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
   .legend-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; display: inline-block; }
   .legend-dot--views { background: var(--primary); }
   .legend-dot--visitors { background: #10b981; }
-  :global(.dark) .legend-dot--visitors { background: #34d399; }
   .analytics-chart-hint { margin-left: auto; }
 
   .analytics-pages { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
