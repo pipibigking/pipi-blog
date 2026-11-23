@@ -1,0 +1,74 @@
+---
+/**
+ * 文章内嵌视频卡片
+ *
+ * 用法（在 .mdx 文章中）：
+ *   import VideoCard from "@/components/features/VideoCard.astro";
+ *   <VideoCard src="/assets/videos/xxx.mp4" poster="/assets/images/xxx.webp" title="视频标题" />
+ *
+ * - src:    视频地址（public 下的路径或远程 URL）
+ * - poster: 封面图地址；未播放时显示，点击后播放
+ * - title:  可选的标题，显示在封面下方
+ */
+interface Props {
+	src: string;
+	poster?: string;
+	title?: string;
+}
+
+const { src, poster = "", title = "" } = Astro.props;
+const uid = `video-card-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<figure id={uid} class="video-card group relative my-6 overflow-hidden rounded-xl border border-(--line-divider) bg-black/5">
+	<div class="video-card-stage relative aspect-video w-full overflow-hidden bg-black">
+		<video
+			class="video-card-media absolute inset-0 h-full w-full object-contain"
+			preload="none"
+			playsinline
+			controls
+			poster={poster || undefined}
+			src={src}
+		></video>
+		{poster && (
+			<button
+				type="button"
+				class="video-card-play absolute inset-0 z-10 flex items-center justify-center cursor-pointer bg-transparent border-0 transition-opacity duration-300"
+				aria-label="播放视频"
+			>
+				<span class="video-card-play-btn flex h-16 w-16 items-center justify-center rounded-full bg-black/55 text-white shadow-lg backdrop-blur-sm transition-transform duration-200 group-hover:scale-110">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="ml-0.5 h-8 w-8" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.54.84l10.4-6.86a1 1 0 0 0 0-1.68L9.54 4.3A1 1 0 0 0 8 5.14Z" /></svg>
+				</span>
+			</button>
+		)}
+	</div>
+	{title && <figcaption class="video-card-caption px-1 pt-2 text-center text-xs text-(--content-meta)">{title}</figcaption>}
+</figure>
+
+<style>
+	.video-card-play-btn {
+		box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+	}
+	.video-card.is-playing .video-card-play {
+		opacity: 0;
+		pointer-events: none;
+	}
+</style>
+
+<script is:inline define:vars={{ uid }}>
+	(() => {
+		var root = document.getElementById(uid);
+		if (!root) return;
+		var video = root.querySelector(".video-card-media");
+		var playBtn = root.querySelector(".video-card-play");
+		if (video && playBtn) {
+			playBtn.addEventListener("click", function () {
+				root.classList.add("is-playing");
+				video.play().catch(function () {});
+			});
+			video.addEventListener("play", function () {
+				root.classList.add("is-playing");
+			});
+		}
+	})();
+</script>

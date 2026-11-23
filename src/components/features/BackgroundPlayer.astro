@@ -1,0 +1,324 @@
+---
+import { Icon } from "astro-icon/components";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+
+export interface Props {
+	playerUrl: string | string[];
+	playerMode?: "order" | "random";
+	cycleMode?: "loop" | "next";
+}
+
+const { playerUrl, playerMode = "order", cycleMode = "next" } = Astro.props;
+
+const urls = Array.isArray(playerUrl) ? playerUrl : [playerUrl];
+const hasMultiple = urls.length > 1;
+
+// 从文件名生成简短显示名
+const displayNames = urls.map((u, i) => {
+	const file = u.split("/").pop() ?? `Video ${i + 1}`;
+	return decodeURIComponent(file.replace(/\.[^.]+$/, ""));
+});
+
+const tPrev = i18n(I18nKey.videoPrev);
+const tNext = i18n(I18nKey.videoNext);
+const tLoadError = i18n(I18nKey.videoLoadError);
+---
+
+{
+	urls.length > 0 && (
+		<div id="bg-player">
+			<div
+				id="bg-player-overlay"
+				class="absolute inset-0 z-15 overflow-hidden pointer-events-none transition-opacity duration-500 ease-in-out opacity-0"
+			>
+				<!-- 双层 video 交叉淡入，切换时不会闪白 -->
+				<video id="bg-player-video-a" preload="auto" playsinline muted class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-700 ease-in-out"></video>
+				<video id="bg-player-video-b" preload="auto" playsinline muted class="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-700 ease-in-out"></video>
+			</div>
+
+			<!-- 左右切换按钮：常驻在视频层左右两侧 -->
+			{hasMultiple && (
+				<div id="bg-player-side-controls" class="absolute inset-0 z-20 pointer-events-none opacity-0 transition-opacity duration-300">
+					<button
+						id="bg-side-prev-btn"
+						class="pointer-events-auto absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full border border-white/30 bg-black/35 text-white/80 backdrop-blur-sm cursor-pointer transition-all duration-200 hover:bg-black/60 hover:text-white"
+						title={tPrev} aria-label={tPrev}
+					>
+						<Icon is:inline name="material-symbols:chevron-left-rounded" class="text-[1.4rem]" />
+					</button>
+					<button
+						id="bg-side-next-btn"
+						class="pointer-events-auto absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full border border-white/30 bg-black/35 text-white/80 backdrop-blur-sm cursor-pointer transition-all duration-200 hover:bg-black/60 hover:text-white"
+						title={tNext} aria-label={tNext}
+					>
+						<Icon is:inline name="material-symbols:chevron-right-rounded" class="text-[1.4rem]" />
+					</button>
+				</div>
+			)}
+
+			<!-- 视频信息角标 -->
+			<div id="bg-player-info" class="absolute bottom-4 left-4 z-20 rounded-lg bg-black/45 text-white text-xs px-3 py-1.5 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex items-center gap-2">
+				<Icon is:inline name="material-symbols:movie-outline" class="text-[1rem]" />
+				<span id="bg-player-name"></span>
+			</div>
+
+			<div
+				id="bg-player-toast"
+				class="fixed bottom-20 left-1/2 -translate-x-1/2 z-100 px-4 py-2 rounded-lg bg-black/70 text-white text-sm backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none"
+			>
+				{tLoadError}
+			</div>
+		</div>
+	)
+}
+
+<!--
+  播放逻辑只负责控制视频。设置面板已移到 Navbar.astro，和音乐/设置面板
+  使用同一套 float-panel 开关机制，避免跨组件自定义事件导致的开关时序问题。
+  Navbar 通过下面两个赋值式桥接函数与播放器通信（赋值天然幂等，切页不会重复绑定）：
+    window.__bgPlayerCommand(cmd, data)  -> "toggle" | "play" | "pause" | "prev" | "next" | "track" | "cycle"
+    window.__bgPlayerState()             -> { playing, index, cycle }
+-->
+<script is:inline define:vars={{ urls: JSON.stringify(urls), names: JSON.stringify(displayNames), playerMode, cycleMode: cycleMode, hasMultiple }}>
+	(() => {
+		var urlList = JSON.parse(urls);
+		var nameList = JSON.parse(names);
+		if (!urlList.length) return;
+
+		var overlay = document.getElementById("bg-player-overlay");
+		var videoA = document.getElementById("bg-player-video-a");
+		var videoB = document.getElementById("bg-player-video-b");
+		var sideControls = document.getElementById("bg-player-side-controls");
+		var prevBtn = document.getElementById("bg-side-prev-btn");
+		var nextBtn = document.getElementById("bg-side-next-btn");
+		var nameEl = document.getElementById("bg-player-name");
+		var toast = document.getElementById("bg-player-toast");
+
+		if (!videoA || !videoB) return;
+
+		var CYCLE_KEY = "rainzt.bg-player.cycle-mode.v1";
+		var isPlaying = false;
+		var currentIndex = 0;
+		var activeVideo = videoA;
+		var idleVideo = videoB;
+		var errorCount = 0;
+		var toastTimer = null;
+		var switching = false;
+		var currentCycle = cycleMode || "next";
+
+		try {
+			var stored = localStorage.getItem(CYCLE_KEY);
+			if (stored === "loop" || stored === "next") currentCycle = stored;
+		} catch (e) {}
+
+		function showToast() {
+			if (!toast) return;
+			toast.classList.remove("opacity-0");
+			toast.classList.add("opacity-100");
+			if (toastTimer) clearTimeout(toastTimer);
+			toastTimer = setTimeout(function () {
+				toast.classList.remove("opacity-100");
+				toast.classList.add("opacity-0");
+			}, 3000);
+		}
+
+		function emitState() {
+			window.dispatchEvent(new CustomEvent("bg-player-state-change", {
+				detail: { playing: isPlaying, index: currentIndex, cycle: currentCycle }
+			}));
+		}
+
+		function updateTrackInfo() {
+			var label = nameList[currentIndex] || ("Video " + (currentIndex + 1));
+			if (nameEl) nameEl.textContent = label;
+		}
+
+		function syncAttr() {
+			document.body.toggleAttribute("data-bg-video-playing", isPlaying);
+			document.documentElement.toggleAttribute("data-bg-video-playing", isPlaying);
+			if (sideControls) sideControls.style.opacity = isPlaying ? "1" : "0";
+			var info = document.getElementById("bg-player-info");
+			if (info) info.style.opacity = isPlaying ? "1" : "0";
+			emitState();
+		}
+
+		function playVideo(video, src) {
+			video.muted = true;
+			if (video.getAttribute("src") !== src) video.setAttribute("src", src);
+			video.currentTime = 0;
+			return video.play();
+		}
+
+		function crossFadeTo(index, autoplay) {
+			if (index < 0 || index >= urlList.length) return;
+			if (switching) return;
+			currentIndex = index;
+			updateTrackInfo();
+			var nextSrc = urlList[currentIndex];
+			var incoming = idleVideo;
+			var outgoing = activeVideo;
+
+			var commit = function () {
+				switching = false;
+				if (autoplay && isPlaying) incoming.play().catch(function () {});
+				// 新视频叠在上层先淡入，旧视频保持不透明直到新视频完全盖住，
+				// 避免两层同时半透明时露出底下的壁纸（切换间隙闪壁纸的根因）。
+				incoming.style.zIndex = "2";
+				outgoing.style.zIndex = "1";
+				incoming.classList.remove("opacity-0");
+				incoming.classList.add("opacity-100");
+				activeVideo = incoming;
+				idleVideo = outgoing;
+				setTimeout(function () {
+					outgoing.classList.remove("opacity-100");
+					outgoing.classList.add("opacity-0");
+					setTimeout(function () { if (outgoing !== activeVideo) outgoing.pause(); }, 750);
+				}, 720);
+				emitState();
+			};
+
+			if (autoplay && isPlaying) {
+				switching = true;
+				var settled = false;
+				// 用 playing（首帧已渲染）而不是 canplay，避免新视频还没有画面就开始淡出旧视频
+				var onReady = function () {
+					if (settled) return;
+					settled = true;
+					incoming.removeEventListener("playing", onReady);
+					incoming.removeEventListener("error", onReady);
+					commit();
+				};
+				incoming.addEventListener("playing", onReady);
+				incoming.addEventListener("error", onReady);
+				playVideo(incoming, nextSrc).catch(function () { onReady(); });
+				// 兜底：加载异常时也要恢复 switching，避免切换按钮卡死
+				setTimeout(function () { if (switching) onReady(); }, 1500);
+			} else {
+				incoming.setAttribute("src", nextSrc);
+				incoming.load();
+			}
+		}
+
+		function switchTrack(index) { crossFadeTo(index, true); }
+
+		function pickIndex(except) {
+			if (urlList.length <= 1) return 0;
+			if (playerMode === "random") {
+				var n;
+				do { n = Math.floor(Math.random() * urlList.length); } while (n === except);
+				return n;
+			}
+			return (except + 1) % urlList.length;
+		}
+
+		function prevIndex() {
+			if (urlList.length <= 1) return 0;
+			if (playerMode === "random") return pickIndex(currentIndex);
+			return (currentIndex - 1 + urlList.length) % urlList.length;
+		}
+
+		function toggle() {
+			isPlaying = !isPlaying;
+			if (isPlaying) {
+				syncAttr();
+				if (overlay) { overlay.classList.remove("opacity-0"); overlay.classList.add("opacity-100"); }
+				activeVideo.classList.add("opacity-100");
+				activeVideo.classList.remove("opacity-0");
+				requestAnimationFrame(function () {
+					playVideo(activeVideo, urlList[currentIndex]).catch(function () {
+						isPlaying = false; syncAttr();
+					});
+				});
+			} else {
+				videoA.pause();
+				videoB.pause();
+				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
+				syncAttr();
+			}
+		}
+
+		function setPlaying(target) {
+			if (target !== isPlaying) toggle();
+		}
+
+		function onEnded(e) {
+			if (e.target !== activeVideo) return;
+			if (currentCycle === "loop") {
+				activeVideo.currentTime = 0;
+				activeVideo.play().catch(function () {});
+			} else if (hasMultiple) {
+				crossFadeTo(pickIndex(currentIndex), true);
+			} else {
+				activeVideo.currentTime = 0;
+				activeVideo.play().catch(function () {});
+			}
+		}
+
+		function onError() {
+			errorCount++;
+			if (hasMultiple && errorCount < urlList.length) {
+				crossFadeTo(pickIndex(currentIndex), true);
+			} else {
+				isPlaying = false;
+				if (overlay) { overlay.classList.remove("opacity-100"); overlay.classList.add("opacity-0"); }
+				syncAttr();
+				showToast();
+			}
+		}
+
+		function setCycle(mode) {
+			if (mode !== "loop" && mode !== "next") return;
+			currentCycle = mode;
+			try { localStorage.setItem(CYCLE_KEY, mode); } catch (e) {}
+			emitState();
+		}
+
+		// 赋值式桥接：Navbar 面板调用；赋值会覆盖旧函数，切页/重复执行都不会累积监听器
+		window.__bgPlayerCommand = function (cmd, data) {
+			switch (cmd) {
+				case "toggle": toggle(); break;
+				case "play": setPlaying(true); break;
+				case "pause": setPlaying(false); break;
+				case "prev": switchTrack(prevIndex()); break;
+				case "next": switchTrack(pickIndex(currentIndex)); break;
+				case "track": switchTrack(Number(data)); break;
+				case "cycle": setCycle(data); break;
+			}
+		};
+		window.__bgPlayerState = function () {
+			return { playing: isPlaying, index: currentIndex, cycle: currentCycle };
+		};
+
+		// 壁纸模式变化时若正在播放则停止
+		window.addEventListener("wallpaperModeChange", function (e) {
+			var ce = e;
+			if (ce.detail && ce.detail.mode === "none" && isPlaying) setPlaying(false);
+		});
+
+		videoA.addEventListener("ended", onEnded);
+		videoB.addEventListener("ended", onEnded);
+		videoA.addEventListener("error", onError);
+		videoB.addEventListener("error", onError);
+		videoA.addEventListener("playing", function () { errorCount = 0; });
+		videoB.addEventListener("playing", function () { errorCount = 0; });
+		if (prevBtn) prevBtn.addEventListener("click", function () { switchTrack(prevIndex()); });
+		if (nextBtn) nextBtn.addEventListener("click", function () { switchTrack(pickIndex(currentIndex)); });
+
+		updateTrackInfo();
+		activeVideo.setAttribute("src", urlList[currentIndex]);
+		activeVideo.load();
+		emitState();
+	})();
+</script>
+
+<style>
+	:global([data-bg-video-playing] #banner-images-container),
+	:global([data-bg-video-playing] #banner-dim-container),
+	:global([data-bg-video-playing] #banner-overlay-container),
+	:global([data-bg-video-playing] #header-waves),
+	:global([data-bg-video-playing] #wallpaper-gradient) {
+		opacity: 0 !important;
+		transition: opacity 0.5s ease;
+	}
+</style>
