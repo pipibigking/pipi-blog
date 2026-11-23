@@ -597,3 +597,27 @@ html {
 .pagination-info {
   @apply text-sm text-(--text-secondary) text-center mb-2;
 }
+
+/* ============================================
+ * 浮动面板手机端适配
+ * 视频播放面板 / 音乐面板 / 显示设置面板在 Navbar 里用
+ * w-80(320px) + right-16(64px) 定位，窄屏下总宽约 384px，
+ * 在 375px 及更窄的手机上左边缘会被裁切、显示不全。
+ * 这里在 640px 以下收敛宽度与定位，并限制高度保证纵向也可滚动。
+ * 用 ID 选择器 + !important 覆盖 Tailwind 工具类。
+ * ============================================ */
+@media (max-width: 640px) {
+  #bg-player-panel,
+  #music-nav-panel,
+  #display-setting {
+    width: min(20rem, calc(100vw - 1.5rem)) !important;
+    right: 0.75rem !important;
+    max-height: calc(100dvh - 4.5rem) !important;
+    overflow: hidden;
+  }
+
+  /* 视频面板内部主滚动区：占满面板剩余高度，内容可完整滚动 */
+  #bg-player-panel > div:first-child {
+    max-height: calc(100dvh - 6rem) !important;
+  }
+}
