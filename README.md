@@ -64,20 +64,39 @@ corepack pnpm dev
 ## 📁 目录结构
 
 ```text
-src/
-├── pages/          # 页面路由
-├── layouts/        # 布局
-├── components/     # 可复用组件（Svelte / Astro）
-├── content/        # 文章内容（Markdown / MDX）
-├── config/         # 站点各项配置（导航、壁纸、音乐、友链等）
-├── styles/         # 全局样式
-├── utils/          # 工具函数
-└── plugins/        # Markdown / HTML 插件
-public/             # 静态资源（图片、视频、音乐、favicon）
-scripts/            # 构建与辅助脚本
+src/              前端源码（Astro 约定必须固定在根目录）
+├── pages/        页面路由，一个文件对应一个页面
+├── layouts/      页面布局骨架
+├── components/   可复用组件（Astro / Svelte）
+├── content/      文章内容与页面文案（Markdown / MDX）
+├── config/       站点配置中心：导航、壁纸、音乐、友链等
+├── styles/       全局样式
+├── scripts/      前端交互脚本
+├── plugins/      Markdown / HTML 构建插件
+└── i18n/ data/ types/ utils/ constants/ assets/   多语言、数据、类型与工具代码
+
+public/           静态素材，构建时原样拷到网站根目录（图片、视频、音乐、favicon）
+scripts/          构建与文章管理脚本（构建链路依赖，说明见下）
+waline/           评论系统的邮件通知模板（Waline 后端需单独部署）
+ops/              评论 AI 审核服务（Python，独立部署，可选，不影响前端构建）
+docs/             开发文档归档（部署指南、TODO 等，不纳入版本库）
+.github/          GitHub CI 工作流与 Issue / PR 模板
+dist/             构建产物，部署时上传此目录
+node_modules/     依赖包，可删除后执行 pnpm install 重建
+.astro/           Astro 生成的类型与缓存，可自动重建
+.tmp/ .workbuddy/ 本地临时数据，不纳入版本库
 ```
 
-站点的大部分个性化设置集中在 `src/config/`，修改对应配置即可，无需改动组件代码。
+> **关于 `scripts/`**：其中 `generate-icons.js`、`generate-lqips.ts`、`subset-fonts.ts` 是 `pnpm build` 链路的一环（自动生成图标、模糊占位图、字体子集），**不要删除**；`new-post.js`、`post-studio.js` 用于新建和管理文章。
+
+## ✍️ 从哪开始改
+
+1. **改站名、域名、头像**：`src/config/siteConfig.ts`
+2. **写文章**：`corepack pnpm new-post`，或直接编辑 `src/content/posts/`
+3. **换壁纸 / 音乐 / 友链**：`src/config/` 下对应的配置文件
+4. **改页面结构**：`src/pages/` 与 `src/layouts/`
+
+大部分个性化设置集中在 `src/config/`，改配置即可，无需改动组件代码。
 
 ## 🌐 部署
 
