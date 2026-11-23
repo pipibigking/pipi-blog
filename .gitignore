@@ -71,15 +71,8 @@ Firefly-master/
 # WorkBuddy workspace data
 .workbuddy/
 
-# 说明文档与 AI 过程文件（README.md 及博客正文 src/content/** 保留）
-AGENTS.md
-CLAUDE.md
-CONTRIBUTING.md
-DEPLOY.md
-PRODUCT.md
-README.en.md
-TODO.md
-内容修改清单.md
+# 开发文档归档（统一放在 docs/，不上传；README.md 与博客正文 src/content/** 保留）
+docs/
 src/components/README.md
 src/config/README.md
 waline/README.md

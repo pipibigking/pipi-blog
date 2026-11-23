@@ -89,7 +89,7 @@ corepack pnpm build
 
 产物在 `dist/`，将其整个目录上传到任意静态托管平台即可（腾讯云 CloudBase、Vercel、Netlify、Cloudflare Pages 等）。
 
-> **部署前请检查**：`src/config/siteConfig.ts` 中的 `site_url`、评论配置 `src/config/commentConfig.ts` 中的 `serverURL` 目前是占位地址（`https://example.com`），需替换为你的真实域名。评论功能使用 Waline，需要单独部署后端服务。详见 `DEPLOY.md` 与 `TODO.md`。
+> **部署前请检查**：`src/config/siteConfig.ts` 中的 `site_url`、评论配置 `src/config/commentConfig.ts` 中的 `serverURL` 目前是占位地址（`https://example.com`），需替换为你的真实域名。评论功能使用 Waline，需要单独部署后端服务。详见 `docs/DEPLOY.md` 与 `docs/TODO.md`。
 
 ## 📄 许可
 
