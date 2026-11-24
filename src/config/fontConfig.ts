@@ -27,41 +27,93 @@ import type { FontDefinition, FontSelectionConfig } from "@/types/fontConfig";
 // 适用于 Astro Font API 的字体配置，支持自动下载、缓存和优化加载
 // 本地开发调试的情况下，修改后需要每次重启开发服务器才能生效
 export const fontsList: FontDefinition[] = [
+	// 本地字体（fontsource 下载快照拷贝至 public/assets/fonts/fontsource/）
+	// 之前使用 fontsource 在线 provider，构建时需联网下载字体，网络不稳时会卡死构建；
+	// 改为 local provider + unicodeRange 子集，构建完全离线。
 	{
 		name: "Zen Maru Gothic",
 		cssVariable: "--font-zen-maru-gothic",
-		provider: "fontsource",
-		weights: ["300", "400", "500", "600", "700"],
-		styles: ["normal"],
-		subsets: ["latin", "cyrillic"],
+		provider: "local",
+		options: {
+			variants: [
+				{
+					weight: "300",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/zen-maru-gothic/latin-300-normal.woff2"],
+				},
+				{
+					weight: "400",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/zen-maru-gothic/latin-400-normal.woff2"],
+				},
+				{
+					weight: "500",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/zen-maru-gothic/latin-500-normal.woff2"],
+				},
+				{
+					weight: "700",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/zen-maru-gothic/latin-700-normal.woff2"],
+				},
+			],
+		},
 		fallbacks: ["sans-serif"],
 	},
 	{
 		name: "Inter",
 		cssVariable: "--font-inter",
-		provider: "fontsource",
-		weights: ["300", "400", "500", "600", "700"],
-		styles: ["normal"],
-		subsets: ["latin", "cyrillic"],
+		provider: "local",
+		options: {
+			variants: [
+				{
+					weight: "300",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/inter/latin-300-normal.woff2"],
+				},
+				{
+					weight: "400",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/inter/latin-400-normal.woff2"],
+				},
+				{
+					weight: "500",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/inter/latin-500-normal.woff2"],
+				},
+				{
+					weight: "600",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/inter/latin-600-normal.woff2"],
+				},
+				{
+					weight: "700",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/inter/latin-700-normal.woff2"],
+				},
+			],
+		},
 		fallbacks: ["sans-serif"],
 	},
 	{
 		name: "JetBrains Mono",
 		cssVariable: "--font-jetbrains-mono",
-		provider: "fontsource",
-		weights: ["400", "700"],
-		styles: ["normal"],
-		subsets: ["latin", "cyrillic"],
-		fallbacks: [
-			"ui-monospace",
-			"SFMono-Regular",
-			"Menlo",
-			"Monaco",
-			"Consolas",
-			"Liberation Mono",
-			"Courier New",
-			"monospace",
-		],
+		provider: "local",
+		options: {
+			variants: [
+				{
+					weight: "400",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/jetbrains-mono/latin-400-normal.woff2"],
+				},
+				{
+					weight: "700",
+					style: "normal",
+					src: ["./public/assets/fonts/fontsource/jetbrains-mono/latin-700-normal.woff2"],
+				},
+			],
+		},
+		fallbacks: ["sans-serif"],
 	},
 	// ─── 本地字体示例 ───
 	// 使用步骤：

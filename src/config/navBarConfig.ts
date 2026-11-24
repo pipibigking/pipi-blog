@@ -22,9 +22,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		url: "#",
 		icon: "material-symbols:article",
 		children: [
-			// 归档
-			LinkPresets.Archive,
-
 			// 分类
 			LinkPresets.Categories,
 		],
@@ -32,11 +29,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 
 	// 更新日志
 	links.push(LinkPresets.Changelog);
-
-	// 友链（已关闭，不显示在导航）
-
-	// 朋友圈
-	links.push(LinkPresets.Moments);
 
 	// 留言板
 	links.push(LinkPresets.Guestbook);

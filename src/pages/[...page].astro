@@ -5,6 +5,7 @@ import PostPage from "@/components/layout/PostPage.astro";
 import { siteConfig } from "@/config";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@/utils/content-utils";
+import { url } from "@/utils/url-utils";
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
 	// 使用配置中的文章数量
@@ -19,6 +20,14 @@ const len = page.data.length;
 ---
 
 <MainGridLayout>
+  <div class="pure-list-head">
+    <div class="pure-list-head__row">
+      <h1 class="pure-list-head__title">主页</h1>
+    </div>
+    <p class="pure-list-head__meta">
+      第 {page.currentPage} 页 · 本页 {len} 篇 · 共 {page.total} 篇
+    </p>
+  </div>
   <PostPage page={page} />
   {
     page.total > page.size && (

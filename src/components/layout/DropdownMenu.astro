@@ -110,6 +110,8 @@ const activePaths = [
 						loading="eager"
 						decoding="async"
 					/>
+				) : processedLink.icon ? (
+					<Icon is:inline name={processedLink.icon} class="nav-icon navbar-icon" />
 				) : getNavSymbol(processedLink) && (
 					<span class="nav-icon navbar-icon">{getNavSymbol(processedLink)}</span>
 				)}
@@ -159,6 +161,8 @@ const activePaths = [
 						loading="eager"
 						decoding="async"
 					/>
+				) : processedLink.icon ? (
+					<Icon is:inline name={processedLink.icon} class="nav-icon navbar-icon" />
 				) : getNavSymbol(processedLink) && (
 					<span class="nav-icon navbar-icon">{getNavSymbol(processedLink)}</span>
 				)}

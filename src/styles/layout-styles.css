@@ -828,3 +828,24 @@ html[data-wallpaper-mode="fullscreen"] body:not(.wallpaper-initialized) .w-full.
         transition: top 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s !important;
     }
 }
+
+/* ==========================================================================
+   平板端（768–1279px）文章页改单栏：正文占满整行，视频/图片获得完整显示空间
+   ========================================================================== */
+@media (min-width: 768px) and (max-width: 1279.9px) {
+    body:has(#post-container) #main-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    body:has(#post-container) #left-sidebar-wrapper,
+    body:has(#post-container) #left-sidebar,
+    body:has(#post-container) #right-sidebar {
+        display: none !important;
+    }
+
+    body:has(#post-container) #main-grid > .transition-main,
+    body:has(#post-container) #main-grid > main {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+    }
+}

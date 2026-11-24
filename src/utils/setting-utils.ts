@@ -17,6 +17,35 @@ import {
 	siteConfig,
 } from "../config";
 import { isHomePage as checkIsHomePage } from "./layout-utils";
+import {
+	SITE_THEME_ATTR,
+	getSiteThemeFromUrl,
+	getStoredSiteTheme,
+} from "./site-theme-utils";
+
+/**
+ * 当前是否处于 Pure（简洁阅读）站点主题。
+ * 优先读 <html data-site-theme>；尚未写入时回退到 URL / localStorage，
+ * 避免初始化阶段的定位逻辑在 Pure 下多留 16px 顶距。
+ */
+function isPureSiteTheme(): boolean {
+	if (typeof document === "undefined") return false;
+	const attr = document.documentElement.getAttribute(SITE_THEME_ATTR);
+	if (attr) return attr === "pure";
+	try {
+		return (
+			getStoredSiteTheme() === "pure" ||
+			getSiteThemeFromUrl(window.location.search) === "pure"
+		);
+	} catch {
+		return false;
+	}
+}
+
+/** 主内容容器在全屏壁纸模式下需要紧跟壁纸；Pure 下由 CSS 控制留白，顶距归零。 */
+function fullscreenContentMargin(): string {
+	return isPureSiteTheme() ? "0" : "1rem";
+}
 
 // Declare global functions
 declare global {
@@ -800,7 +829,7 @@ function adjustMainContentPosition(
 				mainContent.style.zIndex = "30";
 				mainContent.style.setProperty("top", `${computedTop}px`, "important");
 				// absolute 定位下 margin-top 不影响布局，提前设好最终值避免切换 relative 时跳变
-				mainContent.style.setProperty("margin-top", "1rem", "important");
+				mainContent.style.setProperty("margin-top", fullscreenContentMargin(), "important");
 				mainContent.classList.add("no-banner-layout");
 				void mainContent.offsetWidth;
 				mainContent.style.setProperty(
@@ -822,7 +851,7 @@ function adjustMainContentPosition(
 				mainContent.style.position = "relative";
 				mainContent.style.zIndex = "30";
 				mainContent.style.setProperty("top", "0", "important");
-				mainContent.style.setProperty("margin-top", "1rem", "important");
+				mainContent.style.setProperty("margin-top", fullscreenContentMargin(), "important");
 				mainContent.style.transition = "";
 			}
 			break;

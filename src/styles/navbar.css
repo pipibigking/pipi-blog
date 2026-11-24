@@ -32,7 +32,7 @@
  * 基础导航栏样式
  * 适用: 所有模式，所有设备
  * ============================================ */
-#navbar>div {
+#navbar> .firefly-nav-shell {
     background-color: var(--card-bg);
     border: 1px solid transparent;
     border-radius: 0 0 0.75rem 0.75rem;
@@ -42,17 +42,17 @@
 
 
 /* 通用滚动阴影：用于提升导航栏与页面内容的分层感 */
-#navbar.navbar-sticky-shadow>div {
+#navbar.navbar-sticky-shadow> .firefly-nav-shell {
     box-shadow: var(--shadow-navbar) !important;
 }
 
-:root.dark #navbar.navbar-sticky-shadow>div {
+:root.dark #navbar.navbar-sticky-shadow> .firefly-nav-shell {
     box-shadow: var(--shadow-navbar-dark) !important;
 }
 
 /* semifull 模式的透明阶段不单独显示 sticky shadow，避免 8px 和 50px 两段跳变 */
-#wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]:not(.scrolled).navbar-sticky-shadow>div,
-body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scrolled).navbar-sticky-shadow>div {
+#wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]:not(.scrolled).navbar-sticky-shadow> .firefly-nav-shell,
+body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scrolled).navbar-sticky-shadow> .firefly-nav-shell {
     box-shadow: none !important;
 }
 
@@ -64,44 +64,44 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
 @media (min-width: 1024px) {
 
     /* "semi" */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"]>div {
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"]> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"]> .firefly-nav-shell {
         backdrop-filter: blur(var(--navbar-glass-blur, 20px)) !important;
         background: rgba(255, 255, 255, var(--opacity-55)) !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-radius: 999px !important;
         box-shadow: var(--shadow-navbar) !important;
     }
 
     /* "full" */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="full"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"]>div {
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="full"]> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"]> .firefly-nav-shell {
         backdrop-filter: blur(0) !important;
         background: transparent !important;
         border: none !important;
-        border-radius: 0 !important;
+        border-radius: 999px !important;
         box-shadow: none !important;
     }
 
     /* "semifull" (static) */
     /* 原作者此处为全透明，压在亮色壁图上文字几乎看不清；提高实底比例与模糊，
        保证 Hero 区域的导航文字/图标始终可读（仍保留毛玻璃层次，不是死白条）。 */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]>div {
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]> .firefly-nav-shell {
         backdrop-filter: blur(var(--navbar-glass-blur, 16px)) saturate(1.12) !important;
         -webkit-backdrop-filter: blur(var(--navbar-glass-blur, 16px)) saturate(1.12) !important;
         background: color-mix(in oklab, var(--card-bg) 72%, transparent) !important;
         border: none !important;
         border-bottom: 1px solid color-mix(in oklab, var(--nav-accent-primary) 18%, transparent) !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-radius: 999px !important;
         box-shadow: 0 6px 22px rgb(0 0 0 / 0.08) !important;
     }
 
     /* "semifull" (scrolled) */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"].scrolled>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"].scrolled>div {
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"].scrolled> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"].scrolled> .firefly-nav-shell {
         backdrop-filter: blur(var(--navbar-glass-blur, 20px)) !important;
         background: rgba(255, 255, 255, var(--opacity-55)) !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-radius: 999px !important;
         box-shadow: var(--shadow-navbar) !important;
     }
 }
@@ -113,40 +113,40 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
 @media (max-width: 1023px) {
 
     /* "semi" */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"][data-is-home="true"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-is-home="true"]>div {
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"][data-is-home="true"]> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-is-home="true"]> .firefly-nav-shell {
         backdrop-filter: blur(var(--navbar-glass-blur, 20px)) !important;
         background: rgba(255, 255, 255, var(--opacity-55)) !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-radius: 999px !important;
         box-shadow: var(--shadow-navbar) !important;
     }
 
     /* "full" */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="full"][data-is-home="true"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"][data-is-home="true"]>div {
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="full"][data-is-home="true"]> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"][data-is-home="true"]> .firefly-nav-shell {
         backdrop-filter: blur(0) !important;
         background: transparent !important;
         border: none !important;
-        border-radius: 0 !important;
+        border-radius: 999px !important;
         box-shadow: none !important;
     }
 
     /* "semifull" (static) */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"]>div {
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"]> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"]> .firefly-nav-shell {
         backdrop-filter: blur(0) !important;
         background: transparent !important;
         border: none !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-radius: 999px !important;
         box-shadow: none !important;
     }
 
     /* "semifull" (scrolled) */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div {
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled> .firefly-nav-shell {
         backdrop-filter: blur(var(--navbar-glass-blur, 20px)) !important;
         background: rgba(255, 255, 255, var(--opacity-55)) !important;
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-radius: 999px !important;
         box-shadow: var(--shadow-navbar) !important;
     }
 }
@@ -157,23 +157,23 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
 @media (min-width: 1024px) {
 
     /* "semi" */
-    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"]>div,
-    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"]>div {
+    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"]> .firefly-nav-shell,
+    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"]> .firefly-nav-shell {
         background: rgba(0, 0, 0, var(--opacity-55)) !important;
         box-shadow: var(--shadow-navbar-dark) !important;
     }
 
     /* "full" */
-    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="full"]>div,
-    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"]>div {
+    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="full"]> .firefly-nav-shell,
+    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"]> .firefly-nav-shell {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
     }
 
     /* "semifull" (static) */
-    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]>div,
-    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]>div {
+    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]> .firefly-nav-shell,
+    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]> .firefly-nav-shell {
         background: color-mix(in oklab, var(--card-bg) 76%, transparent) !important;
         border: none !important;
         border-bottom: 1px solid color-mix(in oklab, var(--nav-accent-primary) 22%, transparent) !important;
@@ -183,8 +183,8 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
     }
 
     /* "semifull" (scrolled) */
-    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"].scrolled>div,
-    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"].scrolled>div {
+    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"].scrolled> .firefly-nav-shell,
+    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"].scrolled> .firefly-nav-shell {
         background: rgba(0, 0, 0, var(--opacity-55)) !important;
         box-shadow: var(--shadow-navbar-dark) !important;
     }
@@ -196,31 +196,31 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
 @media (max-width: 1023px) {
 
     /* "semi" */
-    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"][data-is-home="true"]>div,
-    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-is-home="true"]>div {
+    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"][data-is-home="true"]> .firefly-nav-shell,
+    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-is-home="true"]> .firefly-nav-shell {
         background: rgba(0, 0, 0, var(--opacity-55)) !important;
         box-shadow: var(--shadow-navbar-dark) !important;
     }
 
     /* "full" */
-    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="full"][data-is-home="true"]>div,
-    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"][data-is-home="true"]>div {
+    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="full"][data-is-home="true"]> .firefly-nav-shell,
+    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"][data-is-home="true"]> .firefly-nav-shell {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
     }
 
     /* "semifull" (static) */
-    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"]>div,
-    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"]>div {
+    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"]> .firefly-nav-shell,
+    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"]> .firefly-nav-shell {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
     }
 
     /* "semifull" (scrolled) */
-    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div,
-    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div {
+    :root.dark #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled> .firefly-nav-shell,
+    :root.dark body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled> .firefly-nav-shell {
         background: rgba(0, 0, 0, var(--opacity-55)) !important;
         box-shadow: var(--shadow-navbar-dark) !important;
     }
@@ -230,18 +230,18 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
  * 移动端去掉底部圆角
  * ============================================ */
 @media (max-width: 767px) {
-    #navbar>div {
-        border-radius: 0 !important;
+    #navbar> .firefly-nav-shell {
+        border-radius: 999px !important;
     }
 
     /* 覆盖 banner 模式 semi / semifull 下的圆角 */
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"][data-is-home="true"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-is-home="true"]>div,
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"]>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"]>div,
-    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div,
-    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled>div {
-        border-radius: 0 !important;
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="semi"][data-is-home="true"]> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-is-home="true"]> .firefly-nav-shell,
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"]> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"]> .firefly-nav-shell,
+    #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled> .firefly-nav-shell,
+    body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled> .firefly-nav-shell {
+        border-radius: 999px !important;
     }
 }
 
@@ -249,24 +249,24 @@ body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scro
 /* ============================================
  * 关闭毛玻璃模糊效果 - Banner模式
  * ============================================ */
-body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-enable-blur="false"]>div,
-body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-enable-blur="false"].scrolled>div {
+body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-enable-blur="false"]> .firefly-nav-shell,
+body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semi"][data-enable-blur="false"].scrolled> .firefly-nav-shell {
     backdrop-filter: blur(0) !important;
 }
 
-body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"][data-enable-blur="false"]>div,
-body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"][data-enable-blur="false"].scrolled>div {
+body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"][data-enable-blur="false"]> .firefly-nav-shell,
+body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="full"][data-enable-blur="false"].scrolled> .firefly-nav-shell {
     backdrop-filter: blur(0) !important;
 }
 
-body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-enable-blur="false"]>div,
-body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-enable-blur="false"].scrolled>div {
+body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-enable-blur="false"]> .firefly-nav-shell,
+body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"][data-enable-blur="false"].scrolled> .firefly-nav-shell {
     backdrop-filter: blur(0) !important;
 }
 
 /* 页面切换期间强制 semifull 保持透明，避免自动回顶时出现背景闪烁 */
-.is-page-transitioning #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]:not(.scrolled)>div,
-.is-page-transitioning body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scrolled)>div {
+.is-page-transitioning #wallpaper-wrapper~* #navbar[data-transparent-mode="semifull"]:not(.scrolled)> .firefly-nav-shell,
+.is-page-transitioning body:has(#wallpaper-wrapper) #navbar[data-transparent-mode="semifull"]:not(.scrolled)> .firefly-nav-shell {
     backdrop-filter: blur(0) !important;
     background: transparent !important;
     border: none !important;
@@ -315,7 +315,7 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
     html[data-wallpaper-mode="fullscreen"] #navbar-wrapper #navbar.firefly-navbar > .firefly-nav-shell,
     html[data-wallpaper-mode="none"] #navbar-wrapper #navbar.firefly-navbar > .firefly-nav-shell,
     body.wallpaper-transparent #navbar-wrapper #navbar.firefly-navbar > .firefly-nav-shell {
-        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-radius: 999px !important;
     }
 }
 
@@ -350,7 +350,7 @@ body.wallpaper-transparent #navbar-wrapper #navbar[data-full-width="true"] > div
     background: color-mix(in oklab, var(--card-bg) 18%, transparent) !important;
     border: 0 !important;
     border-bottom: 1px solid color-mix(in oklab, var(--nav-accent-primary) 8%, transparent) !important;
-    border-radius: 0 !important;
+    border-radius: 999px !important;
     box-shadow: 0 4px 16px rgb(0 0 0 / 0.02) !important;
     backdrop-filter: blur(8px) saturate(1.08) !important;
     -webkit-backdrop-filter: blur(8px) saturate(1.08) !important;
@@ -1106,4 +1106,396 @@ body:has(#wallpaper-wrapper) #navbar.firefly-navbar.navbar-sticky-shadow > .fire
         animation: none !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* ==========================================================================
+   胶囊悬浮导航（对照参考截图与原站 Aemeath 导航）
+   --------------------------------------------------------------------------
+   整条导航是一个悬浮胶囊：磨砂半透明 + 圆角 + 柔和投影；
+   品牌、菜单项、搜索框、工具按钮各自成小胶囊 / 圆形。
+   放在文件末尾并用 !important 覆盖前面的宽条样式。
+   ========================================================================== */
+
+#navbar.firefly-navbar {
+    --nav-pill-surface: color-mix(in oklab, var(--card-bg) 56%, transparent);
+    --nav-pill-hairline: color-mix(in oklab, var(--card-bg) 58%, transparent);
+    --nav-pill-chip: color-mix(in oklab, var(--card-bg) 40%, transparent);
+}
+
+#navbar.firefly-navbar > .firefly-nav-shell,
+#wallpaper-wrapper~* #navbar.firefly-navbar > .firefly-nav-shell,
+body:has(#wallpaper-wrapper) #navbar.firefly-navbar > .firefly-nav-shell,
+body.wallpaper-transparent #navbar.firefly-navbar > .firefly-nav-shell {
+    max-width: 76rem;
+    min-height: 3.4rem;
+    height: auto;
+    margin: 0.45rem auto;
+    padding: 0.35rem 0.5rem !important;
+    border: 1px solid var(--nav-pill-hairline) !important;
+    border-radius: 999px !important;
+    background: var(--nav-pill-surface) !important;
+    box-shadow:
+        0 12px 32px rgb(15 23 42 / 0.12),
+        inset 0 1px 0 rgb(255 255 255 / 0.32) !important;
+    backdrop-filter: blur(20px) saturate(1.35) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.35) !important;
+}
+
+:root.dark #navbar.firefly-navbar > .firefly-nav-shell {
+    box-shadow:
+        0 12px 34px rgb(0 0 0 / 0.45),
+        inset 0 1px 0 rgb(255 255 255 / 0.06) !important;
+}
+
+/* 滚动后：胶囊更实、投影加深，形状保持不变 */
+#navbar.firefly-navbar.scrolled > .firefly-nav-shell,
+#navbar.firefly-navbar.navbar-sticky-shadow > .firefly-nav-shell,
+#wallpaper-wrapper~* #navbar.firefly-navbar.scrolled > .firefly-nav-shell,
+body:has(#wallpaper-wrapper) #navbar.firefly-navbar.scrolled > .firefly-nav-shell,
+body:has(#wallpaper-wrapper) #navbar.firefly-navbar.navbar-sticky-shadow > .firefly-nav-shell,
+body.wallpaper-transparent #navbar.firefly-navbar.scrolled > .firefly-nav-shell {
+    background: color-mix(in oklab, var(--card-bg) 84%, transparent) !important;
+    border-color: color-mix(in oklab, var(--card-bg) 72%, transparent) !important;
+    box-shadow: 0 16px 42px rgb(15 23 42 / 0.16) !important;
+    backdrop-filter: blur(24px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
+    padding: 0.3rem 0.5rem !important;
+}
+
+#navbar.firefly-navbar .nav-container {
+    padding: 0 0.35rem !important;
+    gap: 0.45rem !important;
+}
+
+/* 品牌：小胶囊 + 圆形头像 */
+#navbar.firefly-navbar .nav-brand {
+    height: 2.7rem !important;
+    padding: 0.25rem 0.95rem 0.25rem 0.35rem !important;
+    border-radius: 999px !important;
+    background: var(--nav-pill-chip);
+    border: 1px solid transparent;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+}
+
+#navbar.firefly-navbar .nav-brand:hover {
+    transform: none !important;
+    background: color-mix(in oklab, var(--card-bg) 62%, transparent);
+    box-shadow: none !important;
+}
+
+#navbar.firefly-navbar .nav-brand :is(img, picture) {
+    border-radius: 999px !important;
+}
+
+/* 菜单容器透明，每个菜单项独立胶囊 */
+#navbar.firefly-navbar .nav-links {
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    gap: 0.15rem !important;
+    border-radius: 0 !important;
+}
+
+#navbar.firefly-navbar .nav-link {
+    padding: 0.5rem 0.85rem !important;
+    border-radius: 999px !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    color: var(--nav-fg-1) !important;
+    font-size: 0.86rem !important;
+    font-weight: 600 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+}
+
+#navbar.firefly-navbar .nav-link::before,
+#navbar.firefly-navbar .nav-link::after {
+    display: none !important;
+}
+
+#navbar.firefly-navbar .nav-link:hover {
+    background: color-mix(in oklab, var(--card-bg) 52%, transparent) !important;
+    color: var(--nav-accent-primary) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+#navbar.firefly-navbar .nav-link.nav-link-active,
+#navbar.firefly-navbar .nav-link.active {
+    background: var(--card-bg) !important;
+    color: var(--nav-accent-primary) !important;
+    border-color: color-mix(in oklab, var(--card-bg) 70%, transparent) !important;
+    box-shadow: 0 2px 10px rgb(15 23 42 / 0.08) !important;
+    transform: none !important;
+}
+
+#navbar.firefly-navbar .nav-link .nav-icon {
+    font-family: inherit !important;
+    font-size: 1.05rem !important;
+    width: 1.05rem;
+    height: 1.05rem;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.85;
+    margin-right: 0.05rem;
+}
+
+#navbar.firefly-navbar .nav-link:hover .nav-icon,
+#navbar.firefly-navbar .nav-link.nav-link-active .nav-icon,
+#navbar.firefly-navbar .nav-link.active .nav-icon {
+    opacity: 1;
+    transform: none !important;
+}
+
+#navbar.firefly-navbar .dropdown-arrow {
+    width: 0.9rem !important;
+    height: 0.9rem !important;
+    opacity: 0.6;
+}
+
+/* 搜索框：胶囊 */
+#navbar.firefly-navbar #search-bar {
+    height: 2.6rem !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--nav-pill-hairline) !important;
+    background: var(--nav-pill-chip) !important;
+    margin-right: 0.25rem !important;
+}
+
+#navbar.firefly-navbar #search-bar input {
+    width: 8rem;
+}
+
+#navbar.firefly-navbar #search-bar input:focus {
+    width: 12rem;
+}
+
+/* 工具按钮：圆形 */
+#navbar.firefly-navbar .nav-actions > button,
+#navbar.firefly-navbar .nav-actions > a,
+#navbar.firefly-navbar .nav-actions > div > button {
+    width: 2.6rem !important;
+    height: 2.6rem !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--nav-pill-hairline) !important;
+    background: var(--nav-pill-chip) !important;
+    color: var(--nav-fg-1) !important;
+}
+
+#navbar.firefly-navbar .nav-actions > button:hover,
+#navbar.firefly-navbar .nav-actions > a:hover,
+#navbar.firefly-navbar .nav-actions > div > button:hover {
+    transform: none !important;
+    background: color-mix(in oklab, var(--card-bg) 70%, transparent) !important;
+    border-color: color-mix(in oklab, var(--nav-accent-primary) 35%, transparent) !important;
+    box-shadow: none !important;
+}
+
+#navbar.firefly-navbar .nav-actions > button::before,
+#navbar.firefly-navbar .nav-actions > a::before,
+#navbar.firefly-navbar .nav-actions > div > button::before {
+    display: none !important;
+}
+
+/* 中等宽度（1181–1440）：保留完整菜单，只是收窄间距 */
+@media (min-width: 1181px) and (max-width: 1440px) {
+    #navbar.firefly-navbar .nav-container {
+        grid-template-columns: auto minmax(0, 1fr) auto !important;
+        padding-inline: 0.35rem !important;
+    }
+
+    #navbar.firefly-navbar .nav-links {
+        display: flex !important;
+    }
+
+    #navbar.firefly-navbar .nav-actions > .menu-btn {
+        display: none !important;
+    }
+
+    #navbar.firefly-navbar #search-bar {
+        display: flex !important;
+    }
+
+    #navbar.firefly-navbar #search-switch {
+        display: none !important;
+    }
+
+    #navbar.firefly-navbar .nav-link {
+        padding: 0.45rem 0.62rem !important;
+        font-size: 0.82rem !important;
+    }
+
+    #navbar.firefly-navbar #search-bar input {
+        width: 6rem;
+    }
+
+    #navbar.firefly-navbar #search-bar input:focus {
+        width: 9rem;
+    }
+}
+
+/* 小屏：胶囊留白收紧 */
+@media (max-width: 767px) {
+    #navbar.firefly-navbar > .firefly-nav-shell {
+        min-height: 3.1rem;
+        margin: 0.35rem 0.5rem;
+    }
+
+    #navbar.firefly-navbar .nav-brand {
+        font-size: 1rem !important;
+        padding-right: 0.6rem !important;
+    }
+
+    #navbar.firefly-navbar .nav-actions > button,
+    #navbar.firefly-navbar .nav-actions > a,
+    #navbar.firefly-navbar .nav-actions > div > button {
+        width: 2.35rem !important;
+        height: 2.35rem !important;
+    }
+}
+
+/* 组件按钮被 astro-island 包裹，`>` 选择器命不中；用 id / class 精确覆盖 */
+#navbar.firefly-navbar .nav-actions :is(
+    #scheme-switch,
+    #site-theme-switch,
+    #music-player-switch,
+    #bg-player-toggle,
+    #display-settings-switch,
+    #nav-menu-switch,
+    #search-switch,
+    .font-switch-btn
+) {
+    width: 2.6rem !important;
+    height: 2.6rem !important;
+    border-radius: 999px !important;
+    border: 1px solid color-mix(in oklab, var(--nav-fg-0) 8%, transparent) !important;
+    background: var(--nav-pill-chip) !important;
+    color: var(--nav-fg-1) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+#navbar.firefly-navbar .nav-actions :is(
+    #scheme-switch,
+    #site-theme-switch,
+    #music-player-switch,
+    #bg-player-toggle,
+    #display-settings-switch,
+    #nav-menu-switch,
+    #search-switch,
+    .font-switch-btn
+):hover {
+    background: color-mix(in oklab, var(--card-bg) 72%, transparent) !important;
+    border-color: color-mix(in oklab, var(--nav-accent-primary) 32%, transparent) !important;
+    color: var(--nav-accent-primary) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+/* 搜索胶囊：略宽，描边更清晰 */
+#navbar.firefly-navbar #search-bar {
+    border-color: color-mix(in oklab, var(--nav-fg-0) 8%, transparent) !important;
+}
+
+#navbar.firefly-navbar #search-bar input {
+    width: 9rem;
+}
+
+/* ==========================================================================
+   胶囊导航收尾修正
+   --------------------------------------------------------------------------
+   1. 菜单项只保留文字：小图标在胶囊里与主题色冲突、也让 1440px 下宽度溢出，
+      导致菜单挤压品牌与右侧工具组。
+   2. 移动抽屉此前被 `#navbar>div` 的 999px 圆角 + overflow clip 裁成一枚巨型
+      胶囊，这里给抽屉自己的直角圆角与安全区内边距。
+   ========================================================================== */
+
+#navbar.firefly-navbar .nav-link .nav-icon {
+    display: none !important;
+}
+
+@media (min-width: 1024px) {
+    #navbar.firefly-navbar .nav-container {
+        grid-template-columns: auto minmax(0, 1fr) auto !important;
+        column-gap: 0.3rem !important;
+    }
+
+    #navbar.firefly-navbar .nav-links {
+        justify-self: center !important;
+        justify-content: center !important;
+        flex-wrap: nowrap !important;
+        gap: 0.05rem !important;
+    }
+}
+
+/* 1440px 及以下：菜单与工具组并排最容易顶到一起，压缩文字尺寸与内边距 */
+@media (min-width: 1024px) and (max-width: 1440px) {
+    #navbar.firefly-navbar .nav-link {
+        padding: 0.48rem 0.56rem !important;
+        font-size: 0.82rem !important;
+    }
+
+    #navbar.firefly-navbar .nav-brand {
+        font-size: 1.02rem !important;
+        padding-right: 0.7rem !important;
+    }
+
+    #navbar.firefly-navbar #search-bar input {
+        width: 5.5rem;
+    }
+
+    #navbar.firefly-navbar #search-bar input:focus {
+        width: 8.5rem;
+    }
+}
+
+/* 移动抽屉：右侧抽屉，只圆左上 / 左下两角，并保证品牌图标与文字不重叠 */
+@media (max-width: 767px) {
+    .mobile-content {
+        width: min(90vw, 23.5rem);
+        padding: calc(0.85rem + env(safe-area-inset-top)) 1.15rem calc(1.25rem + env(safe-area-inset-bottom));
+        border-radius: 1.3rem 0 0 1.3rem;
+        box-shadow: -1.5rem 0 4rem rgb(3 12 29 / 0.28);
+    }
+
+    .mobile-nav-header {
+        min-height: 3.6rem;
+        padding-bottom: 0.5rem;
+        gap: 0.5rem;
+    }
+
+    .mobile-nav-brand-icon {
+        display: block;
+        width: 1.8rem;
+        height: 1.8rem;
+        flex: 0 0 1.8rem;
+    }
+
+    .mobile-nav-brand span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .mobile-nav-eyebrow {
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-content {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
+
+
+/* 抽屉打开时隐藏樱花画布：花瓣画布的层级高于抽屉，会盖在菜单上 */
+body:has(#nav-menu-panel.active) #canvas_sakura {
+    display: none !important;
 }

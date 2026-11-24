@@ -1,6 +1,7 @@
 ---
 import Footer from "@components/layout/Footer.astro";
 import Navbar from "@components/layout/Navbar.astro";
+import PureNavbar from "@components/layout/PureNavbar.astro";
 import SideBar from "@components/layout/SideBar.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
@@ -360,6 +361,9 @@ const hasMultipleImages =
         <Navbar></Navbar>
     </div>
 </div>
+
+<!-- Pure 站点主题的独立极简头部：与 Aemeath 胶囊导航二选一显示 -->
+<PureNavbar />
 
 <!-- Wallpaper - 如果允许切换则始终渲染，否则只渲染当前模式 -->
 <HomePortfolioIntro initialHome={isHomePageCheck} />

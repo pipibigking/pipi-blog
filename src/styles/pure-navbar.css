@@ -1,0 +1,520 @@
+/*
+ * Pure 站点主题导航
+ * --------------------------------------------------------------------------
+ * 结构对照上游 astro-theme-pure 的 pure-header：
+ *   文字品牌 —— 纯文字菜单 —— 图标按钮
+ * 未滚动时透明地压在页面顶部；滚动后浮出一块实底、细边框、轻投影的面板，
+ * 并略微收窄宽度，形成「从纸面浮起」的层次，而不是 Aemeath 的磨砂胶囊。
+ */
+
+#pure-navbar {
+	display: none;
+}
+
+/* ---------- 阅读进度 ---------- */
+#pure-navbar .pure-progress {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 96;
+	height: 2px;
+	overflow: hidden;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 260ms ease;
+}
+
+#pure-navbar .pure-progress.is-active {
+	opacity: 1;
+}
+
+#pure-navbar .pure-progress__fill {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform: scaleX(0);
+	transform-origin: 0 50%;
+	background: linear-gradient(
+		to right,
+		color-mix(in oklab, var(--primary) 55%, transparent),
+		var(--primary)
+	);
+	transition: transform 130ms linear;
+}
+
+html[data-site-theme="pure"] #pure-navbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 95;
+	display: flex;
+	justify-content: center;
+	padding: 1rem 0 0;
+	pointer-events: none;
+	font-family: var(--font-active-sans, var(--font-sans, inherit));
+	-webkit-tap-highlight-color: transparent;
+}
+
+html[data-site-theme="pure"] #pure-navbar .pure-navbar__bar {
+	position: relative;
+	pointer-events: auto;
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	width: var(--pure-header-width, min(100%, 70rem));
+	min-height: 2.5rem;
+	padding: 0.3rem 0.45rem 0.3rem 0.7rem;
+	border: 1px solid transparent;
+	border-radius: 1rem;
+	background: transparent;
+	transition:
+		width 360ms cubic-bezier(0.22, 1, 0.36, 1),
+		padding 360ms cubic-bezier(0.22, 1, 0.36, 1),
+		background-color 220ms ease,
+		border-color 220ms ease,
+		box-shadow 220ms ease;
+}
+
+html[data-site-theme="pure"] #pure-navbar.is-scrolled .pure-navbar__bar {
+	width: max(calc(var(--pure-header-width, 70rem) * 0.84), min(100%, 46rem));
+	padding: 0.25rem 0.4rem 0.25rem 0.65rem;
+	border-color: color-mix(in oklab, var(--line-divider) 82%, transparent);
+	background: color-mix(in oklab, var(--page-bg) 88%, transparent);
+	box-shadow:
+		0 14px 34px -18px rgb(15 23 42 / 0.28),
+		0 3px 10px -4px rgb(15 23 42 / 0.08);
+	backdrop-filter: blur(16px) saturate(1.06);
+	-webkit-backdrop-filter: blur(16px) saturate(1.06);
+}
+
+html.dark[data-site-theme="pure"] #pure-navbar.is-scrolled .pure-navbar__bar {
+	box-shadow:
+		0 14px 34px -16px rgb(0 0 0 / 0.62),
+		0 2px 8px -3px rgb(0 0 0 / 0.4);
+}
+
+/* ---------- 品牌 ---------- */
+#pure-navbar .pure-brand {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.3rem 0.55rem 0.3rem 0.2rem;
+	border-radius: 0.6rem;
+	color: var(--text-color);
+	font-family: var(--font-navbar-title, var(--font-active-sans, inherit));
+	font-size: 1.2rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	line-height: 1.2;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: color 160ms ease, background-color 160ms ease;
+}
+
+#pure-navbar .pure-brand:hover {
+	color: var(--primary);
+	background: color-mix(in oklab, var(--primary) 7%, transparent);
+}
+
+#pure-navbar .pure-brand__avatar {
+	width: 1.55rem;
+	height: 1.55rem;
+	flex: 0 0 auto;
+	border-radius: 999px;
+	object-fit: cover;
+	box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.5);
+}
+
+#pure-navbar .pure-brand__dot {
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: 999px;
+	background: var(--primary);
+}
+
+/* ---------- 桌面菜单 ---------- */
+#pure-navbar .pure-nav {
+	display: flex;
+	align-items: center;
+	gap: 0.05rem;
+	margin-inline: 0.35rem 0.2rem;
+	min-width: 0;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	line-height: 1.5;
+}
+
+#pure-navbar .pure-nav > a,
+#pure-navbar .pure-nav__group > summary {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.24rem;
+	padding: 0.42rem 0.66rem;
+	border-radius: 0.55rem;
+	color: color-mix(in oklab, var(--text-color) 78%, transparent);
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	list-style: none;
+	transition: color 150ms ease, background-color 150ms ease;
+}
+
+#pure-navbar .pure-nav__group > summary::-webkit-details-marker {
+	display: none;
+}
+
+#pure-navbar .pure-nav > a:hover,
+#pure-navbar .pure-nav__group > summary:hover {
+	color: var(--text-color);
+	background: color-mix(in oklab, var(--text-color) 6%, transparent);
+}
+
+#pure-navbar .pure-nav > a.is-current,
+#pure-navbar .pure-nav__group > summary.is-current {
+	color: var(--primary);
+	background: color-mix(in oklab, var(--primary) 9%, transparent);
+}
+
+#pure-navbar .pure-nav__group {
+	position: relative;
+}
+
+#pure-navbar .pure-nav__chevron {
+	width: 0.85rem;
+	height: 0.85rem;
+	flex: 0 0 auto;
+	opacity: 0.55;
+	transition: transform 180ms ease;
+}
+
+#pure-navbar .pure-nav__group[open] > summary .pure-nav__chevron {
+	transform: rotate(180deg);
+}
+
+#pure-navbar .pure-nav__menu {
+	position: absolute;
+	top: calc(100% + 0.55rem);
+	left: 50%;
+	transform: translateX(-50%);
+	min-width: 10.5rem;
+	padding: 0.35rem;
+	border: 1px solid var(--line-divider);
+	border-radius: 0.85rem;
+	background: var(--page-bg);
+	box-shadow: 0 18px 40px -20px rgb(15 23 42 / 0.32);
+	font-size: 0.875rem;
+}
+
+#pure-navbar .pure-nav__menu::before {
+	content: "";
+	position: absolute;
+	top: -0.6rem;
+	left: 0;
+	right: 0;
+	height: 0.6rem;
+}
+
+#pure-navbar .pure-nav__menu a {
+	display: block;
+	padding: 0.5rem 0.65rem;
+	border-radius: 0.5rem;
+	color: var(--text-color);
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+#pure-navbar .pure-nav__menu a:hover {
+	background: color-mix(in oklab, var(--text-color) 6%, transparent);
+}
+
+#pure-navbar .pure-nav__menu a.is-current {
+	color: var(--primary);
+	background: color-mix(in oklab, var(--primary) 8%, transparent);
+}
+
+/* ---------- 右侧按钮 ---------- */
+#pure-navbar .pure-actions {
+	display: flex;
+	flex: 0 0 auto;
+	align-items: center;
+	gap: 0.2rem;
+	margin-left: auto;
+}
+
+#pure-navbar .pure-icon-btn,
+#pure-navbar .pure-actions :is(#scheme-switch, #site-theme-switch) {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	flex: 0 0 auto;
+	padding: 0;
+	border: 1px solid transparent;
+	border-radius: 0.5rem;
+	background: transparent;
+	color: color-mix(in oklab, var(--text-color) 76%, transparent);
+	cursor: pointer;
+	transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+/* Svelte 开关自带 <details>/<button> 内边距，这里统一压平到方形按钮 */
+#pure-navbar .pure-actions :is(#scheme-switch, #site-theme-switch) > summary,
+#pure-navbar .pure-actions :is(#scheme-switch, #site-theme-switch) > button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: inherit;
+	background: transparent;
+	color: inherit;
+	list-style: none;
+	cursor: pointer;
+}
+
+#pure-navbar .pure-actions :is(#scheme-switch, #site-theme-switch) > summary::-webkit-details-marker {
+	display: none;
+}
+
+#pure-navbar .pure-actions :is(#scheme-switch, #site-theme-switch) {
+	border-color: color-mix(in oklab, var(--line-divider) 88%, transparent);
+}
+
+#pure-navbar .pure-icon-btn:hover,
+#pure-navbar .pure-actions :is(#scheme-switch, #site-theme-switch):hover {
+	color: var(--primary);
+	background: color-mix(in oklab, var(--primary) 8%, transparent);
+	border-color: color-mix(in oklab, var(--primary) 26%, transparent);
+}
+
+#pure-navbar .pure-icon-btn :is(svg, .icon),
+#pure-navbar .pure-actions :is(#scheme-switch, #site-theme-switch) svg {
+	width: 1.2rem;
+	height: 1.2rem;
+	font-size: 1.2rem;
+}
+
+/* Astro island 内层是块级容器，按钮为 inline-block 时会多出几像素基线留白，
+ * 用 flex 去掉，让四个按钮严格等高对齐。 */
+#pure-navbar .pure-actions astro-island > div {
+	display: flex;
+	align-items: center;
+}
+
+#pure-navbar .pure-menu-btn {
+	display: none;
+}
+
+#pure-navbar .pure-menu-icon-close {
+	display: none;
+}
+
+#pure-navbar[data-drawer="open"] .pure-menu-icon {
+	display: none;
+}
+
+#pure-navbar[data-drawer="open"] .pure-menu-icon-close {
+	display: block;
+}
+
+/* 让 Svelte 控件的浮层与 Pure 的纸面质感一致 */
+html[data-site-theme="pure"] #pure-navbar .float-panel {
+	border: 1px solid var(--line-divider);
+	border-radius: 0.85rem;
+	background: var(--page-bg);
+	box-shadow: 0 18px 40px -20px rgb(15 23 42 / 0.3);
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+}
+
+/* ---------- 移动抽屉 ---------- */
+#pure-navbar .pure-drawer {
+	position: absolute;
+	top: calc(100% + 0.6rem);
+	left: clamp(0.75rem, 4vw, 2.5rem);
+	right: clamp(0.75rem, 4vw, 2.5rem);
+	max-height: calc(100dvh - 7rem);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: 0.5rem;
+	border: 1px solid var(--line-divider);
+	border-radius: 1rem;
+	background: var(--page-bg);
+	box-shadow: 0 24px 60px -28px rgb(15 23 42 / 0.4);
+	animation: pure-drawer-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+	pointer-events: auto;
+}
+
+#pure-navbar .pure-drawer[hidden] {
+	display: none;
+}
+
+@keyframes pure-drawer-in {
+	from {
+		opacity: 0;
+		transform: translateY(-0.5rem) scale(0.985);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+#pure-navbar .pure-drawer__nav {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.15rem;
+}
+
+#pure-navbar .pure-drawer__nav > a,
+#pure-navbar .pure-drawer__group > summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.4rem;
+	padding: 0.68rem 0.75rem;
+	border-radius: 0.6rem;
+	color: var(--text-color);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	text-decoration: none;
+	list-style: none;
+	cursor: pointer;
+}
+
+#pure-navbar .pure-drawer__group > summary::-webkit-details-marker {
+	display: none;
+}
+
+#pure-navbar .pure-drawer__nav > a.is-current,
+#pure-navbar .pure-drawer__group > summary.is-current {
+	color: var(--primary);
+	background: color-mix(in oklab, var(--primary) 9%, transparent);
+}
+
+#pure-navbar .pure-drawer__group {
+	grid-column: 1 / -1;
+	border-radius: 0.75rem;
+}
+
+#pure-navbar .pure-drawer__links {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.1rem;
+	margin: 0.15rem 0 0.3rem;
+	padding: 0.35rem;
+	border-radius: 0.65rem;
+	background: color-mix(in oklab, var(--text-color) 4%, transparent);
+}
+
+#pure-navbar .pure-drawer__links a {
+	padding: 0.55rem 0.65rem;
+	border-radius: 0.5rem;
+	color: color-mix(in oklab, var(--text-color) 84%, transparent);
+	font-size: 0.875rem;
+	text-decoration: none;
+}
+
+#pure-navbar .pure-drawer__links a:hover,
+#pure-navbar .pure-drawer__links a.is-current {
+	color: var(--primary);
+	background: color-mix(in oklab, var(--primary) 8%, transparent);
+}
+
+#pure-navbar .pure-drawer__search {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 0.4rem;
+	padding: 0.65rem 0.75rem;
+	border-top: 1px solid color-mix(in oklab, var(--line-divider) 80%, transparent);
+	color: color-mix(in oklab, var(--text-color) 62%, transparent);
+	font-size: 0.8125rem;
+	text-decoration: none;
+}
+
+#pure-navbar .pure-drawer__search svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+/* ---------- 断点 ---------- */
+@media (max-width: 1180px) {
+	#pure-navbar .pure-nav {
+		font-size: 0.875rem;
+	}
+
+	#pure-navbar .pure-nav > a,
+	#pure-navbar .pure-nav__group > summary {
+		padding: 0.4rem 0.5rem;
+	}
+}
+
+/* 平板与手机共用抽屉式菜单，避免拥挤的横向菜单 */
+@media (max-width: 1023px) {
+	html[data-site-theme="pure"] #pure-navbar {
+		padding-top: 0.65rem;
+	}
+
+	html[data-site-theme="pure"] #pure-navbar .pure-navbar__bar,
+	html[data-site-theme="pure"] #pure-navbar.is-scrolled .pure-navbar__bar {
+		width: var(--pure-header-width, min(100%, 70rem));
+		min-height: 2.7rem;
+		padding: 0.28rem 0.35rem 0.28rem 0.55rem;
+		border-color: color-mix(in oklab, var(--line-divider) 86%, transparent);
+		background: color-mix(in oklab, var(--page-bg) 90%, transparent);
+		box-shadow: 0 10px 30px -22px rgb(15 23 42 / 0.4);
+		backdrop-filter: blur(14px) saturate(1.04);
+		-webkit-backdrop-filter: blur(14px) saturate(1.04);
+	}
+
+	#pure-navbar .pure-nav {
+		display: none;
+	}
+
+	#pure-navbar .pure-menu-btn {
+		display: inline-flex;
+	}
+
+	#pure-navbar .pure-brand {
+		font-size: 1.08rem;
+	}
+
+	#pure-navbar .pure-brand__avatar {
+		width: 1.4rem;
+		height: 1.4rem;
+	}
+
+	html[data-site-theme="pure"] #pure-navbar .pure-drawer {
+		left: var(--pure-shell-gutter, 1rem);
+		right: var(--pure-shell-gutter, 1rem);
+	}
+}
+
+@media (max-width: 420px) {
+	#pure-navbar .pure-drawer__nav {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	#pure-navbar .pure-drawer__links {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#pure-navbar .pure-drawer {
+		animation: none;
+	}
+
+	html[data-site-theme="pure"] #pure-navbar .pure-navbar__bar {
+		transition: none;
+	}
+}

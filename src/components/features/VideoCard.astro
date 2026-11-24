@@ -21,15 +21,26 @@ const uid = `video-card-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <figure id={uid} class="video-card group relative my-6 overflow-hidden rounded-xl border border-(--line-divider) bg-black/5">
-	<div class="video-card-stage relative aspect-video w-full overflow-hidden bg-black">
+	<div class="video-card-stage relative w-full overflow-hidden bg-black">
 		<video
 			class="video-card-media absolute inset-0 h-full w-full object-contain"
-			preload="none"
+			preload="metadata"
 			playsinline
+			webkit-playsinline
+			x5-playsinline
 			controls
 			poster={poster || undefined}
 			src={src}
 		></video>
+		{poster && (
+			<img
+				class="video-card-poster absolute inset-0 z-[5] h-full w-full object-contain pointer-events-none"
+				src={poster}
+				alt={title || "视频封面"}
+				loading="lazy"
+				aria-hidden="true"
+			/>
+		)}
 		{poster && (
 			<button
 				type="button"
@@ -46,12 +57,22 @@ const uid = `video-card-${Math.random().toString(36).slice(2, 9)}`;
 </figure>
 
 <style>
+	/* 默认 16:9 兜底；元数据加载后 JS 按视频真实比例覆盖，保证任何比例完整显示 */
+	.video-card-stage {
+		aspect-ratio: 16 / 9;
+	}
 	.video-card-play-btn {
 		box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 	}
 	.video-card.is-playing .video-card-play {
 		opacity: 0;
 		pointer-events: none;
+	}
+	.video-card.is-playing .video-card-poster {
+		opacity: 0;
+	}
+	.video-card-poster {
+		transition: opacity 300ms ease;
 	}
 </style>
 
@@ -61,11 +82,36 @@ const uid = `video-card-${Math.random().toString(36).slice(2, 9)}`;
 		if (!root) return;
 		var video = root.querySelector(".video-card-media");
 		var playBtn = root.querySelector(".video-card-play");
+		var stage = root.querySelector(".video-card-stage");
+		// 按视频真实比例自适应容器：横屏保持全宽，竖屏/方图限制高度避免霸屏
+		var fitStage = function () {
+			if (!stage || !video.videoWidth || !video.videoHeight) return;
+			var ratio = video.videoWidth / video.videoHeight;
+			stage.style.aspectRatio = String(ratio);
+			var isPortrait = ratio < 1;
+			// 竖屏视频限制视口高度，超宽屏限制视口宽度，保证完整显示
+			if (isPortrait) {
+				stage.style.maxHeight = "72vh";
+				stage.style.maxWidth = "100%";
+				stage.style.margin = "0 auto";
+				stage.style.width = "min(100%, calc(72vh * " + ratio.toFixed(4) + "))";
+			} else if (ratio > 2.2) {
+				stage.style.maxHeight = "48vh";
+			}
+		};
+		if (video) {
+			if (video.readyState >= 1) fitStage();
+			else video.addEventListener("loadedmetadata", fitStage, { once: true });
+		}
 		if (video && playBtn) {
-			playBtn.addEventListener("click", function () {
+			var start = function () {
 				root.classList.add("is-playing");
-				video.play().catch(function () {});
-			});
+				var p = video.play();
+				if (p && p.catch) p.catch(function () {});
+			};
+			playBtn.addEventListener("click", start);
+			// 移动端：没有封面按钮时也能点视频区域直接播放
+			if (!playBtn) video.addEventListener("click", start);
 			video.addEventListener("play", function () {
 				root.classList.add("is-playing");
 			});
