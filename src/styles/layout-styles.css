@@ -857,6 +857,21 @@ html[data-wallpaper-mode="fullscreen"] body:not(.wallpaper-initialized) .w-full.
    - 16:9 横屏视频完整显示不裁剪；首页卡片紧凑化，整个首屏竖直尺寸收小
    ========================================================================== */
 @media (max-width: 1023px) {
+    /* 播放态不淡出 #banner-overlay-container：首页卡片（.home-wallpaper-decor）
+     * 也挂在这个容器里，手机端卡片在媒体带下方是首屏主体，
+     * 淡出它就是「播放后下面一大块空地」的根因。桌面端卡片悬浮在
+     * 壁纸中央，保留整体淡出的影院式观感（不在此覆盖）。 */
+    html[data-wallpaper-mode="fullscreen"] [data-bg-video-playing] #wallpaper-wrapper.wallpaper-fullscreen #banner-overlay-container {
+        opacity: 1 !important;
+    }
+
+    /* 横幅文字标题不受上面例外的影响：播放视频时仍要隐藏 */
+    html[data-wallpaper-mode="fullscreen"] [data-bg-video-playing] .banner-home-text-overlay,
+    html[data-wallpaper-mode="fullscreen"] [data-bg-video-playing] .banner-page-title-overlay,
+    html[data-wallpaper-mode="fullscreen"] [data-bg-video-playing] .banner-post-meta-overlay {
+        opacity: 0 !important;
+    }
+
     /* wrapper 自身的回退背景图不再铺满全屏：壁纸/视频只在顶部媒体带内
      * 显示（带内已有 <img>/<video> 渲染），下方露出页面底色 */
     html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen {

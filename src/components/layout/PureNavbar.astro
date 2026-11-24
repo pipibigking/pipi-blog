@@ -255,8 +255,13 @@ const avatarUrl =
 	</div>
 </header>
 
-<script is:inline>
+<script is:inline data-swup-ignore-script>
 	(() => {
+		// data-swup-ignore-script：@swup/astro 的 SwupScriptsPlugin 会在每次
+		// 无刷新换页后重新执行所有内联脚本（scope = document）。导航栏不在
+		// swup 容器里、DOM 常驻，重跑只会叠加事件监听——toggle 被绑两次后
+		// 点一下开又立刻关，表现为「换页后汉堡点不动，刷新才恢复」。
+		// 导航栏常驻 + 所有监听挂 window/document/常驻 DOM，跑一次即可。
 		const root = document.getElementById("pure-navbar");
 		if (!root) return;
 
@@ -273,9 +278,12 @@ const avatarUrl =
 			toggle.setAttribute("aria-expanded", String(open));
 		};
 
-		toggle?.addEventListener("click", () => {
-			setOpen(root.dataset.drawer !== "open");
-		});
+		// onclick 赋值式绑定：即使脚本被重复执行也天然幂等，不会叠加监听
+		if (toggle) {
+			toggle.onclick = () => {
+				setOpen(root.dataset.drawer !== "open");
+			};
+		}
 
 		// 点击面板外部 / ESC 关闭，且不打断面板内的 details 交互
 		document.addEventListener("click", (event) => {
