@@ -1,3 +1,5 @@
+import { getCategorySlug } from "@/config/categories";
+
 /**
  * 移除文件扩展名（.md, .mdx, .markdown）
  * 用于将 Astro v5 Content Layer API 的 id 转换为 URL 友好的 slug
@@ -40,8 +42,10 @@ export function getTagUrl(_tag: string): string {
 	return url("/tags/");
 }
 
-export function getCategoryUrl(_category: string | null): string {
-	return url("/categories/");
+export function getCategoryUrl(category: string | null): string {
+	const name = (category || "").trim();
+	if (!name) return url("/categories/");
+	return url(`/categories/${getCategorySlug(name)}/`);
 }
 
 export function getDir(path: string): string {

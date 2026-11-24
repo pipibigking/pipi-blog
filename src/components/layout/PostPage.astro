@@ -57,6 +57,42 @@ const initialLayoutClass =
   }
 </div>
 
+<!--
+  整张卡片可点击：把点击委托到卡片上的标题链接，这样 Swup 的链接拦截、
+  主题样式与键盘可访问性都保持原样；卡片内部的其它链接/按钮不受影响。
+-->
+<script>
+	const onCardClick = (event: MouseEvent) => {
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+		const card = target.closest<HTMLElement>("[data-post-url]");
+		if (!card) return;
+		// 内部链接、控件、文本选择均保留原生行为
+		if (
+			target.closest(
+				"a, button, input, textarea, select, label, [data-no-card-nav]",
+			)
+		) {
+			return;
+		}
+		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+		if (event.button !== 0) return;
+		if (window.getSelection()?.toString()) return;
+		const titleLink = card.querySelector<HTMLAnchorElement>(".post-card-title");
+		if (!titleLink) return;
+		event.preventDefault();
+		titleLink.click();
+	};
+
+	const bindCardClicks = () => {
+		document.removeEventListener("click", onCardClick);
+		document.addEventListener("click", onCardClick);
+	};
+	bindCardClicks();
+	document.addEventListener("astro:page-load", bindCardClicks);
+	document.addEventListener("swup:contentReplaced", bindCardClicks);
+</script>
+
 <!-- 立即执行脚本：防止刷新时的布局闪烁 -->
 <script is:inline define:vars={{ defaultLayout, mobileDefaultLayout, columnWidth }}>
   (function() {

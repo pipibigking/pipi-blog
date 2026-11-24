@@ -59,6 +59,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 
 			// 工具
 			LinkPresets.Tools,
+
+			// 内容管理（密码保护）
+			LinkPresets.Admin,
 		],
 	});
 
@@ -118,6 +121,11 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		name: "工具",
 		url: "/tools/",
 		icon: "material-symbols:construction-rounded",
+	},
+	Admin: {
+		name: "内容管理",
+		url: "/admin/",
+		icon: "material-symbols:edit-document-rounded",
 	},
 	Changelog: {
 		name: "更新日志",

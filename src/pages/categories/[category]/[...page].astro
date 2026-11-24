@@ -1,0 +1,105 @@
+---
+import type { GetStaticPaths } from "astro";
+import Pagination from "@/components/common/Pagination.astro";
+import PostPage from "@/components/layout/PostPage.astro";
+import {
+	CATEGORIES,
+	CATEGORY_NAMES,
+	getCategorySlug,
+} from "@/config/categories";
+import { siteConfig } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getCategoryList, getSortedPosts } from "@/utils/content-utils";
+import { url } from "@/utils/url-utils";
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const dynamicCategories = await getCategoryList();
+	const counts = new Map(dynamicCategories.map((item) => [item.name, item.count]));
+	const extraNames = dynamicCategories
+		.map((item) => item.name)
+		.filter((name) => !CATEGORY_NAMES.includes(name));
+	const categories = [
+		...CATEGORIES.map((item) => ({
+			name: item.name,
+			count: counts.get(item.name) ?? 0,
+		})),
+		...extraNames.map((name) => ({
+			name,
+			count: counts.get(name) ?? 0,
+		})),
+	];
+	const allPosts = await getSortedPosts();
+	const uncategorized = i18n(I18nKey.uncategorized);
+	const pageSize = siteConfig.pagination.postsPerPage;
+
+	return categories.flatMap((category) => {
+		const posts = allPosts.filter((post) => {
+			const name = post.data.category?.trim() || uncategorized;
+			return name === category.name;
+		});
+		return paginate(posts, {
+			pageSize,
+			params: { category: getCategorySlug(category.name) },
+			props: { categoryName: category.name },
+		});
+	});
+}) satisfies GetStaticPaths;
+
+const { page, categoryName } = Astro.props;
+const len = page.data.length;
+---
+
+<MainGridLayout title={`${categoryName} · ${i18n(I18nKey.categories)}`}>
+	<div class="pure-list-head">
+		<div class="pure-list-head__row">
+			<a class="pure-list-head__back" href={url("/categories/")} aria-label="返回分类列表">
+				<span aria-hidden="true">←</span>
+			</a>
+			<h1 class="pure-list-head__title">{categoryName}</h1>
+		</div>
+		<p class="pure-list-head__meta">
+			{page.total} {i18n(I18nKey.postsCount)} · {i18n(I18nKey.categories)}
+		</p>
+	</div>
+
+	{
+		page.data.length > 0 ? (
+			<PostPage page={page} />
+		) : (
+			<div class="card-base px-8 py-12 text-center text-30">
+				这里还没有文章，欢迎后来补上。
+			</div>
+		)
+	}
+
+	{
+		page.total > page.size && (
+			<Pagination
+				class="mx-auto onload-animation"
+				page={page}
+				style={`animation-delay: calc(var(--content-delay) + ${len * 50}ms)`}
+			/>
+		)
+	}
+</MainGridLayout>
+
+<style>
+	.pure-list-head__back {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 999px;
+		color: var(--primary);
+		background: color-mix(in srgb, var(--primary) 10%, transparent);
+		text-decoration: none;
+		transition: background-color 0.2s ease, transform 0.2s ease;
+	}
+	.pure-list-head__back:hover {
+		background: color-mix(in srgb, var(--primary) 20%, transparent);
+		transform: translateX(-2px);
+	}
+</style>

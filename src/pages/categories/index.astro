@@ -3,9 +3,30 @@ import { Icon } from "astro-icon/components";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { CATEGORIES, CATEGORY_NAMES } from "@/config/categories";
 import { getCategoryList } from "@/utils/content-utils";
+import { getCategoryUrl } from "@/utils/url-utils";
 
-const categories = await getCategoryList();
+const dynamicCategories = await getCategoryList();
+const counts = new Map(
+	dynamicCategories.map((category) => [category.name, category.count]),
+);
+const categories = [
+	...CATEGORIES.map((category) => ({
+		name: category.name,
+		count: counts.get(category.name) ?? 0,
+		url: getCategoryUrl(category.name),
+		description: category.description,
+	})),
+	...dynamicCategories
+		.filter((category) => !CATEGORY_NAMES.includes(category.name))
+		.map((category) => ({
+			name: category.name,
+			count: category.count,
+			url: category.url,
+			description: "",
+		})),
+];
 const totalPosts = categories.reduce((sum, cat) => sum + cat.count, 0);
 ---
 
@@ -40,7 +61,7 @@ const totalPosts = categories.reduce((sum, cat) => sum + cat.count, 0);
                             {category.name}
                         </h2>
                         <p class="text-sm text-30 mt-1 group-hover:text-(--primary)/60 transition-colors">
-                            {category.count} {i18n(I18nKey.postsCount)}
+                            {category.description && `${category.description} · `}{category.count} {i18n(I18nKey.postsCount)}
                         </p>
                     </div>
                     <div class="shrink-0">

@@ -5,7 +5,7 @@ description: 记录这个个人博客从本地运行、内容配置、生产构�
 aiSummary: 文章按真实上线顺序记录：准备 Astro 和 pnpm、配置内容、写 Markdown、构建 dist，再把静态文件部署到云端并绑定域名。适合想把自己的博客从本地推上线的读者。
 image: ./cover.webp
 tags: [博客搭建, Astro, 静态托管, 部署, HTTPS]
-category: 博客指南
+category: 博客
 draft: false
 ---
 
@@ -93,7 +93,7 @@ published: 2026-07-08
 description: 文章简介
 image: /assets/images/wallpaper/my-wallpaper-01.webp
 tags: [博客搭建, Astro]
-category: 博客指南
+category: 博客
 draft: false
 ---
 

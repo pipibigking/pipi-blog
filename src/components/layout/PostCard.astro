@@ -230,6 +230,7 @@ const minutes = remarkPluginFrontmatter.minutes;
     className,
   ]}
   data-card-decor={cardDecor}
+  data-post-url={url}
   style={style}
 >
   <!-- pinned icon -->
@@ -374,6 +375,10 @@ const minutes = remarkPluginFrontmatter.minutes;
 </div>
 
 <style define:vars={{ coverWidth, descriptionClampLines }}>
+  .post-card-wrapper {
+    cursor: pointer;
+  }
+
   .post-card-update-badge {
     position: absolute;
     top: 0.6rem;

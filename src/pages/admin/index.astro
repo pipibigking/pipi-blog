@@ -1,0 +1,690 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { adminConfig } from "@/config/adminConfig";
+import { CATEGORY_NAMES } from "@/config/categories";
+import { url } from "@/utils/url-utils";
+
+const config = { ...adminConfig, categories: CATEGORY_NAMES };
+---
+
+<Layout title="内容管理 · 站点后台">
+  <main class="admin-page" id="admin-app" data-config={JSON.stringify(config)}>
+    <!-- 密码锁 -->
+    <section class="admin-card admin-login" id="admin-login">
+      <div class="admin-brand">
+        <span class="admin-brand-mark">✦</span>
+        <div>
+          <p class="admin-kicker">CONTENT STUDIO</p>
+          <h1>内容管理</h1>
+        </div>
+      </div>
+      <p class="admin-hint">输入管理密码后即可新建文件夹、撰写与修改文章。所有改动会直接提交到 GitHub 仓库。</p>
+      <label class="admin-field">
+        <span>管理密码</span>
+        <input id="admin-password" type="password" autocomplete="current-password" placeholder="请输入密码" />
+      </label>
+      <button class="admin-btn admin-btn-primary" id="admin-unlock">解锁工作台</button>
+      <p class="admin-error" id="admin-login-error" role="alert"></p>
+      <a class="admin-back" href={url("/")}>← 返回主页</a>
+    </section>
+
+    <!-- 工作台 -->
+    <section class="admin-work" id="admin-work" hidden>
+      <header class="admin-header">
+        <div>
+          <p class="admin-kicker">CONTENT STUDIO</p>
+          <h1>内容管理</h1>
+          <p class="admin-sub" id="admin-repo-label"></p>
+        </div>
+        <div class="admin-header-actions">
+          <button class="admin-btn" id="admin-btn-refresh">刷新列表</button>
+          <button class="admin-btn" id="admin-btn-folder">创建文件夹</button>
+          <button class="admin-btn" id="admin-btn-new">创建文章</button>
+          <button class="admin-btn" id="admin-btn-settings">设置</button>
+          <button class="admin-btn admin-btn-quiet" id="admin-btn-lock">锁定</button>
+        </div>
+      </header>
+
+      <p class="admin-status" id="admin-status" role="status"></p>
+
+      <!-- 文章列表 -->
+      <section class="admin-card admin-panel" id="admin-panel-list">
+        <div class="admin-panel-head">
+          <h2>已发布文章</h2>
+          <span class="admin-count" id="admin-post-count"></span>
+        </div>
+        <div class="admin-posts" id="admin-posts"></div>
+      </section>
+
+      <!-- 文件夹 -->
+      <section class="admin-card admin-panel" id="admin-panel-folder" hidden>
+        <div class="admin-panel-head"><h2>创建文件夹</h2></div>
+        <p class="admin-hint">Git 不追踪空目录，这里会在文件夹下写入一个 <code>.gitkeep</code> 占位文件。</p>
+        <label class="admin-field">
+          <span>文件夹名称（支持中文、字母、数字、- 与 _）</span>
+          <input id="admin-folder-name" placeholder="例如：ai-notes" />
+        </label>
+        <div class="admin-row">
+          <button class="admin-btn admin-btn-primary" id="admin-folder-create">创建并提交</button>
+          <button class="admin-btn admin-btn-quiet" data-close-panel>取消</button>
+        </div>
+      </section>
+
+      <!-- 编辑器 -->
+      <section class="admin-card admin-panel" id="admin-panel-editor" hidden>
+        <div class="admin-panel-head">
+          <h2 id="admin-editor-title">撰写文章</h2>
+          <button class="admin-btn admin-btn-quiet" data-close-panel>收起编辑器</button>
+        </div>
+
+        <div class="admin-form-grid">
+          <label class="admin-field admin-wide">
+            <span>仓库内文件路径</span>
+            <input id="admin-f-file" placeholder="例如：ai/我的第一篇 AI 笔记.md" />
+          </label>
+          <label class="admin-field admin-wide">
+            <span>标题</span>
+            <input id="admin-f-title" placeholder="文章标题" />
+          </label>
+          <label class="admin-field">
+            <span>发布日期</span>
+            <input id="admin-f-date" type="date" />
+          </label>
+          <label class="admin-field">
+            <span>分类</span>
+            <select id="admin-f-category"></select>
+          </label>
+          <label class="admin-field admin-wide">
+            <span>标签（英文逗号分隔）</span>
+            <input id="admin-f-tags" placeholder="Astro, 前端, 记录" />
+          </label>
+          <label class="admin-field admin-wide">
+            <span>简介</span>
+            <textarea id="admin-f-desc" rows="2" placeholder="一句话介绍这篇文章"></textarea>
+          </label>
+
+          <div class="admin-field admin-wide">
+            <span>文章封面</span>
+            <div class="admin-inline">
+              <select id="admin-f-cover-select"></select>
+              <input id="admin-f-cover" placeholder="/assets/images/xxx.webp 或完整链接" />
+              <label class="admin-upload">
+                上传图片<input id="admin-cover-upload" type="file" accept="image/*" hidden />
+              </label>
+            </div>
+          </div>
+
+          <div class="admin-field admin-wide admin-video-box">
+            <span>插入视频（内容会自动切换为 .mdx 并引入 VideoCard）</span>
+            <div class="admin-inline">
+              <select id="admin-f-video"></select>
+              <input id="admin-f-video-custom" placeholder="视频地址（可选，填写后优先）" />
+              <select id="admin-f-poster"></select>
+              <input id="admin-f-video-title" placeholder="视频标题（可选）" />
+              <button class="admin-btn" id="admin-btn-video">插入视频</button>
+            </div>
+          </div>
+
+          <label class="admin-field admin-wide">
+            <span>正文（Markdown / MDX）</span>
+            <textarea id="admin-f-body" rows="16" placeholder="从这里开始写……"></textarea>
+          </label>
+
+          <div class="admin-switches">
+            <label><input id="admin-f-draft" type="checkbox" /> 草稿</label>
+            <label><input id="admin-f-pinned" type="checkbox" /> 置顶</label>
+          </div>
+        </div>
+
+        <div class="admin-row">
+          <button class="admin-btn admin-btn-primary" id="admin-btn-save">提交到 GitHub</button>
+          <span class="admin-save-note">提交后会回读校验内容，并返回 Commit 链接</span>
+        </div>
+      </section>
+
+      <!-- 设置 -->
+      <section class="admin-card admin-panel" id="admin-panel-settings" hidden>
+        <div class="admin-panel-head"><h2>设置</h2></div>
+        <p class="admin-hint">
+          Token 只保存在当前浏览器（用管理密码加密），请求只发往 api.github.com。
+          请使用仅授权本仓库 Contents 读写的 Fine-grained Personal Access Token。
+        </p>
+        <div class="admin-form-grid">
+          <label class="admin-field"><span>仓库所有者</span><input id="admin-s-owner" /></label>
+          <label class="admin-field"><span>仓库名</span><input id="admin-s-repo" /></label>
+          <label class="admin-field"><span>分支</span><input id="admin-s-branch" /></label>
+          <label class="admin-field"><span>文章目录</span><input id="admin-s-posts" /></label>
+          <label class="admin-field admin-wide"><span>GitHub Token</span><input id="admin-s-token" type="password" autocomplete="off" placeholder="ghp_... / github_pat_..." /></label>
+          <label class="admin-check admin-wide"><input id="admin-s-remember" type="checkbox" /> 在本浏览器记住 Token（用管理密码加密）</label>
+        </div>
+        <div class="admin-row">
+          <button class="admin-btn admin-btn-primary" id="admin-s-save">保存设置</button>
+          <button class="admin-btn admin-btn-quiet" data-close-panel>取消</button>
+        </div>
+      </section>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .admin-page {
+    max-width: 1120px;
+    margin: 7rem auto 4rem;
+    padding: 0 1.25rem;
+    color: var(--body);
+  }
+  .admin-card {
+    background: color-mix(in srgb, var(--card-bg) 94%, transparent);
+    border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+    border-radius: 1.25rem;
+    box-shadow: 0 20px 60px rgb(20 30 60 / 0.08);
+    padding: 1.75rem;
+  }
+  .admin-login { max-width: 30rem; margin: 4rem auto; display: grid; gap: 1rem; }
+  .admin-brand { display: flex; gap: 0.9rem; align-items: center; }
+  .admin-brand-mark {
+    display: grid; place-items: center; width: 3rem; height: 3rem;
+    border-radius: 1rem; color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+    font-size: 1.5rem;
+  }
+  .admin-page h1 { margin: 0; font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+  .admin-page h2 { margin: 0; font-size: 1.2rem; color: var(--primary); }
+  .admin-kicker { margin: 0 0 0.2rem; font-size: 0.68rem; letter-spacing: 0.18em; color: var(--primary); opacity: 0.65; }
+  .admin-sub, .admin-hint { margin: 0.35rem 0 0; font-size: 0.86rem; color: var(--body); opacity: 0.72; line-height: 1.7; }
+  .admin-field { display: grid; gap: 0.4rem; font-size: 0.82rem; font-weight: 700; }
+  .admin-field > span { opacity: 0.75; }
+  .admin-field input, .admin-field select, .admin-field textarea {
+    width: 100%; border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+    border-radius: 0.7rem; padding: 0.65rem 0.75rem;
+    background: color-mix(in srgb, var(--card-bg) 88%, white 12%);
+    color: var(--body); font: inherit; font-size: 0.88rem; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .admin-field textarea { resize: vertical; line-height: 1.7; }
+  .admin-field input:focus, .admin-field select:focus, .admin-field textarea:focus {
+    border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent);
+  }
+  .admin-page input[type="checkbox"] { width: auto; accent-color: var(--primary); }
+  .admin-btn {
+    border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
+    border-radius: 0.7rem; padding: 0.55rem 0.95rem; cursor: pointer;
+    background: color-mix(in srgb, var(--card-bg) 90%, white 10%); color: var(--body);
+    font: inherit; font-size: 0.85rem; font-weight: 700; transition: transform 0.15s, background 0.2s;
+  }
+  .admin-btn:hover { transform: translateY(-1px); background: color-mix(in srgb, var(--primary) 10%, var(--card-bg)); }
+  .admin-btn-primary { background: var(--primary); color: white; border-color: transparent; }
+  .admin-btn-primary:hover { background: color-mix(in srgb, var(--primary) 85%, black); }
+  .admin-btn-quiet { opacity: 0.7; }
+  .admin-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .admin-header { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: end; margin-bottom: 1rem; }
+  .admin-header-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .admin-status { min-height: 1.4rem; font-size: 0.85rem; color: var(--primary); }
+  .admin-error { min-height: 1.2rem; font-size: 0.82rem; color: #d4575c; }
+  .admin-panel { margin-bottom: 1rem; }
+  .admin-panel-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .admin-count { font-size: 0.8rem; opacity: 0.6; }
+  .admin-posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.85rem; }
+  .admin-post {
+    display: grid; grid-template-columns: 4.5rem 1fr; gap: 0.8rem; align-items: center;
+    border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent);
+    border-radius: 0.9rem; padding: 0.7rem; transition: border-color 0.2s, transform 0.2s;
+  }
+  .admin-post:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .admin-post img { width: 4.5rem; height: 3.2rem; object-fit: cover; border-radius: 0.55rem; background: color-mix(in srgb, var(--primary) 10%, transparent); }
+  .admin-post > div { display: flex; flex-direction: column; align-items: flex-start; gap: 0.3rem; min-width: 0; }
+  .admin-post-title { font-size: 0.88rem; font-weight: 800; line-height: 1.4; display: block; }
+  .admin-post-meta { font-size: 0.72rem; opacity: 0.65; display: block; margin: 0; word-break: break-all; }
+  .admin-post .admin-btn { margin-top: 0.15rem; padding: 0.32rem 0.7rem; font-size: 0.76rem; }
+  .admin-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; }
+  .admin-wide { grid-column: 1 / -1; }
+  .admin-inline { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+  .admin-inline select, .admin-inline input { flex: 1 1 11rem; width: auto; }
+  .admin-upload { position: relative; display: inline-block; padding: 0.55rem 0.95rem; border-radius: 0.7rem; cursor: pointer; border: 1px dashed color-mix(in srgb, var(--primary) 40%, transparent); font-size: 0.82rem; font-weight: 700; }
+  .admin-switches { grid-column: 1 / -1; display: flex; gap: 1.5rem; font-size: 0.84rem; }
+  .admin-check { grid-column: 1 / -1; display: flex; gap: 0.5rem; align-items: center; font-size: 0.84rem; }
+  .admin-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 1.1rem; }
+  .admin-save-note { font-size: 0.78rem; opacity: 0.6; }
+  .admin-back { display: inline-block; font-size: 0.82rem; color: var(--primary); text-decoration: none; }
+  .admin-empty { grid-column: 1 / -1; text-align: center; padding: 2rem; opacity: 0.6; font-size: 0.86rem; }
+  @media (max-width: 720px) {
+    .admin-form-grid { grid-template-columns: 1fr; }
+    .admin-page { margin-top: 5rem; }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const app = document.getElementById("admin-app");
+    if (!app || window.__pipiAdminBound) return;
+    window.__pipiAdminBound = true;
+
+    const cfg = JSON.parse(app.dataset.config || "{}");
+    const $ = (id) => document.getElementById(id);
+    const enc = new TextEncoder();
+    const dec = new TextDecoder();
+    let token = "";
+    let password = "";
+    let posts = [];
+    let currentFile = "";
+
+    const setStatus = (text, error = false) => {
+      const node = $("admin-status");
+      node.textContent = text || "";
+      node.style.color = error ? "#d4575c" : "var(--primary)";
+    };
+
+    const sha256 = async (value) => {
+      const digest = await crypto.subtle.digest("SHA-256", enc.encode(value));
+      return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+    };
+
+    const deriveKey = async (salt) => {
+      const material = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
+      return crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt, iterations: 150000, hash: "SHA-256" },
+        material,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"],
+      );
+    };
+
+    const storeToken = async (value) => {
+      if (!value) { localStorage.removeItem("pipiAdminToken"); return; }
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(salt);
+      const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, enc.encode(value));
+      localStorage.setItem("pipiAdminToken", JSON.stringify({
+        salt: Array.from(salt), iv: Array.from(iv), data: Array.from(new Uint8Array(cipher)),
+      }));
+    };
+
+    const restoreToken = async () => {
+      const raw = localStorage.getItem("pipiAdminToken");
+      if (!raw) return;
+      try {
+        const payload = JSON.parse(raw);
+        const key = await deriveKey(new Uint8Array(payload.salt));
+        const plain = await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: new Uint8Array(payload.iv) },
+          key,
+          new Uint8Array(payload.data),
+        );
+        token = dec.decode(plain);
+      } catch (_) {
+        localStorage.removeItem("pipiAdminToken");
+      }
+    };
+
+    // ---------- GitHub Contents API ----------
+    const settings = () => ({
+      owner: ($("admin-s-owner").value || cfg.repo.owner).trim(),
+      repo: ($("admin-s-repo").value || cfg.repo.repo).trim(),
+      branch: ($("admin-s-branch").value || cfg.repo.branch).trim(),
+      postsPath: ($("admin-s-posts").value || cfg.repo.postsPath).trim().replace(/^\/+|\/+$/g, ""),
+    });
+
+    const apiPath = (file) => String(file).split("/").map(encodeURIComponent).join("/");
+
+    const gh = async (file, options = {}) => {
+      const s = settings();
+      if (!token) throw new Error("请先在「设置」中填写 GitHub Token");
+      const query = options.params ? "?" + new URLSearchParams(options.params).toString() : "";
+      const endpoint = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${apiPath(file)}${query}`;
+      const headers = {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      };
+      if (options.body) headers["Content-Type"] = "application/json";
+      const response = await fetch(endpoint, {
+        method: options.method || "GET",
+        headers,
+        body: options.body ? JSON.stringify(options.body) : undefined,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.message ? `GitHub: ${data.message}` : `GitHub HTTP ${response.status}`);
+      }
+      return data;
+    };
+
+    const readFile = async (file) => {
+      const data = await gh(file, { params: { ref: settings().branch } });
+      if (typeof data.content !== "string") return { content: "", sha: data.sha };
+      const binary = atob(data.content.replace(/\s/g, ""));
+      const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+      return { content: dec.decode(bytes), sha: data.sha };
+    };
+
+    const toBase64 = (text) => {
+      const bytes = typeof text === "string" ? enc.encode(text) : new Uint8Array(text);
+      let binary = "";
+      for (const byte of bytes) binary += String.fromCharCode(byte);
+      return btoa(binary);
+    };
+
+    const writeFile = async (file, content, message, sha, verify = true) => {
+      const body = { message, content: toBase64(content), branch: settings().branch };
+      if (sha) body.sha = sha;
+      const result = await gh(file, { method: "PUT", body });
+      if (verify) {
+        const check = await readFile(file);
+        if (check.content !== content) throw new Error("提交已创建，但回读内容不一致，请人工核对后再发布");
+      }
+      return result?.commit?.html_url || "";
+    };
+
+    // ---------- frontmatter 解析 ----------
+    const unquote = (value) => {
+      const raw = value.trim();
+      if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
+        return raw.slice(1, -1).replace(/\\"/g, '"');
+      }
+      return raw;
+    };
+    const quote = (value) => `"${String(value ?? "").replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+    const parseScalar = (raw) => {
+      const value = raw.trim();
+      if (value === "true") return true;
+      if (value === "false") return false;
+      if (/^\d{4}-\d{2}-\d{2}/.test(value)) return value;
+      if (value.startsWith("[") && value.endsWith("]")) {
+        return value.slice(1, -1).split(",").map((item) => unquote(item)).filter(Boolean);
+      }
+      return unquote(value);
+    };
+    const stringifyScalar = (value) => {
+      if (typeof value === "boolean") return String(value);
+      if (Array.isArray(value)) return `[${value.map(quote).join(", ")}]`;
+      if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) return value;
+      return quote(value);
+    };
+    const parsePost = (text) => {
+      const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (!match) return { data: {}, body: text };
+      const data = {};
+      for (const line of match[1].split(/\r?\n/)) {
+        const pair = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+        if (pair) data[pair[1]] = parseScalar(pair[2]);
+      }
+      return { data, body: text.slice(match[0].length) };
+    };
+    const buildPost = (data, body) => {
+      const lines = ["---"];
+      for (const [key, value] of Object.entries(data)) {
+        if (key === "prevTitle" || key === "prevSlug" || key === "nextTitle" || key === "nextSlug") continue;
+        lines.push(`${key}: ${stringifyScalar(value)}`);
+      }
+      lines.push("---", "", body.replace(/\r\n/g, "\n"));
+      return lines.join("\n");
+    };
+
+    // ---------- 列表与表单 ----------
+    const resolveCover = (post) => {
+      const image = post.image || "";
+      if (!image) return "";
+      if (/^(https?:|data:|\/)/.test(image)) return image;
+      return new URL(image, `${location.origin}/posts/${post.id}/`).toString();
+    };
+
+    const renderPosts = () => {
+      const wrap = $("admin-posts");
+      $("admin-post-count").textContent = `${posts.length} 篇`;
+      if (!posts.length) {
+        wrap.innerHTML = '<div class="admin-empty">还没有文章，点击「创建文章」开始写吧。</div>';
+        return;
+      }
+      wrap.innerHTML = posts.map((post, index) => {
+        const cover = resolveCover(post);
+        return `<div class="admin-post">
+          ${cover ? `<img src="${cover}" alt="" loading="lazy" />` : '<div style="width:4.5rem;height:3.2rem;border-radius:.55rem;background:color-mix(in srgb, var(--primary) 10%, transparent)"></div>'}
+          <div>
+            <span class="admin-post-title">${escapeHtml(post.title)}</span>
+            <span class="admin-post-meta">${escapeHtml(post.category || "未分类")} · ${escapeHtml(post.file)}</span>
+            <button class="admin-btn" data-edit="${index}">编辑</button>
+          </div>
+        </div>`;
+      }).join("");
+      wrap.querySelectorAll("[data-edit]").forEach((button) => {
+        button.onclick = () => openEditor(posts[Number(button.dataset.edit)], false);
+      });
+    };
+
+    const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    })[c]);
+
+    const loadPosts = async () => {
+      const response = await fetch("/admin/post-index.json");
+      if (!response.ok) throw new Error("无法读取文章目录");
+      posts = await response.json();
+      renderPosts();
+    };
+
+    const loadMedia = async () => {
+      const response = await fetch("/admin/media-index.json");
+      if (!response.ok) return;
+      const media = await response.json();
+      const coverSelect = $("admin-f-cover-select");
+      coverSelect.innerHTML = '<option value="">选择已有封面</option>' +
+        media.images.map((file) => `<option value="${escapeHtml(file)}">${escapeHtml(file)}</option>`).join("");
+      coverSelect.onchange = () => {
+        if (coverSelect.value) $("admin-f-cover").value = coverSelect.value;
+      };
+      $("admin-f-video").innerHTML = '<option value="">选择已有视频</option>' +
+        media.videos.map((file) => `<option value="${escapeHtml(file)}">${escapeHtml(file)}</option>`).join("");
+      $("admin-f-poster").innerHTML = '<option value="">选择视频封面</option>' +
+        media.images.map((file) => `<option value="${escapeHtml(file)}">${escapeHtml(file)}</option>`).join("");
+    };
+
+    const showPanel = (name) => {
+      for (const key of ["list", "folder", "editor", "settings"]) {
+        $(`admin-panel-${key}`).hidden = key !== name;
+      }
+    };
+
+    const slugify = (value) => String(value || "").trim().replace(/[\\/:*?"<>|]/g, "-").replace(/\s+/g, "-").slice(0, 80) || "new-post";
+
+    const openEditor = async (post = null, isNew = true) => {
+      currentFile = post?.file || "";
+      let frontmatter = {};
+      let body = "";
+      if (post && !isNew) {
+        try {
+          const file = await readFile(`${settings().postsPath}/${post.file}`);
+          const parsed = parsePost(file.content);
+          frontmatter = parsed.data;
+          body = parsed.body;
+        } catch (error) {
+          setStatus(`读取文章失败：${error.message}`, true);
+          return;
+        }
+      }
+      $("admin-editor-title").textContent = isNew ? "撰写新文章" : `编辑：${post.title}`;
+      $("admin-f-file").value = currentFile || `${slugify($("admin-f-title").value) || "new-post"}.md`;
+      $("admin-f-title").value = frontmatter.title || post?.title || "";
+      $("admin-f-date").value = String(frontmatter.published || post?.published || new Date().toISOString().slice(0, 10)).slice(0, 10);
+      $("admin-f-category").value = frontmatter.category || post?.category || cfg.categories[0];
+      $("admin-f-tags").value = Array.isArray(frontmatter.tags) ? frontmatter.tags.join(", ") : (post?.tags || []).join(", ");
+      $("admin-f-desc").value = frontmatter.description || post?.description || "";
+      $("admin-f-cover").value = frontmatter.image || post?.image || "";
+      $("admin-f-cover-select").value = frontmatter.image || "";
+      $("admin-f-draft").checked = Boolean(frontmatter.draft ?? post?.draft);
+      $("admin-f-pinned").checked = Boolean(frontmatter.pinned ?? post?.pinned);
+      $("admin-f-body").value = body;
+      showPanel("editor");
+    };
+
+    const collectEditor = () => {
+      const file = $("admin-f-file").value.trim().replace(/^\/+/, "");
+      if (!file || !/\.(md|mdx)$/i.test(file)) throw new Error("文件路径需以 .md 或 .mdx 结尾");
+      if (file.includes("..")) throw new Error("文件路径不能包含 ..");
+      const title = $("admin-f-title").value.trim();
+      if (!title) throw new Error("请填写标题");
+      const tags = $("admin-f-tags").value.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean);
+      const data = {
+        title,
+        published: $("admin-f-date").value || new Date().toISOString().slice(0, 10),
+        updated: new Date().toISOString().slice(0, 10),
+        description: $("admin-f-desc").value.trim(),
+        image: $("admin-f-cover").value.trim(),
+        tags,
+        category: $("admin-f-category").value,
+        draft: $("admin-f-draft").checked,
+        pinned: $("admin-f-pinned").checked,
+      };
+      return { file, data, body: $("admin-f-body").value };
+    };
+
+    // ---------- 事件绑定 ----------
+    $("admin-unlock").onclick = async () => {
+      const value = $("admin-password").value;
+      $("admin-login-error").textContent = "";
+      if (!value) { $("admin-login-error").textContent = "请输入密码"; return; }
+      if ((await sha256(value)) !== cfg.passwordHash) {
+        $("admin-login-error").textContent = "密码不正确";
+        return;
+      }
+      password = value;
+      $("admin-login").hidden = true;
+      $("admin-work").hidden = false;
+      const saved = JSON.parse(localStorage.getItem("pipiAdminSettings") || "{}");
+      for (const [id, key] of [["owner", "owner"], ["repo", "repo"], ["branch", "branch"], ["posts", "postsPath"]]) {
+        $(`admin-s-${id}`).value = saved[key] || cfg.repo[key];
+      }
+      $("admin-s-remember").checked = Boolean(saved.remember);
+      $("admin-repo-label").textContent = `${settings().owner}/${settings().repo} · ${settings().branch}`;
+      await restoreToken();
+      $("admin-s-token").value = token;
+      try {
+        await loadPosts();
+        await loadMedia();
+        setStatus("已解锁。Token 未配置时请先在「设置」中填写。");
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+    };
+
+    $("admin-password").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") $("admin-unlock").click();
+    });
+
+    $("admin-btn-lock").onclick = () => {
+      token = ""; password = "";
+      $("admin-password").value = "";
+      $("admin-work").hidden = true;
+      $("admin-login").hidden = false;
+      setStatus("");
+    };
+
+    $("admin-btn-refresh").onclick = async () => {
+      try { await loadPosts(); setStatus("列表已刷新"); } catch (error) { setStatus(error.message, true); }
+    };
+    $("admin-btn-folder").onclick = () => { $("admin-folder-name").value = ""; showPanel("folder"); };
+    $("admin-btn-new").onclick = () => openEditor(null, true);
+    $("admin-btn-settings").onclick = () => showPanel("settings");
+    document.querySelectorAll("[data-close-panel]").forEach((button) => {
+      button.onclick = () => showPanel("list");
+    });
+
+    $("admin-folder-create").onclick = async () => {
+      const name = $("admin-folder-name").value.trim();
+      if (!/^[\w\u4e00-\u9fa5-]+$/.test(name)) {
+        setStatus("文件夹名称只能包含中文、字母、数字、- 与 _", true);
+        return;
+      }
+      setStatus("正在提交文件夹…");
+      try {
+        const file = `${settings().postsPath}/${name}/.gitkeep`;
+        const url = await writeFile(file, "# 目录占位\n", `chore: 创建文章目录 ${name}`, null, false);
+        setStatus(`文件夹已提交${url ? `：${url}` : ""}`);
+        $("admin-folder-name").value = "";
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+    };
+
+    $("admin-s-save").onclick = async () => {
+      const newToken = $("admin-s-token").value.trim();
+      if (newToken !== token) {
+        token = newToken;
+        if ($("admin-s-remember").checked) await storeToken(token);
+        else localStorage.removeItem("pipiAdminToken");
+      }
+      localStorage.setItem("pipiAdminSettings", JSON.stringify({
+        ...settings(), remember: $("admin-s-remember").checked,
+      }));
+      $("admin-repo-label").textContent = `${settings().owner}/${settings().repo} · ${settings().branch}`;
+      setStatus("设置已保存");
+    };
+
+    $("admin-cover-upload").onchange = async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      setStatus(`正在上传 ${file.name}…`);
+      try {
+        const name = `${Date.now()}-${slugify(file.name)}`;
+        const binary = await file.arrayBuffer();
+        const target = `${cfg.mediaPath}/${name}`;
+        await writeFile(target, binary, `media: 上传封面 ${name}`, null, false);
+        const url = `/assets/images/${name}`;
+        $("admin-f-cover").value = url;
+        $("admin-f-cover-select").value = url;
+        setStatus(`封面已上传：${url}（提交内容后才会出现在文章中）`);
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+      event.target.value = "";
+    };
+
+    $("admin-btn-video").onclick = () => {
+      const src = $("admin-f-video-custom").value.trim() || $("admin-f-video").value;
+      if (!src) { setStatus("请选择或填写视频地址", true); return; }
+      const poster = $("admin-f-poster").value;
+      const title = $("admin-f-video-title").value.trim();
+      const snippet = `<VideoCard\n  src="${src}"${poster ? `\n  poster="${poster}"` : ""}${title ? `\n  title="${title}"` : ""}\n/>`;
+      let body = $("admin-f-body").value;
+      if (!body.includes('from "@/components/features/VideoCard.astro"')) {
+        body = `import VideoCard from "@/components/features/VideoCard.astro";\n\n${body}`;
+      }
+      $("admin-f-body").value = `${body.trimEnd()}\n\n${snippet}\n`;
+      if (/\.md$/i.test($("admin-f-file").value)) {
+        $("admin-f-file").value = $("admin-f-file").value.replace(/\.md$/i, ".mdx");
+      }
+      setStatus("视频代码已插入正文，保存时会一并提交");
+    };
+
+    $("admin-btn-save").onclick = async () => {
+      setStatus("正在提交…");
+      try {
+        const { file, data, body } = collectEditor();
+        let sha = null;
+        let previous = {};
+        if (currentFile === file) {
+          try {
+            const existing = await readFile(`${settings().postsPath}/${file}`);
+            sha = existing.sha;
+            previous = parsePost(existing.content).data;
+          } catch (_) { /* 新文件 */ }
+        }
+        const merged = { ...previous, ...data };
+        const content = buildPost(merged, body);
+        const commitUrl = await writeFile(
+          `${settings().postsPath}/${file}`,
+          content,
+          `${currentFile === file ? "update" : "feat"}: ${data.title}`,
+          sha,
+        );
+        currentFile = file;
+        await loadPosts();
+        $("admin-editor-title").textContent = `编辑：${data.title}`;
+        setStatus(`已提交并校验通过${commitUrl ? `：${commitUrl}` : ""}`);
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+    };
+  })();
+</script>

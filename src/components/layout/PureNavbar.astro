@@ -139,7 +139,7 @@ const avatarUrl =
 			{
 				links.map((link) =>
 					link.children ? (
-						<details class="pure-nav__group">
+						<details class="pure-nav__group" name="pure-nav-group">
 							<summary class:list={[isActive(link) && "is-current"]}>
 								<span>{link.name}</span>
 								<svg
@@ -218,7 +218,7 @@ const avatarUrl =
 			{
 				links.map((link) =>
 					link.children ? (
-						<details class="pure-drawer__group">
+						<details class="pure-drawer__group" name="pure-drawer-group">
 							<summary class:list={[isActive(link) && "is-current"]}>
 								<span>{link.name}</span>
 								<svg class="pure-nav__chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -289,6 +289,35 @@ const avatarUrl =
 				setOpen(root.dataset.drawer !== "open");
 			};
 		}
+
+		// ------------------------------------------------------------------
+		// 下拉菜单手风琴：同一层级一次只展开一个；点击普通导航项或导航外部
+		// 时自动收起。原生 name 属性负责现代浏览器互斥，这里再补一层 JS
+		// 兜底（旧浏览器 + swup 换页后 DOM 复用），用赋值式绑定保证幂等。
+		// ------------------------------------------------------------------
+		const closeGroups = () => {
+			root.querySelectorAll("details[open]").forEach((group) => {
+				group.open = false;
+			});
+		};
+		root.querySelectorAll("details.pure-nav__group, details.pure-drawer__group").forEach((group) => {
+			group.ontoggle = () => {
+				if (!group.open) return;
+				const parent = group.parentElement;
+				if (!parent) return;
+				parent.querySelectorAll("details[open]").forEach((other) => {
+					if (other !== group) other.open = false;
+				});
+			};
+		});
+		root.querySelectorAll(".pure-nav > a, .pure-drawer__nav > a").forEach((link) => {
+			link.onclick = () => closeGroups();
+		});
+		document.addEventListener("click", (event) => {
+			const target = event.target;
+			if (!(target instanceof Node) || root.contains(target)) return;
+			closeGroups();
+		});
 
 		// 点击面板外部 / ESC 关闭，且不打断面板内的 details 交互
 		document.addEventListener("click", (event) => {

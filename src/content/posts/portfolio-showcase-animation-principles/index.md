@@ -6,7 +6,7 @@ description: 从滚动读数、目标与渲染进度、分镜区间出发，拆�
 aiSummary: 作品展示页不再把动画当作几段独立淡入，而是把滚动位置变成一条可控的 0 到 1 时间轴。文章解释分镜、requestAnimationFrame 平滑、资源预热、快门转场和可访问性如何共同保证叙事连续。
 image: ./cover.webp
 tags: [Astro, 前端动画, CSS, JavaScript, 性能优化]
-category: 博客改造
+category: 项目
 draft: false
 ---
 
