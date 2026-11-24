@@ -7,10 +7,9 @@ export async function GET(): Promise<Response> {
 	const posts = await getCollection("posts");
 	const items = posts
 		.map((post) => {
-			const filePath = (post.filePath || `${adminConfig.repo.postsPath}/${post.id}.md`).replace(
-				/\\/g,
-				"/",
-			);
+			const filePath = (
+				post.filePath || `${adminConfig.repo.postsPath}/${post.id}.md`
+			).replace(/\\/g, "/");
 			const relativePath = filePath.startsWith(`${adminConfig.repo.postsPath}/`)
 				? filePath.slice(adminConfig.repo.postsPath.length + 1)
 				: filePath;

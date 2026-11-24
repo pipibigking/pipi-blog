@@ -10,7 +10,8 @@
  * 生成新哈希：node scripts/admin-password.js 你的新密码
  */
 export const adminConfig = {
-	passwordHash: "c79213203d7f3d9079b3899ba4d8342d22f019346d69d96b2aeea89c608bb03d",
+	passwordHash:
+		"c79213203d7f3d9079b3899ba4d8342d22f019346d69d96b2aeea89c608bb03d",
 	repo: {
 		owner: "pipibigking",
 		repo: "pipi-blog",

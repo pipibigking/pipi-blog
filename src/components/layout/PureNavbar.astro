@@ -32,7 +32,9 @@ function filterLinks(link: NavBarLink): NavBarLink | null {
 	const isSponsor = (item: NavBarLink) => item.url === "/sponsor/";
 	if (isSponsor(link)) return null;
 	if (!link.children) return isPageEnabled(link) ? link : null;
-	const children = link.children.filter((child) => isPageEnabled(child) && !isSponsor(child));
+	const children = link.children.filter(
+		(child) => isPageEnabled(child) && !isSponsor(child),
+	);
 	if (children.length === 0) return null;
 	// 保留「文章」这类分组标题，避免单子项被摊平成「分类」
 	if (children.length === 1 && link.url !== "#") return children[0];

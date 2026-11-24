@@ -5,9 +5,19 @@ import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
 // 只保留一条「博客成长轨迹」：不再重复展示按日更新记录与折叠框。
 const latest = blogChangelogEntries[0];
-const versionSteps = [...new Set(["V1.0.0", "V1.5.0", "V2.0.0", "V2.3.0", "V3.0.0", latest.version])];
+const versionSteps = [
+	...new Set([
+		"V1.0.0",
+		"V1.5.0",
+		"V2.0.0",
+		"V2.3.0",
+		"V3.0.0",
+		latest.version,
+	]),
+];
 const milestones = versionSteps.map((version) => {
-	const entry = blogChangelogEntries.find((item) => item.version === version) ?? latest;
+	const entry =
+		blogChangelogEntries.find((item) => item.version === version) ?? latest;
 	return {
 		version,
 		label: entry.kind,

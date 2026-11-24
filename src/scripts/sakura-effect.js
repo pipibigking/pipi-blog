@@ -433,8 +433,6 @@ function queueSakuraSync() {
 	if (pendingSakuraStart) return;
 	pendingSakuraStart = true;
 
-	const intro = document.getElementById("home-portfolio-intro");
-	const introPending = intro && !intro.classList.contains("is-complete");
 	const startWhenIdle = () => {
 		if (!pendingSakuraStart) return;
 		pendingSakuraStart = false;
@@ -479,9 +477,9 @@ if (!window.sakuraRouteSyncBound) {
 		"swup:contentReplaced",
 		"swup:content:replace",
 		"swup:page:view",
-	].forEach((eventName) =>
-		document.addEventListener(eventName, queueSakuraSync),
-	);
+	].forEach((eventName) => {
+		document.addEventListener(eventName, queueSakuraSync);
+	});
 	window.addEventListener("pageshow", queueSakuraSync);
 
 	const bindSakuraSwupHooks = () => {
@@ -530,10 +528,7 @@ window.addEventListener("friends-portal-open", () => {
 });
 window.addEventListener("friends-portal-close", () => {
 	window.__friendsPortalActive = false;
-	if (
-		document.visibilityState === "visible" &&
-		isSakuraPreferenceEnabled()
-	) {
+	if (document.visibilityState === "visible" && isSakuraPreferenceEnabled()) {
 		window.sakuraManager?.resume?.();
 	}
 });

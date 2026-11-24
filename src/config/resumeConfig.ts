@@ -54,7 +54,10 @@ export const resumeConfig: {
 			category: "项目 / 作品",
 			description:
 				"复制这一项即可新增项目。左侧展示项目视频或入口，右侧放项目描述、亮点与技术标签；没有视频时会显示带链接的项目封面。",
-			highlights: ["在 src/config/resumeConfig.ts 中替换标题与描述。", "填写 video / poster / link 即可自动切换左侧实体。"],
+			highlights: [
+				"在 src/config/resumeConfig.ts 中替换标题与描述。",
+				"填写 video / poster / link 即可自动切换左侧实体。",
+			],
 			tags: ["示例", "待替换"],
 			link: "/about/",
 			linkLabel: "项目链接",

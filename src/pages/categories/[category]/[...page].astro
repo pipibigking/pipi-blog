@@ -2,12 +2,12 @@
 import type { GetStaticPaths } from "astro";
 import Pagination from "@/components/common/Pagination.astro";
 import PostPage from "@/components/layout/PostPage.astro";
+import { siteConfig } from "@/config";
 import {
 	CATEGORIES,
 	CATEGORY_NAMES,
 	getCategorySlug,
 } from "@/config/categories";
-import { siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
@@ -16,7 +16,9 @@ import { url } from "@/utils/url-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const dynamicCategories = await getCategoryList();
-	const counts = new Map(dynamicCategories.map((item) => [item.name, item.count]));
+	const counts = new Map(
+		dynamicCategories.map((item) => [item.name, item.count]),
+	);
 	const extraNames = dynamicCategories
 		.map((item) => item.name)
 		.filter((name) => !CATEGORY_NAMES.includes(name));

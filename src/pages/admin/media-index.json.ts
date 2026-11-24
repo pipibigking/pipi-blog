@@ -2,7 +2,15 @@ import fs from "node:fs";
 import path from "node:path";
 
 /** 站内管理页的图片/视频素材清单（构建期生成，只读） */
-const imageExts = new Set([".webp", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".avif"]);
+const imageExts = new Set([
+	".webp",
+	".png",
+	".jpg",
+	".jpeg",
+	".gif",
+	".svg",
+	".avif",
+]);
 const videoExts = new Set([".mp4", ".webm", ".ogg", ".m4v"]);
 
 function collect(dir: string, publicDir: string, exts: Set<string>): string[] {
