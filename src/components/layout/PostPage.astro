@@ -447,13 +447,6 @@ const initialLayoutClass =
     object-position: center !important;
   }
 
-  /* Hand-designed 2:1 covers keep their source ratio and avoid hover
-     cropping, so small labels stay readable in generated previews. */
-  #post-list-container.grid-mode :global(.post-card-wrapper.post-card-full-preview .cover-image-container img) {
-    object-fit: contain !important;
-    object-position: center !important;
-  }
-
   #post-list-container.grid-mode :global(.card-header-meta .text-sm) {
     font-size: 0.875rem !important;
     line-height: 1.25rem !important;

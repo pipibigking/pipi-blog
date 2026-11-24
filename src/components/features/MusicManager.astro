@@ -1,4 +1,6 @@
 ---
+import fs from "node:fs";
+import path from "node:path";
 import { musicPlayerConfig } from "@/config/musicConfig";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
@@ -6,10 +8,28 @@ import { url } from "@/utils/url-utils";
 
 const config = musicPlayerConfig;
 
+/**
+ * 歌词与封面在构建期内联进播放器配置：
+ * 静态托管若对 .lrc / .webp 返回了错误的 MIME 或路由未生成，播放器仍可显示。
+ */
+const readAsset = (assetPath?: string, encoding: BufferEncoding = "utf8") => {
+	if (!assetPath || /^(https?:)?\/\//.test(assetPath)) return undefined;
+	try {
+		return fs.readFileSync(
+			path.join(process.cwd(), "public", assetPath.replace(/^\//, "")),
+			encoding,
+		);
+	} catch {
+		return undefined;
+	}
+};
+
 const localPlaylist =
 	config.mode === "local" && config.local?.playlist
 		? config.local.playlist.map((song) => {
-				const isFullUrl = (path: string) => /^https?:\/\//.test(path);
+				const isFullUrl = (value: string) => /^https?:\/\//.test(value);
+				const lrcText = readAsset(song.lrc);
+				const coverBase64 = readAsset(song.cover, "base64");
 				return {
 					name: song.name,
 					artist: song.artist,
@@ -17,13 +37,16 @@ const localPlaylist =
 					pic: song.cover
 						? isFullUrl(song.cover)
 							? song.cover
-							: url(song.cover)
+							: coverBase64
+								? `data:image/${song.cover.split(".").pop() === "jpg" ? "jpeg" : song.cover.split(".").pop()};base64,${coverBase64}`
+								: url(song.cover)
 						: undefined,
 					lrc: song.lrc
 						? isFullUrl(song.lrc)
 							? song.lrc
 							: url(song.lrc)
 						: undefined,
+					lrcText,
 				};
 			})
 		: [];
@@ -184,6 +207,13 @@ const managerConfigStr = JSON.stringify({
     function loadLyrics(track) {
         state.lyrics = [];
         state.currentLrcIndex = -1;
+
+        // 构建期内联的歌词优先：即使静态文件服务未正确返回 .lrc 也能显示
+        if (track.lrcText) {
+            state.lyrics = parseLRC(track.lrcText);
+            emit('fm:lyrics', { lyrics: state.lyrics, status: state.lyrics.length > 0 ? 'loaded' : 'none' });
+            return;
+        }
 
         if (!track.lrc) {
             emit('fm:lyrics', { lyrics: [], status: 'none' });

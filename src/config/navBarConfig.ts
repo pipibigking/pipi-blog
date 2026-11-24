@@ -27,6 +27,12 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		],
 	});
 
+	// 站点统计：从「关于」拆出，紧跟在「文章」之后
+	links.push(LinkPresets.Analytics);
+
+	// 关于我：从「关于」拆出，放在「我的」之前
+	links.push(LinkPresets.About);
+
 	// 博客更新日志
 	links.push(LinkPresets.BlogChangelog);
 
@@ -39,6 +45,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		url: "#",
 		icon: "material-symbols:person",
 		children: [
+			// 简历
+			LinkPresets.Resume,
+
 			// 相册
 			LinkPresets.Gallery,
 
@@ -53,7 +62,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		],
 	});
 
-	// 关于及其子菜单
+	// 关于及其子菜单（打赏只在壁纸主题出现，阅读模式不展示）
 	links.push({
 		name: "关于",
 		url: "#",
@@ -61,12 +70,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		children: [
 			// 打赏
 			LinkPresets.Sponsor,
-
-			// 关于页面
-			LinkPresets.About,
-
-			// 站点统计
-			LinkPresets.Analytics,
 		],
 	});
 
@@ -148,6 +151,11 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		name: "关于我",
 		url: "/about/",
 		icon: "material-symbols:person",
+	},
+	Resume: {
+		name: "我的简历",
+		url: "/resume/",
+		icon: "material-symbols:description-rounded",
 	},
 	BlogChangelog: {
 		name: "博客日志",

@@ -27,10 +27,15 @@ function isPageEnabled(link: NavBarLink): boolean {
 }
 
 function filterLinks(link: NavBarLink): NavBarLink | null {
+	// 简洁阅读模式不展示打赏入口：入口本身从导航中剔除，
+	// 避免只剩一个子项时被 filterLinks 摊平成顶级「打赏」链接。
+	const isSponsor = (item: NavBarLink) => item.url === "/sponsor/";
+	if (isSponsor(link)) return null;
 	if (!link.children) return isPageEnabled(link) ? link : null;
-	const children = link.children.filter(isPageEnabled);
+	const children = link.children.filter((child) => isPageEnabled(child) && !isSponsor(child));
 	if (children.length === 0) return null;
-	if (children.length === 1) return children[0];
+	// 保留「文章」这类分组标题，避免单子项被摊平成「分类」
+	if (children.length === 1 && link.url !== "#") return children[0];
 	return { ...link, children };
 }
 

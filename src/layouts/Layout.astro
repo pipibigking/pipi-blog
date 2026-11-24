@@ -2286,3 +2286,93 @@ function disableAnimation() {
     scheduleServerMetricsInit();
   })();
 </script>
+
+<!--
+	壁纸首页守卫：所有模式下壁纸只在首页出现。
+	服务端给非首页的 wallpaper-wrapper 加上 non-home-wallpaper-hidden，
+	这里在 Swup/Astro 切页后重新同步类名与内联样式，覆盖其它脚本写入的定位值。
+-->
+<script is:inline data-swup-ignore-script define:vars={{ wallpaperBaseUrl: import.meta.env.BASE_URL }}>
+	(() => {
+		if (window.__wallpaperHomeGuardBound) return;
+		window.__wallpaperHomeGuardBound = true;
+
+		const homePaths = new Set(["/", (wallpaperBaseUrl || "/").replace(/\/$/, "") || "/"]);
+		const isHomePage = () => {
+			const path = (window.location.pathname || "/").replace(/\/$/, "") || "/";
+			return homePaths.has(path);
+		};
+
+		const sync = () => {
+			const home = isHomePage();
+			const pure = document.documentElement.getAttribute("data-site-theme") === "pure";
+			const mode = document.documentElement.getAttribute("data-wallpaper-mode");
+			const wrapper = document.getElementById("wallpaper-wrapper");
+			const main = document.querySelector(".w-full.z-30.pointer-events-none");
+
+			if (wrapper) {
+				wrapper.classList.toggle("non-home-wallpaper-hidden", !home);
+				wrapper.classList.toggle("homepage-fullscreen-decor", home && mode === "fullscreen");
+				if (home) wrapper.style.removeProperty("display");
+				else wrapper.style.setProperty("display", "none", "important");
+			}
+
+			if (!main) return;
+			main.classList.toggle("non-home-main-layout", !home);
+			main.classList.toggle("no-banner-layout", !home);
+			main.classList.toggle("mobile-main-no-banner", !home);
+
+			if (!home) {
+				main.style.setProperty("top", "5.5rem", "important");
+				main.style.removeProperty("position");
+				main.style.removeProperty("z-index");
+				main.style.setProperty("margin-top", "0", "important");
+				return;
+			}
+
+			main.style.setProperty("margin-top", pure || mode !== "fullscreen" ? "0" : "1rem", "important");
+			if (!pure && mode === "fullscreen") {
+				main.style.setProperty("position", "relative", "important");
+				main.style.setProperty("top", "0", "important");
+				main.style.setProperty("z-index", "30", "important");
+			} else {
+				main.style.removeProperty("position");
+				main.style.removeProperty("z-index");
+				main.style.setProperty(
+					"top",
+					mode === "banner" ? "calc(var(--banner-height) - 3.5rem)" : "5.5rem",
+					"important",
+				);
+			}
+		};
+
+		// 让其它切页钩子先写样式，再由守卫收敛到最终状态
+		const queue = () => {
+			window.setTimeout(() => {
+				sync();
+				requestAnimationFrame(() => requestAnimationFrame(sync));
+			}, 0);
+		};
+
+		queue();
+		for (const eventName of [
+			"astro:page-load",
+			"astro:after-swap",
+			"swup:contentReplaced",
+			"swup:content:replace",
+			"swup:page:view",
+			"swup:visit:start",
+			"pageshow",
+			"site-theme-change",
+		]) {
+			document.addEventListener(eventName, queue);
+		}
+		window.addEventListener("pageshow", queue);
+		document.addEventListener("swup:enable", () => {
+			if (!window.swup?.hooks || window.__wallpaperGuardHooksBound) return;
+			window.__wallpaperGuardHooksBound = true;
+			window.swup.hooks.on("content:replace", queue);
+			window.swup.hooks.on("page:view", queue);
+		});
+	})();
+</script>

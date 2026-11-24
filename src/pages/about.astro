@@ -16,44 +16,6 @@ if (!aboutPost) {
 
 const { Content } = await render(aboutPost);
 
-const changelogEntries = [
-	{
-		title: "博客视觉与首页改造",
-		description:
-			"重新梳理首页立绘、壁纸轮播、开屏动画与横幅选择，让页面更好看也更好维护。",
-		href: "/blog-changelog/",
-		tags: ["V1.0.0", "UI"],
-		tone: "blue",
-		icon: "material-symbols:auto-awesome-rounded",
-	},
-	{
-		title: "站点内容整理",
-		description:
-			"统一关于我、导航和站点信息中的身份展示，让每个入口都说同一种语言。",
-		href: "/blog-changelog/",
-		tags: ["V1.0.0", "维护"],
-		tone: "mint",
-		icon: "material-symbols:history-rounded",
-	},
-	{
-		title: "文章与记录",
-		description:
-			"把做过的事情、踩过的坑和喜欢的素材，慢慢整理成可以回看的文字。",
-		href: "/categories/",
-		tags: ["V1.0.0", "写作"],
-		tone: "gold",
-		icon: "material-symbols:rss-feed-rounded",
-	},
-	{
-		title: "正在持续更新",
-		description: "新的页面、新的想法，会继续在这里慢慢留下。",
-		href: "/blog-changelog/",
-		tags: ["V1.0.0", "持续更新"],
-		tone: "violet",
-		icon: "material-symbols:edit-note-rounded",
-	},
-];
-
 const personalProjects = [
 	{
 		title: "屁屁大王的个人博客",
@@ -164,9 +126,9 @@ const stack = ["Astro", "Svelte", "TypeScript", "Tailwind CSS", "Sharp"];
 				<Icon is:inline name="material-symbols:person-outline-rounded" aria-hidden="true" />
 				<span>个人资料</span>
 			</a>
-			<a class="profile-tab" href="/blog-changelog/">
-				<Icon is:inline name="material-symbols:history-rounded" aria-hidden="true" />
-				<span>博客日志</span>
+			<a class="profile-tab" href="/resume/">
+				<Icon is:inline name="material-symbols:description-rounded" aria-hidden="true" />
+				<span>我的简历</span>
 			</a>
 		</nav>
 
@@ -208,31 +170,6 @@ const stack = ["Astro", "Svelte", "TypeScript", "Tailwind CSS", "Sharp"];
 									</span>
 								</span>
 							</article>
-						))}
-					</div>
-				</section>
-
-				<section class="profile-panel card-base" aria-labelledby="pinned-title">
-					<header class="profile-section-heading">
-						<div>
-							<p class="profile-section-kicker">LATEST CHANGES</p>
-							<h2 id="pinned-title">更新摘要</h2>
-						</div>
-						<a href="/blog-changelog/" class="profile-section-link">按日查看 <Icon is:inline name="material-symbols:arrow-outward-rounded" aria-hidden="true" /></a>
-					</header>
-					<div class="project-grid">
-						{changelogEntries.map((project) => (
-							<a class:list={["project-card", `project-card--${project.tone}`]} href={project.href}>
-								<span class="project-card__icon" aria-hidden="true"><Icon is:inline name={project.icon} /></span>
-								<span class="project-card__body">
-									<strong>{project.title}</strong>
-									<span>{project.description}</span>
-									<span class="project-card__tags">
-										{project.tags.map((tag) => <em>{tag}</em>)}
-									</span>
-								</span>
-								<Icon class="project-card__arrow" is:inline name="material-symbols:arrow-outward-rounded" aria-hidden="true" />
-							</a>
 						))}
 					</div>
 				</section>

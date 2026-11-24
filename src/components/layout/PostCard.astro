@@ -188,34 +188,8 @@ const forcePostTitleBreak =
 	entry.id === "others/youth-most-expensive/youth-most-expensive";
 
 const coverWidth = "30%";
-const preserveCoverRatio = new Set([
-	"time-greeting",
-	"custom-cursor",
-	"quote-of-the-day",
-	"schedule-progress",
-	"welcome-toast",
-	"footer-config",
-	"portfolio-showcase-animation-principles",
-	"ai-infinite-canvas-workflow",
-	"auto-listing-system",
-	"agent-ecommerce-automation",
-	"after-the-tools-i-returned-to-my-blog",
-	"why-i-still-write-in-the-age-of-ai",
-	"chao-chao-listening-rain-years-wind",
-	"others/youth-most-expensive/youth-most-expensive",
-	"from-matriarchal-society-to-patriarchy",
-]).has(entry.id);
-const fullPreviewCover = new Set([
-	"portfolio-showcase-animation-principles",
-	"ai-infinite-canvas-workflow",
-	"auto-listing-system",
-	"agent-ecommerce-automation",
-	"after-the-tools-i-returned-to-my-blog",
-	"why-i-still-write-in-the-age-of-ai",
-	"chao-chao-listening-rain-years-wind",
-	"others/youth-most-expensive/youth-most-expensive",
-	"from-matriarchal-society-to-patriarchy",
-]).has(entry.id);
+// 封面统一铺满容器（对齐上游）：不再为个别文章保留 contain，避免右侧留白。
+const preserveCoverRatio = false;
 const updateBadgeDate =
 	entry.id === "auto-listing-system" && updated
 		? new Intl.DateTimeFormat("zh-CN", {
@@ -251,7 +225,6 @@ const minutes = remarkPluginFrontmatter.minutes;
   class:list={[
     "post-card-wrapper",
     hasCover ? "has-cover" : "no-cover",
-    fullPreviewCover ? "post-card-full-preview" : "",
     pinned ? "pinned" : "",
     "card-base flex flex-col-reverse w-full rounded-(--radius-large) overflow-hidden relative",
     className,
@@ -266,7 +239,7 @@ const minutes = remarkPluginFrontmatter.minutes;
       "pl-4 md:pl-9 pr-4 md:pr-2 pt-4 md:pt-7 pb-4 md:pb-7 relative flex flex-col h-full",
       {
         "w-full md:w-[calc(100%-52px-12px)]": !hasCover,
-        "w-full md:w-[calc(100%-var(--coverWidth)-1.5rem)]": hasCover,
+        "w-full md:w-[calc(100%-var(--coverWidth))]": hasCover,
       },
     ]}
   >
@@ -332,7 +305,7 @@ const minutes = remarkPluginFrontmatter.minutes;
           "post-card-image",
           "w-full md:w-(--coverWidth)",
           "aspect-2/1 md:aspect-auto",
-          "relative md:absolute md:top-4 md:bottom-4 md:right-4",
+          "relative md:absolute md:top-0 md:bottom-0 md:right-0",
         ]}
       >
         <a
@@ -354,9 +327,7 @@ const minutes = remarkPluginFrontmatter.minutes;
             alt="Cover Image of the Post"
             class:list={[
               "w-full h-full transition-transform duration-300",
-              fullPreviewCover
-                ? "group-hover:scale-100 group-active:scale-100"
-                : "group-hover:scale-110 group-active:scale-115",
+              "group-hover:scale-110 group-active:scale-115",
             ]}
             preview={true}
             preserveAspectRatio={preserveCoverRatio}
@@ -551,16 +522,17 @@ const minutes = remarkPluginFrontmatter.minutes;
     }
 
     :global(.list-mode) .has-cover .post-card-content {
-      width: calc(100% - var(--coverWidth) - 1.5rem) !important;
+      width: calc(100% - var(--coverWidth)) !important;
       padding: 1.75rem 0.5rem 1.75rem 2.25rem !important;
     }
 
+    /* 封面贴齐卡片右缘、铺满整卡高度，右侧不再留空隙 */
     :global(.list-mode) .has-cover .post-card-image {
-      top: 1rem !important;
-      bottom: 1rem !important;
-      right: 1rem !important;
+      top: 0 !important;
+      bottom: 0 !important;
+      right: 0 !important;
       width: var(--coverWidth) !important;
-      border-radius: 0.75rem !important;
+      border-radius: 0 0.75rem 0.75rem 0 !important;
     }
 
     :global(.list-mode) .post-card-title {

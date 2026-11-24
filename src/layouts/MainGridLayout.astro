@@ -372,6 +372,7 @@ const hasMultipleImages =
 		"absolute z-10 w-full transition duration-700",
 		showBannerPageTitle ? "wallpaper-page-title" : "overflow-hidden",
 		mobileNonHomeBannerClass,
+		!isHomePageCheck && "non-home-wallpaper-hidden",
 	],
 	isOverlayMode ? 'wallpaper-overlay' : '',
 	isFullscreenMode ? 'wallpaper-fullscreen' : '',
@@ -1157,6 +1158,12 @@ const hasMultipleImages =
   .banner-carousel-nav-btn:hover,
   .banner-carousel-nav-btn:focus-visible {
     opacity: 1;
+  }
+
+  /* 壁纸只在首页展示：内页直接移出渲染，避免重复的全屏背景与内容重叠。
+     服务端类名负责首屏，切页同步由 Layout.astro 的壁纸守卫脚本完成。 */
+  #wallpaper-wrapper.non-home-wallpaper-hidden {
+    display: none !important;
   }
 
   /* Page-title content may extend below the banner, but animated waves must

@@ -89,8 +89,7 @@ html[data-site-theme="pure"] :is(
 	.top-gradient-highlight,
 	.wave-wrapper,
 	#header-waves,
-	.sakura-canvas,
-	#canvas_sakura,
+	/* 樱花在简洁阅读主题下保留：首页可见、canvas 不拦截点击 */
 	.home-portfolio-intro,
 	.recommend-particle,
 	.banner-carousel-nav,
@@ -491,13 +490,13 @@ html[data-site-theme="pure"] #post-list-container.grid-mode .post-card-image,
 html[data-site-theme="pure"] #post-list-container.list-mode .post-card-image {
 	position: absolute !important;
 	inset: 0 0 0 auto !important;
-	width: 55% !important;
+	width: 60% !important;
 	height: 100% !important;
 	max-height: none !important;
 	margin: 0 !important;
 	aspect-ratio: auto !important;
 	border-radius: 0 !important;
-	opacity: 0.27;
+	opacity: 0.38;
 	filter: saturate(0.92);
 	z-index: 0 !important;
 	pointer-events: none;
@@ -505,7 +504,7 @@ html[data-site-theme="pure"] #post-list-container.list-mode .post-card-image {
 }
 
 html[data-site-theme="pure"] #post-list-container .post-card-wrapper:hover .post-card-image {
-	opacity: 0.46;
+	opacity: 0.54;
 }
 
 html[data-site-theme="pure"] #post-list-container .post-card-image-link {
