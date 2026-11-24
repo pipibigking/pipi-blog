@@ -385,8 +385,14 @@ function loadButtonScript() {
     // 背景视频播放器控制按钮
     let bgPlayerBtn = document.getElementById("bg-player-toggle");
     if (bgPlayerBtn) {
-        // 与其它按钮一致：onclick 直接 toggle 面板 class，不派发跨组件事件
         bgPlayerBtn.onclick = function () {
+            // 手机/平板竖屏：播放按钮只管播放/暂停，不弹设置面板。
+            // 面板（w-80）会盖在视频带右半区，且「点外关闭」会吞掉紧随其后的
+            // 第一次点按，正是手机端左右切换按钮「点了没反应」的根因。
+            if (window.matchMedia("(max-width: 1023px)").matches) {
+                if (bgBridge.__bgPlayerCommand) bgBridge.__bgPlayerCommand("toggle");
+                return;
+            }
             const panel = document.getElementById("bg-player-panel");
             if (!panel) return;
             panel.classList.toggle("float-panel-closed");

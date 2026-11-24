@@ -851,36 +851,88 @@ html[data-wallpaper-mode="fullscreen"] body:not(.wallpaper-initialized) .w-full.
 }
 
 /* ==========================================================================
-   手机/平板竖屏：壁纸/视频媒体区改为顶部 16:9
-   壁纸素材是横屏 16:9，此前媒体铺满 100vh 竖屏会被 object-cover 大幅裁剪。
-   现在媒体（壁纸图/背景视频/压暗层/视频切换按钮）固定在顶部 16:9 区域，
-   16:9 视频完整显示；首页卡片移到媒体区正下方，下方空间由回退底色填充。
+   手机/平板竖屏：壁纸/视频媒体区改为顶部 16:9 横屏带
+   - 媒体带从固定导航栏（h-18 = 4.5rem）下方开始，导航栏不再遮挡视频
+   - 带左右留白 + 圆角，呈现「影片卡片」的高级观感
+   - 16:9 横屏视频完整显示不裁剪；首页卡片紧凑化，整个首屏竖直尺寸收小
    ========================================================================== */
 @media (max-width: 1023px) {
-    /* wrapper 自身的回退背景图不再铺满全屏：壁纸/视频只在顶部 16:9 媒体带内
-     * 显示（带内已有 <img>/<video> 渲染），下方露出页面底色，界面比例即为 16:9 */
+    /* wrapper 自身的回退背景图不再铺满全屏：壁纸/视频只在顶部媒体带内
+     * 显示（带内已有 <img>/<video> 渲染），下方露出页面底色 */
     html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen {
         background-image: none !important;
     }
 
+    /* 媒体带：导航栏下方 8px 处开始，左右各留 8px 圆角卡片带，比例锁定 16:9
+     * - width:auto + position:absolute 必须显式声明：#banner-images-container
+     *   自带 relative h-full w-full 类，relative 下 left/right 偏移不会收缩宽度，
+     *   右缘会超出屏幕 8px */
     html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #banner-images-container,
     html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-player-overlay,
     html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-player-side-controls,
     html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #banner-dim-container {
-        inset: 0 0 auto 0 !important;
+        position: absolute !important;
+        inset: calc(4.5rem + 8px) 8px auto 8px !important;
+        width: auto !important;
         height: auto !important;
         aspect-ratio: 16 / 9 !important;
     }
 
-    /* 视频信息角标：从容器底部移到媒体区底部 */
-    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-player-info {
-        top: calc(100vw * 9 / 16 - 3rem) !important;
-        bottom: auto !important;
+    /* 左右切换按钮容器压过可拖拽贴纸（贴纸 zIndex=8），避免贴纸落在
+     * 按钮上时吞掉切歌点按 */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-player-side-controls {
+        z-index: 30 !important;
     }
 
-    /* 首页卡片：从屏幕正中移到媒体区正下方 */
+    /* 圆角媒体带：图片/压暗层/视频层统一裁圆角（视频层自带 overflow-hidden） */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #banner-images-container,
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #banner-dim-container {
+        border-radius: 1.1rem;
+        overflow: hidden;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-player-overlay {
+        border-radius: 1.1rem;
+    }
+
+    /* 视频信息角标：固定在媒体带底部内侧
+     * 带底 = 4.5rem + 8px + 100vw*9/16，wrapper 高 100vh，用 bottom 反推 */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-player-info {
+        top: auto !important;
+        bottom: calc(100vh - 4.5rem - 8px - 100vw * 9 / 16 + 0.7rem) !important;
+        left: 1.4rem !important;
+    }
+
+    /* 左右切换按钮：48px 大触控目标、实底高对比、去掉 backdrop-blur
+     * （视频上层叠模糊会拖慢触屏 hit-test，造成「点了没反应」的迟滞感） */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-side-prev-btn,
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-side-next-btn {
+        width: 3.4rem !important;
+        height: 3.4rem !important;
+        background: rgba(15, 18, 26, 0.58) !important;
+        border-color: rgba(255, 255, 255, 0.42) !important;
+        color: rgba(255, 255, 255, 0.92) !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        transition: transform 120ms ease, background-color 120ms ease;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-side-prev-btn:active,
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-side-next-btn:active {
+        transform: translateY(-50%) scale(0.9);
+        background: rgba(15, 18, 26, 0.8) !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-side-prev-btn {
+        left: 0.7rem !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-side-next-btn {
+        right: 0.7rem !important;
+    }
+
+    /* 首页卡片：紧贴媒体带下方，整体紧凑化（原 top 间距 1.8rem → 1rem） */
     html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card {
-        top: calc(100vw * 9 / 16 + 1.8rem) !important;
+        top: calc(4.5rem + 8px + 100vw * 9 / 16 + 1rem) !important;
         transform: translate(-50%, 0) !important;
     }
 
@@ -892,8 +944,71 @@ html[data-wallpaper-mode="fullscreen"] body:not(.wallpaper-initialized) .w-full.
         backdrop-filter: blur(14px) saturate(1.15);
     }
 
-    /* 滚动指示器同样落在页面底色上：白色改为跟随主题文字色 */
+    /* —— 首屏竖直尺寸整体收小：卡片内容紧凑化 —— */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card {
+        padding: 1.15rem 1rem 0 !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card::after {
+        width: 60px !important;
+        height: 15px !important;
+        top: -8px !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card__avatar-wrap {
+        width: 46px !important;
+        height: 46px !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card__avatar {
+        border-radius: 11px;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card__avatar-sticker {
+        top: -0.5rem !important;
+        left: calc(100% - 0.6rem) !important;
+        width: 54px !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card__identity {
+        margin: 0.55rem 0 0.15rem !important;
+        font-size: 0.72rem !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card h1 {
+        font-size: clamp(1.55rem, 6.4vw, 2rem) !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card__subtitle {
+        margin: 0.45rem 0 0 !important;
+        font-size: 0.84rem !important;
+        line-height: 1.5;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card__nav {
+        margin-top: 0.7rem !important;
+        gap: 0.3rem 0.95rem !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card__nav a {
+        font-size: 0.76rem !important;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card__socials {
+        margin-top: 0.8rem !important;
+        margin-bottom: -43px !important;
+        gap: 10px;
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card__social-link {
+        width: 32px !important;
+        height: 43px !important;
+        font-size: 0.88rem !important;
+        padding: 0 0 6px !important;
+    }
+
+    /* 滚动指示器：缩小并上移，避免与紧凑后的卡片底部拥挤 */
     html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .scroll-down-indicator {
+        bottom: 7.5rem !important;
         color: color-mix(in oklab, var(--text-color) 72%, transparent);
+    }
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .scroll-down-indicator .scroll-down-icon {
+        font-size: 3.4rem;
+    }
+
+    /* 导航栏按钮 / 视频控制按钮：消灭移动端双击缩放手势吞掉点按的问题 */
+    #navbar button, #navbar a, #pure-navbar button, #pure-navbar a,
+    #bg-side-prev-btn, #bg-side-next-btn, .scroll-down-indicator {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
 }

@@ -258,7 +258,25 @@ html.dark[data-site-theme="pure"] #pure-navbar.is-scrolled .pure-navbar__bar {
 	background: transparent;
 	color: color-mix(in oklab, var(--text-color) 76%, transparent);
 	cursor: pointer;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
 	transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+/* 触屏端触控目标至少 40px：视觉尺寸不变，用伪元素扩 hit area，
+ * 靠近屏幕边缘的按钮尤其容易点空 */
+@media (hover: none) {
+	#pure-navbar .pure-icon-btn::after,
+	#pure-navbar .pure-actions :is(#scheme-switch, #site-theme-switch)::after {
+		content: "";
+		position: absolute;
+		inset: -5px;
+		border-radius: 0.75rem;
+	}
+	#pure-navbar .pure-icon-btn,
+	#pure-navbar .pure-actions :is(#scheme-switch, #site-theme-switch) {
+		position: relative;
+	}
 }
 
 /* Svelte 开关自带 <details>/<button> 内边距，这里统一压平到方形按钮 */
@@ -349,23 +367,30 @@ html[data-site-theme="pure"] #pure-navbar .float-panel {
 	border-radius: 1rem;
 	background: var(--page-bg);
 	box-shadow: 0 24px 60px -28px rgb(15 23 42 / 0.4);
-	animation: pure-drawer-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+	/* 用 transition（而非 hidden/display + animation）驱动显隐：
+	 * 状态只有一个 data-drawer 开关位，快速连点时永远收敛到最终状态，
+	 * 不会出现动画重置 / display 切换导致的「点了没反应」 */
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-0.5rem) scale(0.985);
+	transition:
+		opacity 200ms cubic-bezier(0.22, 1, 0.36, 1),
+		transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+		visibility 0s linear 200ms;
+	pointer-events: none;
+}
+
+#pure-navbar[data-drawer="open"] .pure-drawer {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition-delay: 0s;
 	pointer-events: auto;
 }
 
-#pure-navbar .pure-drawer[hidden] {
-	display: none;
-}
-
-@keyframes pure-drawer-in {
-	from {
-		opacity: 0;
-		transform: translateY(-0.5rem) scale(0.985);
-	}
-	to {
-		opacity: 1;
-		transform: none;
-	}
+#pure-navbar .pure-drawer:focus-within {
+	visibility: visible;
+	pointer-events: auto;
 }
 
 #pure-navbar .pure-drawer__nav {
@@ -511,7 +536,7 @@ html[data-site-theme="pure"] #pure-navbar .float-panel {
 
 @media (prefers-reduced-motion: reduce) {
 	#pure-navbar .pure-drawer {
-		animation: none;
+		transition: none;
 	}
 
 	html[data-site-theme="pure"] #pure-navbar .pure-navbar__bar {

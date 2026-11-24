@@ -208,7 +208,7 @@ const avatarUrl =
 		</div>
 	</div>
 
-	<div class="pure-drawer" id="pure-drawer" hidden>
+	<div class="pure-drawer" id="pure-drawer">
 		<nav class="pure-drawer__nav" aria-label="移动端主导航">
 			{
 				links.map((link) =>
@@ -266,10 +266,11 @@ const avatarUrl =
 
 		const setOpen = (open) => {
 			if (!drawer || !toggle) return;
+			// 只翻转一个状态位（data-drawer），显隐交给 CSS transition：
+			// 不再用 hidden/display 切换 + animation， rapid 连点时状态机是
+			// 幂等的，不会出现「点了没反应」的中间态。
 			root.dataset.drawer = open ? "open" : "closed";
 			toggle.setAttribute("aria-expanded", String(open));
-			if (open) drawer.removeAttribute("hidden");
-			else drawer.setAttribute("hidden", "");
 		};
 
 		toggle?.addEventListener("click", () => {

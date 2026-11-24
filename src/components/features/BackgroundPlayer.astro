@@ -105,6 +105,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		var errorCount = 0;
 		var toastTimer = null;
 		var switching = false;
+		var pendingIndex = null;
 		var currentCycle = cycleMode || "next";
 
 		try {
@@ -152,7 +153,12 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 
 		function crossFadeTo(index, autoplay) {
 			if (index < 0 || index >= urlList.length) return;
-			if (switching) return;
+			if (switching) {
+				// 交叉淡入进行中的点按不再被静默丢弃：记下最终目标，
+				// commit 后立刻继续切过去，保证快速连点每次都有响应
+				pendingIndex = index;
+				return;
+			}
 			currentIndex = index;
 			updateTrackInfo();
 			var nextSrc = urlList[currentIndex];
@@ -176,6 +182,14 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 					setTimeout(function () { if (outgoing !== activeVideo) outgoing.pause(); }, 750);
 				}, 720);
 				emitState();
+				// 处理切换期间积压的目标
+				if (pendingIndex !== null && pendingIndex !== currentIndex) {
+					var next = pendingIndex;
+					pendingIndex = null;
+					crossFadeTo(next, true);
+				} else {
+					pendingIndex = null;
+				}
 			};
 
 			if (autoplay && isPlaying) {
@@ -192,8 +206,8 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 				incoming.addEventListener("playing", onReady);
 				incoming.addEventListener("error", onReady);
 				playVideo(incoming, nextSrc).catch(function () { onReady(); });
-				// 兜底：加载异常时也要恢复 switching，避免切换按钮卡死
-				setTimeout(function () { if (switching) onReady(); }, 1500);
+				// 兜底：加载异常时也要尽快恢复 switching，避免切换按钮卡死
+				setTimeout(function () { if (switching) onReady(); }, 900);
 			} else {
 				incoming.setAttribute("src", nextSrc);
 				incoming.load();
