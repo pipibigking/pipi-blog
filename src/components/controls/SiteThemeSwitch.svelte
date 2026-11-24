@@ -1,16 +1,16 @@
 <script lang="ts">
+import { onMount } from "svelte";
 import DropdownItem from "@/components/common/DropdownItem.svelte";
 import DropdownPanel from "@/components/common/DropdownPanel.svelte";
 import Icon from "@/components/common/Icon.svelte";
 import { siteThemeConfig } from "@/config/siteThemeConfig";
+import type { SiteTheme } from "@/types/siteThemeConfig";
 import {
 	getStoredSiteTheme,
 	SITE_THEME_ATTR,
 	SITE_THEME_QUERY,
 	SITE_THEME_STORAGE_KEY,
 } from "@/utils/site-theme-utils";
-import type { SiteTheme } from "@/types/siteThemeConfig";
-import { onMount } from "svelte";
 
 let current: SiteTheme = $state("aemeath");
 let open = $state(false);
@@ -86,7 +86,9 @@ onMount(() => {
 	// 与上游 ThemeSwitch 的 pageshow 守卫一致，避免两套主题 DOM 错配。
 	const handlePageShow = (event: PageTransitionEvent) => {
 		if (!event.persisted) return;
-		const urlTheme = new URLSearchParams(window.location.search).get(SITE_THEME_QUERY);
+		const urlTheme = new URLSearchParams(window.location.search).get(
+			SITE_THEME_QUERY,
+		);
 		const fromUrl: SiteTheme | null =
 			urlTheme === "pure" || urlTheme === "aemeath" ? urlTheme : null;
 		const expected = fromUrl ?? getStoredSiteTheme();

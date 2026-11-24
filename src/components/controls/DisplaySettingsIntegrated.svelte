@@ -134,21 +134,32 @@ const defaultOverlayBlur = getDefaultOverlayBlur();
 let overlayCardOpacity = $state(getDefaultOverlayCardOpacity());
 const defaultOverlayCardOpacity = getDefaultOverlayCardOpacity();
 let introEnabled = $state(homePortfolioIntroSettings.defaultEnabled);
-let selectedIntroCharacterId = $state(homePortfolioIntroSettings.defaultCharacterId);
-let selectedIntroTopBannerId = $state(homePortfolioIntroSettings.defaultTopBannerId);
-let selectedIntroBottomBannerId = $state(homePortfolioIntroSettings.defaultBottomBannerId);
+let selectedIntroCharacterId = $state(
+	homePortfolioIntroSettings.defaultCharacterId,
+);
+let selectedIntroTopBannerId = $state(
+	homePortfolioIntroSettings.defaultTopBannerId,
+);
+let selectedIntroBottomBannerId = $state(
+	homePortfolioIntroSettings.defaultBottomBannerId,
+);
 // 横幅选择器默认折叠，避免 12 张缩略图一次铺满
 let bannerPickerExpanded = $state(false);
 let currentTopBannerLabel = $derived(
-	homePortfolioIntroSettings.banners.desktop.top.find((b) => b.id === selectedIntroTopBannerId)?.label ?? "—",
+	homePortfolioIntroSettings.banners.desktop.top.find(
+		(b) => b.id === selectedIntroTopBannerId,
+	)?.label ?? "—",
 );
 let currentBottomBannerLabel = $derived(
-	homePortfolioIntroSettings.banners.desktop.bottom.find((b) => b.id === selectedIntroBottomBannerId)?.label ?? "—",
+	homePortfolioIntroSettings.banners.desktop.bottom.find(
+		(b) => b.id === selectedIntroBottomBannerId,
+	)?.label ?? "—",
 );
 const defaultIntroEnabled = homePortfolioIntroSettings.defaultEnabled;
 const defaultIntroCharacterId = homePortfolioIntroSettings.defaultCharacterId;
 const defaultIntroTopBannerId = homePortfolioIntroSettings.defaultTopBannerId;
-const defaultIntroBottomBannerId = homePortfolioIntroSettings.defaultBottomBannerId;
+const defaultIntroBottomBannerId =
+	homePortfolioIntroSettings.defaultBottomBannerId;
 
 const isWallpaperSwitchable = backgroundWallpaper.switchable ?? true;
 const allowLayoutSwitch = siteConfig.postListLayout.allowSwitch;
@@ -232,9 +243,9 @@ const hasAnyContent =
 
 const introSettingsIsDefault = $derived(
 	introEnabled === defaultIntroEnabled &&
-	selectedIntroCharacterId === defaultIntroCharacterId &&
-	selectedIntroTopBannerId === defaultIntroTopBannerId &&
-	selectedIntroBottomBannerId === defaultIntroBottomBannerId,
+		selectedIntroCharacterId === defaultIntroCharacterId &&
+		selectedIntroTopBannerId === defaultIntroTopBannerId &&
+		selectedIntroBottomBannerId === defaultIntroBottomBannerId,
 );
 
 let overlaySliderItems = $derived<OverlaySliderItem[]>([
@@ -410,7 +421,9 @@ function toggleSakuraEnabled() {
 
 function getStoredIntroEnabled() {
 	try {
-		return localStorage.getItem(homePortfolioIntroSettings.enabledStorageKey) !== "0";
+		return (
+			localStorage.getItem(homePortfolioIntroSettings.enabledStorageKey) !== "0"
+		);
 	} catch {
 		return defaultIntroEnabled;
 	}
@@ -418,27 +431,29 @@ function getStoredIntroEnabled() {
 
 function getStoredIntroCharacterId() {
 	try {
-		const storedId = localStorage.getItem(homePortfolioIntroSettings.characterStorageKey);
-		return homePortfolioIntroSettings.characters.some((character) => character.id === storedId)
-			? storedId!
+		const storedId = localStorage.getItem(
+			homePortfolioIntroSettings.characterStorageKey,
+		);
+		return homePortfolioIntroSettings.characters.some(
+			(character) => character.id === storedId,
+		)
+			? (storedId as string)
 			: defaultIntroCharacterId;
 	} catch {
 		return defaultIntroCharacterId;
 	}
 }
 
-function getStoredIntroBannerId(
-	position: "top" | "bottom",
-	defaultId: string,
-) {
-	const storageKey = position === "top"
-		? homePortfolioIntroSettings.topBannerStorageKey
-		: homePortfolioIntroSettings.bottomBannerStorageKey;
+function getStoredIntroBannerId(position: "top" | "bottom", defaultId: string) {
+	const storageKey =
+		position === "top"
+			? homePortfolioIntroSettings.topBannerStorageKey
+			: homePortfolioIntroSettings.bottomBannerStorageKey;
 	const options = homePortfolioIntroSettings.banners.desktop[position];
 	try {
 		const storedId = localStorage.getItem(storageKey);
 		return options.some((banner) => banner.id === storedId)
-			? storedId!
+			? (storedId as string)
 			: defaultId;
 	} catch {
 		return defaultId;
@@ -459,7 +474,6 @@ function dispatchIntroSettingsChange(preview = false) {
 	);
 }
 
-
 function toggleIntroEnabled() {
 	introEnabled = !introEnabled;
 	try {
@@ -467,7 +481,8 @@ function toggleIntroEnabled() {
 			homePortfolioIntroSettings.enabledStorageKey,
 			introEnabled ? "1" : "0",
 		);
-		if (introEnabled) sessionStorage.removeItem("rainzt.home-portfolio-intro-seen.v1");
+		if (introEnabled)
+			sessionStorage.removeItem("rainzt.home-portfolio-intro-seen.v1");
 	} catch {
 		// 私有浏览模式下无法持久化时，仍让当前页面立即响应切换。
 	}
@@ -475,10 +490,18 @@ function toggleIntroEnabled() {
 }
 
 function selectIntroCharacter(characterId: string) {
-	if (!homePortfolioIntroSettings.characters.some((character) => character.id === characterId)) return;
+	if (
+		!homePortfolioIntroSettings.characters.some(
+			(character) => character.id === characterId,
+		)
+	)
+		return;
 	selectedIntroCharacterId = characterId;
 	try {
-		localStorage.setItem(homePortfolioIntroSettings.characterStorageKey, characterId);
+		localStorage.setItem(
+			homePortfolioIntroSettings.characterStorageKey,
+			characterId,
+		);
 	} catch {
 		// 私有浏览模式下无法持久化时，仍让当前页面立即响应切换。
 	}
@@ -488,9 +511,10 @@ function selectIntroCharacter(characterId: string) {
 function selectIntroBanner(position: "top" | "bottom", bannerId: string) {
 	const options = homePortfolioIntroSettings.banners.desktop[position];
 	if (!options.some((banner) => banner.id === bannerId)) return;
-	const storageKey = position === "top"
-		? homePortfolioIntroSettings.topBannerStorageKey
-		: homePortfolioIntroSettings.bottomBannerStorageKey;
+	const storageKey =
+		position === "top"
+			? homePortfolioIntroSettings.topBannerStorageKey
+			: homePortfolioIntroSettings.bottomBannerStorageKey;
 	if (position === "top") {
 		selectedIntroTopBannerId = bannerId;
 	} else {
@@ -526,8 +550,7 @@ function switchWallpaperMode(newMode: WALLPAPER_MODE) {
 	setWallpaperMode(newMode);
 
 	if (isMobileWidth) {
-		mobileSettingsTab =
-			newMode === WALLPAPER_NONE ? "appearance" : "wallpaper";
+		mobileSettingsTab = newMode === WALLPAPER_NONE ? "appearance" : "wallpaper";
 		requestAnimationFrame(() => {
 			document
 				.getElementById("display-setting")
@@ -538,7 +561,8 @@ function switchWallpaperMode(newMode: WALLPAPER_MODE) {
 	}
 
 	window.scrollTo({ top: 0 });
-	if (newMode === WALLPAPER_OVERLAY) requestAnimationFrame(refreshAllRangeProgress);
+	if (newMode === WALLPAPER_OVERLAY)
+		requestAnimationFrame(refreshAllRangeProgress);
 }
 
 function selectMobileSettingsTab(tab: MobileSettingsTab) {
@@ -666,8 +690,14 @@ onMount(() => {
 	// 从localStorage读取首页开屏动画偏好
 	introEnabled = getStoredIntroEnabled();
 	selectedIntroCharacterId = getStoredIntroCharacterId();
-	selectedIntroTopBannerId = getStoredIntroBannerId("top", defaultIntroTopBannerId);
-	selectedIntroBottomBannerId = getStoredIntroBannerId("bottom", defaultIntroBottomBannerId);
+	selectedIntroTopBannerId = getStoredIntroBannerId(
+		"top",
+		defaultIntroTopBannerId,
+	);
+	selectedIntroBottomBannerId = getStoredIntroBannerId(
+		"bottom",
+		defaultIntroBottomBannerId,
+	);
 
 	// 从localStorage读取保存的壁纸模式
 	wallpaperMode = getStoredWallpaperMode();

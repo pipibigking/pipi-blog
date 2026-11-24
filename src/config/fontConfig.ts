@@ -39,22 +39,30 @@ export const fontsList: FontDefinition[] = [
 				{
 					weight: "300",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/zen-maru-gothic/latin-300-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/zen-maru-gothic/latin-300-normal.woff2",
+					],
 				},
 				{
 					weight: "400",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/zen-maru-gothic/latin-400-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/zen-maru-gothic/latin-400-normal.woff2",
+					],
 				},
 				{
 					weight: "500",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/zen-maru-gothic/latin-500-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/zen-maru-gothic/latin-500-normal.woff2",
+					],
 				},
 				{
 					weight: "700",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/zen-maru-gothic/latin-700-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/zen-maru-gothic/latin-700-normal.woff2",
+					],
 				},
 			],
 		},
@@ -69,27 +77,37 @@ export const fontsList: FontDefinition[] = [
 				{
 					weight: "300",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/inter/latin-300-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/inter/latin-300-normal.woff2",
+					],
 				},
 				{
 					weight: "400",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/inter/latin-400-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/inter/latin-400-normal.woff2",
+					],
 				},
 				{
 					weight: "500",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/inter/latin-500-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/inter/latin-500-normal.woff2",
+					],
 				},
 				{
 					weight: "600",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/inter/latin-600-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/inter/latin-600-normal.woff2",
+					],
 				},
 				{
 					weight: "700",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/inter/latin-700-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/inter/latin-700-normal.woff2",
+					],
 				},
 			],
 		},
@@ -104,12 +122,16 @@ export const fontsList: FontDefinition[] = [
 				{
 					weight: "400",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/jetbrains-mono/latin-400-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/jetbrains-mono/latin-400-normal.woff2",
+					],
 				},
 				{
 					weight: "700",
 					style: "normal",
-					src: ["./public/assets/fonts/fontsource/jetbrains-mono/latin-700-normal.woff2"],
+					src: [
+						"./public/assets/fonts/fontsource/jetbrains-mono/latin-700-normal.woff2",
+					],
 				},
 			],
 		},

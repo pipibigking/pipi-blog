@@ -42,7 +42,6 @@ export { backgroundWallpaper } from "./backgroundWallpaper"; // 背景壁纸配�
 export { commentConfig } from "./commentConfig"; // 评论系统配置
 export { coverImageConfig } from "./coverImageConfig"; // 封面图配置
 export { sakuraConfig } from "./effectsConfig"; // 动画特效配置（樱花等）
-export { siteThemeConfig } from "./siteThemeConfig"; // 站点双主题配置（Aemeath / Pure）
 export { expressiveCodeConfig } from "./expressiveCodeConfig"; // 代码高亮配置
 export { fontConfig, fontsList } from "./fontConfig"; // 字体配置
 export { footerConfig } from "./footerConfig"; // 页脚配置
@@ -52,6 +51,7 @@ export {
 	getEnabledFriends,
 } from "./friendsConfig"; // 友链配置
 export { galleryConfig } from "./galleryConfig"; // 相册配置
+export { homePortfolioIntroSettings } from "./homePortfolioIntro"; // 首页开屏动画访客偏好
 export { licenseConfig } from "./licenseConfig"; // 许可证配置
 // 组件配置
 export { musicPlayerConfig } from "./musicConfig"; // 音乐播放器配置
@@ -63,5 +63,5 @@ export { profileConfig } from "./profileConfig"; // 用户资料配置
 export { sidebarLayoutConfig } from "./sidebarConfig"; // 侧边栏布局配置
 // 核心配置
 export { siteConfig } from "./siteConfig"; // 站点基础配置
+export { siteThemeConfig } from "./siteThemeConfig"; // 站点双主题配置（Aemeath / Pure）
 export { sponsorConfig } from "./sponsorConfig"; // 打赏配置
-export { homePortfolioIntroSettings } from "./homePortfolioIntro"; // 首页开屏动画访客偏好

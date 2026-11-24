@@ -11,8 +11,7 @@ export const galleryConfig: GalleryConfig = {
 		{
 			id: "luoke-kingdom",
 			name: "洛克王国",
-			description:
-				"把童年里那些熟悉的场景和精灵，一张张收进这个小相册。",
+			description: "把童年里那些熟悉的场景和精灵，一张张收进这个小相册。",
 			location: "洛克王国",
 			date: "2026-11-22",
 			tags: ["洛克王国", "游戏摄影", "回忆"],

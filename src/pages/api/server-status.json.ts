@@ -1,5 +1,5 @@
-import os from "node:os";
 import { statfsSync } from "node:fs";
+import os from "node:os";
 
 type CpuSnapshot = { idle: number; total: number };
 
@@ -7,7 +7,13 @@ const readCpuSnapshot = (): CpuSnapshot => {
 	const cpus = os.cpus();
 	const idle = cpus.reduce((sum, cpu) => sum + cpu.times.idle, 0);
 	const total = cpus.reduce(
-		(sum, cpu) => sum + cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq,
+		(sum, cpu) =>
+			sum +
+			cpu.times.user +
+			cpu.times.nice +
+			cpu.times.sys +
+			cpu.times.idle +
+			cpu.times.irq,
 		0,
 	);
 	return { idle, total };
@@ -20,7 +26,9 @@ const readCpuUsage = async (): Promise<number> => {
 	const second = readCpuSnapshot();
 	const totalDelta = second.total - first.total;
 	const idleDelta = second.idle - first.idle;
-	return totalDelta > 0 ? Math.max(0, Math.min(100, ((totalDelta - idleDelta) / totalDelta) * 100)) : 0;
+	return totalDelta > 0
+		? Math.max(0, Math.min(100, ((totalDelta - idleDelta) / totalDelta) * 100))
+		: 0;
 };
 
 export async function GET(): Promise<Response> {
@@ -64,6 +72,11 @@ export async function GET(): Promise<Response> {
 				uptimeSeconds: os.uptime(),
 			},
 		}),
-		{ headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } },
+		{
+			headers: {
+				"Content-Type": "application/json; charset=utf-8",
+				"Cache-Control": "no-store",
+			},
+		},
 	);
 }

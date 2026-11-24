@@ -23,7 +23,7 @@ let sortBy = $state<"fav-desc" | "fav-asc" | "views-desc">("fav-desc");
 let currentPage = $state(1);
 
 function formatDuration(seconds: number): string {
-	if (!seconds || isNaN(seconds)) return "";
+	if (!seconds || Number.isNaN(seconds)) return "";
 	const h = Math.floor(seconds / 3600);
 	const m = Math.floor((seconds % 3600) / 60);
 	const s = Math.floor(seconds % 60);
@@ -32,7 +32,7 @@ function formatDuration(seconds: number): string {
 }
 
 function formatViews(n: number): string {
-	if (!n || isNaN(n)) return "0";
+	if (!n || Number.isNaN(n)) return "0";
 	if (n >= 10000) return `${(n / 10000).toFixed(1)}万`;
 	return String(n);
 }
@@ -84,9 +84,14 @@ let filteredItems = $derived.by(() => {
 	return result;
 });
 
-let totalPages = $derived(Math.max(1, Math.ceil(filteredItems.length / itemsPerPage)));
+let totalPages = $derived(
+	Math.max(1, Math.ceil(filteredItems.length / itemsPerPage)),
+);
 let pageItems = $derived(
-	filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage),
+	filteredItems.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage,
+	),
 );
 
 $effect(() => {

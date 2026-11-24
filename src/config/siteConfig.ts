@@ -20,8 +20,7 @@ export const siteConfig: SiteConfig = {
 	site_url: "https://example.com",
 
 	// 站点描述
-	description:
-		"屁屁大王的个人博客，记录技术、动漫与生活中的所思所想。",
+	description: "屁屁大王的个人博客，记录技术、动漫与生活中的所思所想。",
 
 	// 站点关键词
 	keywords: ["屁屁大王", "pipi", "个人博客", "动漫", "技术", "生活"],

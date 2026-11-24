@@ -2,12 +2,12 @@
 import { Icon } from "astro-icon/components";
 import FavoritesGrid from "@/components/pages/anime/FavoritesGrid.svelte";
 import { siteConfig } from "@/config";
+import favoritesCache from "@/data/favorites-cache.json";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import type { FavoriteVideo } from "@/types/favorites";
 import { formatDateI18nWithTime } from "@/utils/date-utils";
-import favoritesCache from "@/data/favorites-cache.json";
 
 // 检查页面是否启用
 if (!siteConfig.pages.anime) {

@@ -1,7 +1,7 @@
 ---
 import { getEntry, render } from "astro:content";
-import { Icon } from "astro-icon/components";
 import Markdown from "@components/common/Markdown.astro";
+import { Icon } from "astro-icon/components";
 import ImageWrapper from "@/components/common/ImageWrapper.astro";
 import { profileConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
@@ -19,7 +19,8 @@ const { Content } = await render(aboutPost);
 const changelogEntries = [
 	{
 		title: "博客视觉与首页改造",
-		description: "重新梳理首页立绘、壁纸轮播、开屏动画与横幅选择，让页面更好看也更好维护。",
+		description:
+			"重新梳理首页立绘、壁纸轮播、开屏动画与横幅选择，让页面更好看也更好维护。",
 		href: "/blog-changelog/",
 		tags: ["V1.0.0", "UI"],
 		tone: "blue",
@@ -27,7 +28,8 @@ const changelogEntries = [
 	},
 	{
 		title: "站点内容整理",
-		description: "统一关于我、导航和站点信息中的身份展示，让每个入口都说同一种语言。",
+		description:
+			"统一关于我、导航和站点信息中的身份展示，让每个入口都说同一种语言。",
 		href: "/blog-changelog/",
 		tags: ["V1.0.0", "维护"],
 		tone: "mint",
@@ -35,7 +37,8 @@ const changelogEntries = [
 	},
 	{
 		title: "文章与记录",
-		description: "把做过的事情、踩过的坑和喜欢的素材，慢慢整理成可以回看的文字。",
+		description:
+			"把做过的事情、踩过的坑和喜欢的素材，慢慢整理成可以回看的文字。",
 		href: "/categories/",
 		tags: ["V1.0.0", "写作"],
 		tone: "gold",
@@ -54,7 +57,8 @@ const changelogEntries = [
 const personalProjects = [
 	{
 		title: "屁屁大王的个人博客",
-		description: "基于 Astro 与 Svelte 搭建的个人站点，收录文章、记录和喜欢的素材。",
+		description:
+			"基于 Astro 与 Svelte 搭建的个人站点，收录文章、记录和喜欢的素材。",
 		tags: ["Astro", "Svelte", "持续更新"],
 		tone: "blue",
 		icon: "material-symbols:auto-awesome-rounded",
@@ -93,7 +97,14 @@ const recentActivity = [
 	},
 ];
 
-const interests = ["前端开发", "个人博客", "洛克王国", "素材整理", "写作", "开源"];
+const interests = [
+	"前端开发",
+	"个人博客",
+	"洛克王国",
+	"素材整理",
+	"写作",
+	"开源",
+];
 const stack = ["Astro", "Svelte", "TypeScript", "Tailwind CSS", "Sharp"];
 ---
 

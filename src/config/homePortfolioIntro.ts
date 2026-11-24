@@ -12,18 +12,66 @@
  * 新增素材：把图片放进 public/assets/images/intro-banner/，在数组里加一项即可。
  */
 const introBannerLibrary = [
-	{ id: "card-01", label: "2人棋盘", src: "/assets/images/intro-banner/card-01.webp" },
-	{ id: "card-02", label: "天空之城", src: "/assets/images/intro-banner/card-02.webp" },
-	{ id: "card-03", label: "女洛克", src: "/assets/images/intro-banner/card-03.webp" },
-	{ id: "card-04", label: "小黑猫彼得大道", src: "/assets/images/intro-banner/card-04.webp" },
-	{ id: "card-05", label: "恶魔钉s5", src: "/assets/images/intro-banner/card-05.webp" },
-	{ id: "card-06", label: "洛克阿布", src: "/assets/images/intro-banner/card-06.webp" },
-	{ id: "card-07", label: "萌王", src: "/assets/images/intro-banner/card-07.webp" },
-	{ id: "card-08", label: "许愿树眺望", src: "/assets/images/intro-banner/card-08.webp" },
-	{ id: "card-09", label: "迪莫麻球", src: "/assets/images/intro-banner/card-09.webp" },
-	{ id: "card-10", label: "阿布巨石", src: "/assets/images/intro-banner/card-10.webp" },
-	{ id: "card-11", label: "鸡牛部队", src: "/assets/images/intro-banner/card-11.webp" },
-	{ id: "card-12", label: "鸭吉吉气球", src: "/assets/images/intro-banner/card-12.webp" },
+	{
+		id: "card-01",
+		label: "2人棋盘",
+		src: "/assets/images/intro-banner/card-01.webp",
+	},
+	{
+		id: "card-02",
+		label: "天空之城",
+		src: "/assets/images/intro-banner/card-02.webp",
+	},
+	{
+		id: "card-03",
+		label: "女洛克",
+		src: "/assets/images/intro-banner/card-03.webp",
+	},
+	{
+		id: "card-04",
+		label: "小黑猫彼得大道",
+		src: "/assets/images/intro-banner/card-04.webp",
+	},
+	{
+		id: "card-05",
+		label: "恶魔钉s5",
+		src: "/assets/images/intro-banner/card-05.webp",
+	},
+	{
+		id: "card-06",
+		label: "洛克阿布",
+		src: "/assets/images/intro-banner/card-06.webp",
+	},
+	{
+		id: "card-07",
+		label: "萌王",
+		src: "/assets/images/intro-banner/card-07.webp",
+	},
+	{
+		id: "card-08",
+		label: "许愿树眺望",
+		src: "/assets/images/intro-banner/card-08.webp",
+	},
+	{
+		id: "card-09",
+		label: "迪莫麻球",
+		src: "/assets/images/intro-banner/card-09.webp",
+	},
+	{
+		id: "card-10",
+		label: "阿布巨石",
+		src: "/assets/images/intro-banner/card-10.webp",
+	},
+	{
+		id: "card-11",
+		label: "鸡牛部队",
+		src: "/assets/images/intro-banner/card-11.webp",
+	},
+	{
+		id: "card-12",
+		label: "鸭吉吉气球",
+		src: "/assets/images/intro-banner/card-12.webp",
+	},
 ] as const;
 
 export const homePortfolioIntroSettings = {

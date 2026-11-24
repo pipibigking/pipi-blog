@@ -2055,7 +2055,7 @@
       },
     };
 
-    function showNoticeVersion(version) {
+    function _showNoticeVersion(version) {
       const meta = NOTICE_VIEWS[version] || NOTICE_VIEWS['2026-09-06'];
       document.querySelectorAll('.notice-view').forEach(view => {
         view.hidden = view.dataset.noticeVersion !== version;
