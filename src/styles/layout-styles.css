@@ -849,3 +849,51 @@ html[data-wallpaper-mode="fullscreen"] body:not(.wallpaper-initialized) .w-full.
         grid-row: 1 !important;
     }
 }
+
+/* ==========================================================================
+   手机/平板竖屏：壁纸/视频媒体区改为顶部 16:9
+   壁纸素材是横屏 16:9，此前媒体铺满 100vh 竖屏会被 object-cover 大幅裁剪。
+   现在媒体（壁纸图/背景视频/压暗层/视频切换按钮）固定在顶部 16:9 区域，
+   16:9 视频完整显示；首页卡片移到媒体区正下方，下方空间由回退底色填充。
+   ========================================================================== */
+@media (max-width: 1023px) {
+    /* wrapper 自身的回退背景图不再铺满全屏：壁纸/视频只在顶部 16:9 媒体带内
+     * 显示（带内已有 <img>/<video> 渲染），下方露出页面底色，界面比例即为 16:9 */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen {
+        background-image: none !important;
+    }
+
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #banner-images-container,
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-player-overlay,
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-player-side-controls,
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #banner-dim-container {
+        inset: 0 0 auto 0 !important;
+        height: auto !important;
+        aspect-ratio: 16 / 9 !important;
+    }
+
+    /* 视频信息角标：从容器底部移到媒体区底部 */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen #bg-player-info {
+        top: calc(100vw * 9 / 16 - 3rem) !important;
+        bottom: auto !important;
+    }
+
+    /* 首页卡片：从屏幕正中移到媒体区正下方 */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card {
+        top: calc(100vw * 9 / 16 + 1.8rem) !important;
+        transform: translate(-50%, 0) !important;
+    }
+
+    /* 卡片移出壁纸后压在页面底色上：给玻璃框加实底，保证白色文字在浅色主题下可读 */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .home-wallpaper-card::before {
+        background: rgba(22, 26, 38, 0.44);
+        border-color: rgba(255, 246, 219, 0.28);
+        -webkit-backdrop-filter: blur(14px) saturate(1.15);
+        backdrop-filter: blur(14px) saturate(1.15);
+    }
+
+    /* 滚动指示器同样落在页面底色上：白色改为跟随主题文字色 */
+    html[data-wallpaper-mode="fullscreen"] #wallpaper-wrapper.wallpaper-fullscreen .scroll-down-indicator {
+        color: color-mix(in oklab, var(--text-color) 72%, transparent);
+    }
+}

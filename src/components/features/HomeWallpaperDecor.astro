@@ -213,14 +213,15 @@ const mobileStickerKeys = [
 
 <script is:inline>
 	(() => {
-		// 移动端贴纸随机区：必须避开中央个人卡片（约 33%~67%Y）。
-		// 上方区贴纸自身高约 9~11%Y，top 值控制在 8~24%；下方区从 72% 起，
-		// 保证贴纸完整落在卡片与滚动箭头以外的左右两侧。
+		// 移动端贴纸随机区：适配「媒体区顶部 16:9 + 卡片在其下方」的布局。
+		// 媒体区高度约 56vw（竖屏约占视口 26%~31%），卡片从媒体区下方开始
+		// （约 29%~35%Y 起，高约 25%）。上方区贴纸落在视频画面上，
+		// 下方区从卡片底缘之下开始；X 轴避开中央滚动箭头（约 40%~60%）。
 		const mobileStickerZones = [
-			{ minX: 3, maxX: 24, minY: 8, maxY: 24 },
-			{ minX: 76, maxX: 94, minY: 8, maxY: 24 },
-			{ minX: 3, maxX: 23, minY: 72, maxY: 86 },
-			{ minX: 77, maxX: 94, minY: 72, maxY: 86 },
+			{ minX: 3, maxX: 24, minY: 6, maxY: 16 },
+			{ minX: 76, maxX: 94, minY: 6, maxY: 16 },
+			{ minX: 3, maxX: 23, minY: 62, maxY: 88 },
+			{ minX: 77, maxX: 94, minY: 62, maxY: 88 },
 		];
 
 		const shuffled = (items) => {
