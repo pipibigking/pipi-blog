@@ -83,10 +83,11 @@ const uid = `video-card-${Math.random().toString(36).slice(2, 9)}`;
 		var video = root.querySelector(".video-card-media");
 		var playBtn = root.querySelector(".video-card-play");
 		var stage = root.querySelector(".video-card-stage");
+		var posterImg = root.querySelector(".video-card-poster");
 		// 按视频真实比例自适应容器：横屏保持全宽，竖屏/方图限制高度避免霸屏
-		var fitStage = function () {
-			if (!stage || !video.videoWidth || !video.videoHeight) return;
-			var ratio = video.videoWidth / video.videoHeight;
+		var fitStage = function (w, h) {
+			if (!stage || !w || !h) return;
+			var ratio = w / h;
 			stage.style.aspectRatio = String(ratio);
 			var isPortrait = ratio < 1;
 			// 竖屏视频限制视口高度，超宽屏限制视口宽度，保证完整显示
@@ -100,8 +101,29 @@ const uid = `video-card-${Math.random().toString(36).slice(2, 9)}`;
 			}
 		};
 		if (video) {
-			if (video.readyState >= 1) fitStage();
-			else video.addEventListener("loadedmetadata", fitStage, { once: true });
+			if (video.videoWidth && video.videoHeight) {
+				fitStage(video.videoWidth, video.videoHeight);
+			} else {
+				video.addEventListener(
+					"loadedmetadata",
+					function () {
+						fitStage(video.videoWidth, video.videoHeight);
+					},
+					{ once: true }
+				);
+			}
+		}
+		// 元数据到达前先用封面图比例设定舞台（封面与视频同比例），移动端
+		// preload=metadata 较慢时可立即有正确尺寸，避免先 16:9 再跳变。
+		if (posterImg && stage && !stage.style.aspectRatio) {
+			var applyPoster = function () {
+				if (stage.style.aspectRatio) return;
+				if (posterImg.naturalWidth && posterImg.naturalHeight) {
+					fitStage(posterImg.naturalWidth, posterImg.naturalHeight);
+				}
+			};
+			if (posterImg.complete) applyPoster();
+			else posterImg.addEventListener("load", applyPoster, { once: true });
 		}
 		if (video && playBtn) {
 			var start = function () {

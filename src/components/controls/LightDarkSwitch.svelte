@@ -26,9 +26,17 @@ type WindowWithSwup = Window & { swup?: SwupInstance };
 
 let mode: LIGHT_DARK_MODE = $state(LIGHT_MODE);
 let displayedMode: LIGHT_DARK_MODE = $state(LIGHT_MODE); // 显示的实际主题（在system模式下会随系统变化）
+let open = $state(false);
+
+let rootEl: HTMLDivElement | null = null;
+
+function togglePanel() {
+	open = !open;
+}
 
 function switchScheme(newMode: LIGHT_DARK_MODE) {
 	mode = newMode;
+	open = false;
 	setTheme(newMode);
 	updateDisplayedMode();
 }
@@ -48,6 +56,21 @@ function updateDisplayedMode() {
 
 // 使用onMount确保在组件挂载后正确初始化
 onMount(() => {
+	// 点击面板外部 / Esc 关闭。本组件自管开关，不依赖 Navbar 全局脚本：
+	// 两套导航栏各挂一份本组件，全局按 ID 只能绑到第一份。
+	const handleDocClick = (event: MouseEvent) => {
+		if (!open) return;
+		const target = event.target;
+		if (target instanceof Node && rootEl && !rootEl.contains(target)) {
+			open = false;
+		}
+	};
+	const handleKeydown = (event: KeyboardEvent) => {
+		if (event.key === "Escape") open = false;
+	};
+	document.addEventListener("click", handleDocClick);
+	document.addEventListener("keydown", handleKeydown);
+
 	// 立即获取并设置正确的主题
 	const storedTheme = getStoredTheme();
 	mode = storedTheme;
@@ -111,12 +134,14 @@ onMount(() => {
 	// 清理函数
 	return () => {
 		window.removeEventListener("theme-change", handleThemeChange);
+		document.removeEventListener("click", handleDocClick);
+		document.removeEventListener("keydown", handleKeydown);
 	};
 });
 </script>
 
-<div class="relative z-50">
-    <button aria-label="Light/Dark Mode" aria-haspopup="menu" class="relative btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="scheme-switch">
+<div class="relative z-50" bind:this={rootEl}>
+    <button aria-label="Light/Dark Mode" aria-haspopup="menu" aria-expanded={open} class="relative btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="scheme-switch" onclick={togglePanel}>
         <div class="absolute inset-0 flex items-center justify-center" class:opacity-0={displayedMode !== LIGHT_MODE}>
             <Icon icon="material-symbols:wb-sunny-outline-rounded" class="text-[1.25rem]"></Icon>
         </div>
@@ -124,7 +149,7 @@ onMount(() => {
             <Icon icon="material-symbols:dark-mode-outline-rounded" class="text-[1.25rem]"></Icon>
         </div>
     </button>
-    <div id="theme-mode-panel" class="absolute transition float-panel-closed top-11 -right-2 pt-5 z-50" role="menu" aria-labelledby="scheme-switch">
+    <div class="absolute transition float-panel top-11 -right-2 pt-5 z-50 {open ? '' : 'float-panel-closed'}" role="menu" aria-label="Light/Dark Mode">
         <DropdownPanel>
             <DropdownItem
                 role="menuitem"

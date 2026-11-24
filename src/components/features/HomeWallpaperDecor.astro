@@ -22,10 +22,6 @@ const socialLinks = [...profileConfig.links];
 //   中下 进击的巨人组（三笠/艾伦）：top 80%，left 44%~51%
 //   右下 电锯人组（蕾塞/电次）：top 69%/72%（两人尺寸大，上移保证脚部完整），left 82%~89%
 const stickerImages = [
-	{
-		key: "quote",
-		src: url("/images/home-stickers/claudecode.webp"),
-	},
 	// —— 一人之下组（左上，三人紧密相邻）——
 	{
 		key: "zhangchulan",
@@ -217,11 +213,14 @@ const mobileStickerKeys = [
 
 <script is:inline>
 	(() => {
+		// 移动端贴纸随机区：必须避开中央个人卡片（约 33%~67%Y）。
+		// 上方区贴纸自身高约 9~11%Y，top 值控制在 8~24%；下方区从 72% 起，
+		// 保证贴纸完整落在卡片与滚动箭头以外的左右两侧。
 		const mobileStickerZones = [
-			{ minX: 3, maxX: 24, minY: 18, maxY: 36 },
-			{ minX: 76, maxX: 94, minY: 18, maxY: 36 },
-			{ minX: 3, maxX: 23, minY: 51, maxY: 70 },
-			{ minX: 77, maxX: 94, minY: 51, maxY: 70 },
+			{ minX: 3, maxX: 24, minY: 8, maxY: 24 },
+			{ minX: 76, maxX: 94, minY: 8, maxY: 24 },
+			{ minX: 3, maxX: 23, minY: 72, maxY: 86 },
+			{ minX: 77, maxX: 94, minY: 72, maxY: 86 },
 		];
 
 		const shuffled = (items) => {

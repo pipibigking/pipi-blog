@@ -35,19 +35,36 @@ const recommendedFriendUrls = getEnabledFriends()
 	.map((friend) => friend.siteurl);
 const ownerWalineUserIds = [2];
 const aiWalineUserIds: number[] = [];
+
+// serverURL 仍是占位地址（未部署 Waline 后端）时不初始化组件：
+// 避免每次进文章页/留言板都对 example.com 发起注定失败的请求，只显示提示。
+const serverURL = commentConfig.waline?.serverURL ?? "";
+const walineConfigured =
+	serverURL.length > 0 &&
+	!/:\/\/(example\.com|localhost:\d+|127\.0\.0\.1:\d+)/.test(serverURL);
 ---
 <!-- Waline -->
 <div class="relative w-full">
-  <div
-    id="waline"
-    data-waline-root
-    data-waline-config={JSON.stringify(config)}
-    data-waline-path={Astro.props.path}
-    data-waline-site-url={siteConfig.site_url}
-    data-waline-recommended-links={JSON.stringify(recommendedFriendUrls)}
-    data-waline-owner-user-ids={JSON.stringify(ownerWalineUserIds)}
-    data-waline-ai-user-ids={JSON.stringify(aiWalineUserIds)}
-  ></div>
+  {walineConfigured ? (
+    <div
+      id="waline"
+      data-waline-root
+      data-waline-config={JSON.stringify(config)}
+      data-waline-path={Astro.props.path}
+      data-waline-site-url={siteConfig.site_url}
+      data-waline-recommended-links={JSON.stringify(recommendedFriendUrls)}
+      data-waline-owner-user-ids={JSON.stringify(ownerWalineUserIds)}
+      data-waline-ai-user-ids={JSON.stringify(aiWalineUserIds)}
+    ></div>
+  ) : (
+    <div
+      id="waline"
+      class="waline-unconfigured rounded-xl border border-dashed border-(--line-divider) px-4 py-6 text-center text-sm text-(--content-meta)"
+    >
+      评论功能尚未启用：Waline 后端地址还没配置（src/config/commentConfig.ts 的
+      serverURL），配置后会自动显示评论区。
+    </div>
+  )}
 </div>
 
 <style is:global>

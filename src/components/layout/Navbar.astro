@@ -437,29 +437,13 @@ function loadButtonScript() {
         }
     }
 
-    let themeSwitchBtn = document.getElementById("scheme-switch");
-    if (themeSwitchBtn) {
-        themeSwitchBtn.onclick = function () {
-            let themePanel = document.getElementById("theme-mode-panel");
-            if (themePanel) {
-                themePanel.classList.toggle("float-panel-closed");
-            }
-        };
-    }
-
-    let siteThemeSwitchBtn = document.getElementById("site-theme-switch");
-    if (siteThemeSwitchBtn) {
-        siteThemeSwitchBtn.onclick = function () {
-            let siteThemePanel = document.getElementById("site-theme-panel");
-            if (siteThemePanel) {
-                siteThemePanel.classList.toggle("float-panel-closed");
-            }
-        };
-    }
+    // 亮暗色开关与站点主题开关已改为自包含 Svelte 组件（自带开合/外点关闭），
+    // 不再在此处按 getElementById 绑定——两套导航栏各挂一份组件，
+    // 全局按 ID 绑定只会命中第一份，Pure 主题下那份永远点不开。
 
     document.addEventListener("click", function(event) {
-        const panels = ["display-setting", "nav-menu-panel", "music-nav-panel", "theme-mode-panel", "bg-player-panel", "site-theme-panel"];
-        const buttons = ["display-settings-switch", "nav-menu-switch", "music-player-switch", "scheme-switch", "bg-player-toggle", "site-theme-switch"];
+        const panels = ["display-setting", "nav-menu-panel", "music-nav-panel", "bg-player-panel"];
+        const buttons = ["display-settings-switch", "nav-menu-switch", "music-player-switch", "bg-player-toggle"];
 
         panels.forEach((id, index) => {
             const panel = document.getElementById(id);

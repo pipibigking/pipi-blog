@@ -966,10 +966,8 @@ function disableAnimation() {
     "wallpaper-mode-panel",
     "wallpaper-mode-switch",
   ]);
-  setClickOutsideToClose("theme-mode-panel", [
-    "theme-mode-panel",
-    "scheme-switch",
-  ]);
+  // 亮暗色/站点主题开关面板已改为 Svelte 组件自管，这里不再注册
+  // （面板 DOM 不再使用 theme-mode-panel / site-theme-panel 全局 ID）
 
   function initCustomScrollbar() {
     // 只处理katex元素的滚动条，使用浏览器原生滚动条
