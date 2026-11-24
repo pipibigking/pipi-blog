@@ -27,8 +27,8 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		],
 	});
 
-	// 更新日志
-	links.push(LinkPresets.Changelog);
+	// 博客更新日志
+	links.push(LinkPresets.BlogChangelog);
 
 	// 留言板
 	links.push(LinkPresets.Guestbook);
@@ -64,9 +64,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 
 			// 关于页面
 			LinkPresets.About,
-
-			// 博客更新日志
-			LinkPresets.BlogChangelog,
 
 			// 站点统计
 			LinkPresets.Analytics,
@@ -121,7 +118,7 @@ export const LinkPresets: Record<string, NavBarLink> = {
 	},
 	Changelog: {
 		name: "更新日志",
-		url: "/changelog/",
+		url: "/blog-changelog/",
 		icon: "material-symbols:history-edu-rounded",
 	},
 	Friends: {
