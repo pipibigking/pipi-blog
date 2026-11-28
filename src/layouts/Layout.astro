@@ -1224,6 +1224,21 @@ function disableAnimation() {
 
   const setup = () => {
     syncCategoryBarVisibility(window.location.pathname);
+
+    // 侧栏是常驻框架：首屏入场动画播完后打标记，之后永久冻结侧栏 widget 的
+    // 入场动画。这样 Swup 切页时 hidden/display 切换不会让左右侧栏重播淡入，
+    // 只有中间 #swup-container 内容刷新，两侧保持静止。
+    const markSidebarSettled = () => {
+      window.setTimeout(() => {
+        document.documentElement.classList.add("sidebar-settled");
+      }, 400);
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", markSidebarSettled, { once: true });
+    } else {
+      markSidebarSettled();
+    }
+
     // 由目标页面决定进入页面 0 还是页面 1。
     window.swup.hooks.replace("scroll:top", (visit: { to: { url: string } }, args: { options: ScrollIntoViewOptions }) => {
       const targetPathname = (() => {
@@ -1554,15 +1569,25 @@ function disableAnimation() {
     window.swup.hooks.on("page:view", () => {
       syncPostListPageClass();
       syncCategoryBarVisibility(window.location.pathname);
-      // 恢复 #main-grid 的过渡动画（visit:start 中禁用了）
-      const mainGrid = document.getElementById("main-grid");
-      if (mainGrid) {
-        mainGrid.style.removeProperty("transition");
-      }
 
-      // 更新网格列数和侧边栏组件可见性
+      // 更新网格列数和侧边栏组件可见性。
+      // 关键：必须先完成 grid 类/侧栏类的变更，再恢复 #main-grid 的过渡，
+      // 否则 removeProperty('transition') 之后紧接着的类变化会触发 700ms
+      // 位移动画，牵连常驻的左右侧栏一起“顿一下”。
       updateMainGridCols();
       updateSidebarComponentsVisibility();
+
+      // 变更落到新的一帧后再恢复过渡，确保本次切页不产生位移动画
+      const mainGrid = document.getElementById("main-grid");
+      if (mainGrid) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (!document.documentElement.classList.contains("is-page-transitioning")) {
+              mainGrid.style.removeProperty("transition");
+            }
+          });
+        });
+      }
 
       // hide the temp high element when the transition is done
       const heightExtend = document.getElementById("page-height-extend");

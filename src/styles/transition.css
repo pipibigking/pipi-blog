@@ -83,6 +83,32 @@ html.is-animating .transition-swup-fade {
 .onload-animation:nth-child(5) { animation-delay: 120ms; }
 
 /* --------------------------------------------------------------------------
-   4. Reading Progress
+   4. Persistent Sidebars
+   左右侧栏是常驻框架（非 Swup 容器）。首次入场动画结束后冻结其动画与过渡，
+   避免切页时 hidden/display 切换重播淡入、或 grid 类变化牵连侧栏位移。
+   这样切换路由时只有中间 #swup-container 内容刷新，两侧保持静止。
+   -------------------------------------------------------------------------- */
+
+/* 首屏动画播完后，侧栏 widget 不再重播入场动画（hidden 切换也不会再淡入） */
+html.sidebar-settled #left-sidebar .onload-animation,
+html.sidebar-settled #right-sidebar .onload-animation,
+html.sidebar-settled #bottom-sidebar .onload-animation,
+html.sidebar-settled #mobile-bottom-sidebar .onload-animation {
+    animation: none !important;
+    opacity: 1 !important;
+}
+
+/* 切页期间冻结侧栏自身及子元素的过渡，保持像素级静止 */
+html.is-page-transitioning #left-sidebar,
+html.is-page-transitioning #right-sidebar,
+html.is-page-transitioning #left-sidebar *,
+html.is-page-transitioning #right-sidebar *,
+html.is-page-transitioning #mobile-bottom-sidebar * {
+    transition: none !important;
+    animation-play-state: paused !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. Reading Progress
    顶部彩色细进度条已移除，阅读进度统一由右下角悬浮进度环展示。
    -------------------------------------------------------------------------- */
