@@ -1278,12 +1278,6 @@ html[data-site-theme="pure"] .site-footer__nav-link svg {
 	opacity: 0.8;
 }
 
-html[data-site-theme="pure"] .site-footer__records svg {
-	color: var(--pure-secondary) !important;
-	fill: none;
-	opacity: 0.7;
-}
-
 html[data-site-theme="pure"] .site-footer__runtime {
 	display: block !important;
 	margin: 0 !important;
@@ -1309,25 +1303,6 @@ html[data-site-theme="pure"] .site-footer__runtime strong,
 html[data-site-theme="pure"] .site-footer__traffic strong {
 	color: var(--pure-ink) !important;
 	font-weight: 500 !important;
-}
-
-html[data-site-theme="pure"] .site-footer__records {
-	display: flex !important;
-	margin: 0 !important;
-	color: var(--pure-secondary) !important;
-	font-size: 0.8125rem !important;
-}
-
-html[data-site-theme="pure"] .site-footer__records a {
-	display: inline-flex;
-	gap: 0.35rem;
-	align-items: center;
-	color: var(--pure-secondary) !important;
-}
-
-html[data-site-theme="pure"] .site-footer__shield {
-	width: 0.9rem;
-	height: 1rem;
 }
 
 html[data-site-theme="pure"] .site-footer__traffic {

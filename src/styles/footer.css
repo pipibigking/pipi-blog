@@ -373,40 +373,6 @@
 	filter: drop-shadow(0 0 0.3rem #0a79ee);
 }
 
-.site-footer__records {
-	display: flex;
-	min-height: 1.2rem;
-	margin-top: 0.52rem;
-	align-items: center;
-	justify-content: center;
-	gap: clamp(0.75rem, 1.5vw, 1.3rem);
-	font-size: 0.7rem;
-	font-weight: 540;
-	letter-spacing: 0.01em;
-}
-
-.site-footer__records a {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.3rem;
-	white-space: nowrap;
-	transition: color 180ms ease-out, transform 180ms ease-out;
-}
-
-.site-footer__records a:hover { color: #064c9f; transform: translateY(-1px); }
-
-.site-footer__shield {
-	width: 0.9rem;
-	height: 1rem;
-	filter: drop-shadow(0 0.15rem 0.18rem rgb(23 105 213 / 0.17));
-	overflow: visible;
-}
-
-.site-footer__shield > path:first-child { fill: #2e8df6; stroke: rgb(255 255 255 / 0.75); stroke-width: 1.1; }
-.site-footer__shield-mark { fill: none; stroke: #fff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.2; }
-.site-footer__shield-fire { fill: #fff; }
-.site-footer__record-dot { color: #1d6dca; font-size: 1em; }
-
 .site-footer__traffic {
 	display: flex;
 	min-height: 1.05rem;
@@ -535,7 +501,6 @@
 .site-footer__powered-dots { color: #6baaf4; font-weight: 700; letter-spacing: 0.16em; }
 
 .site-footer__nav-link:focus-visible,
-.site-footer__records a:focus-visible,
 .site-footer__meta a:focus-visible,
 .site-footer__powered a:focus-visible {
 	outline: 2px solid #075cbf;
@@ -588,15 +553,6 @@
 	.site-footer__clock { position: relative; left: auto; width: 3.25rem; }
 	.site-footer__runtime time { max-width: 18rem; font-size: 0.74rem; line-height: 1.5; white-space: normal; }
 	.site-footer__runtime-sparkle { right: 8%; bottom: 19%; }
-
-	.site-footer__records {
-		margin-top: 0.85rem;
-		flex-direction: column;
-		gap: 0.48rem;
-		font-size: 0.7rem;
-	}
-
-	.site-footer__record-dot { display: none; }
 
 	.site-footer__traffic {
 		display: grid;
