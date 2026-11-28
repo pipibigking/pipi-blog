@@ -6,6 +6,10 @@ export type MusicPlayerConfig = {
 	// 默认音量 (0-1)
 	volume?: number;
 
+	// 打开网页时是否自动播放第一首音乐
+	// 浏览器可能拦截有声自动播放，此时会在用户首次交互后补播
+	autoplay?: boolean;
+
 	// 播放模式：'list'=列表循环, 'one'=单曲循环, 'random'=随机播放
 	playMode?: "list" | "one" | "random";
 

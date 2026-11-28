@@ -5,8 +5,9 @@ $buildDir      = Join-Path $temp "pipi-blog-build"
 $ffmpeg        = "D:\aamyWeb\myblog\tools\node_modules\ffmpeg-static\ffmpeg.exe"
 $siteId        = "37lizvnkarogphg61vo"
 $siteDomain    = "pipihome.traesite.cn"
-$deployCli     = "C:\Users\280738\.trae-cn\plugins\trae-remote-official\deployment\0.0.43\skills\deployment\bin\win32-x64\trae-deploy.exe"
-$prepareScript = "C:\Users\280738\.trae-cn\plugins\trae-remote-official\deployment\0.0.43\skills\deployment\scripts\prepare-static-function.mjs"
+$pluginRoot    = (Get-ChildItem "C:\Users\280738\.trae-cn\plugins\trae-remote-official\deployment" -Directory | Sort-Object Name -Descending | Select-Object -First 1).FullName
+$deployCli     = Join-Path $pluginRoot "skills\deployment\bin\win32-x64\trae-deploy.exe"
+$prepareScript = Join-Path $pluginRoot "skills\deployment\scripts\prepare-static-function.mjs"
 
 if (Test-Path $buildDir) { Remove-Item $buildDir -Recurse -Force }
 New-Item -ItemType Directory -Path $buildDir | Out-Null
@@ -54,8 +55,12 @@ Get-ChildItem (Join-Path $buildDir "dist\assets\music") -Filter *.mp3 | ForEach-
 $commit = git -C $localRepo log -1 --format="%h %s" origin/main
 $mb = [math]::Round((((Get-ChildItem $pub -Recurse -File | Measure-Object Length -Sum).Sum) / 1MB), 2)
 
+$rewriteScript = Join-Path $PSScriptRoot "rewrite-assets.mjs"
+node $rewriteScript $src
+if ($LASTEXITCODE -ne 0) { throw "asset rewrite failed" }
+
 $adapt = node $prepareScript --source-dir $src | ConvertFrom-Json
-if (-not $adapt.ok) { throw "prepare-static-function failed" }
+if (-not $adapt.ok) { throw "prepare-static-function failed: $($adapt.error.message)" }
 
 $create = & $deployCli deployments create `
     --site-id $siteId `

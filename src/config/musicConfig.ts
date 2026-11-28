@@ -16,6 +16,9 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 	// 默认音量 (0-1)
 	volume: 0.7,
 
+	// 打开网页时自动播放音乐（若被浏览器拦截，会在首次交互后补播）
+	autoplay: true,
+
 	// 播放模式：'list'=列表循环, 'one'=单曲循环, 'random'=随机播放
 	playMode: "list",
 
@@ -59,6 +62,13 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 		// 新增歌曲：把 mp3 放进 public/assets/music/，在下面加一项即可（可选填 lrc）
 		playlist: [
 			{
+				name: "神宠传说",
+				artist: "洛克王国",
+				url: "/assets/music/bgm-07.mp3",
+				cover: "/assets/music/cover/ndmz.webp",
+				lrc: "/assets/music/lrc/shenchongchuanshuo.lrc",
+			},
+			{
 				name: "Call of Silence",
 				artist: "泽野弘之",
 				url: "/assets/music/bgm-01.mp3",
@@ -90,13 +100,6 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 				artist: "洛克王国",
 				url: "/assets/music/bgm-06.mp3",
 				cover: "/assets/music/cover/ndmz.webp",
-			},
-			{
-				name: "神宠传说",
-				artist: "洛克王国",
-				url: "/assets/music/bgm-07.mp3",
-				cover: "/assets/music/cover/ndmz.webp",
-				lrc: "/assets/music/lrc/shenchongchuanshuo.lrc",
 			},
 			{
 				name: "三叶的日常",

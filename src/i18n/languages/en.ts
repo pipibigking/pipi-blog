@@ -403,4 +403,7 @@ export const en: Translation = {
 	[Key.videoCycleLoop]: "Loop current video",
 	[Key.videoCycleNext]: "Auto-play next",
 	[Key.videoPlaying]: "Now playing",
+	[Key.videoSound]: "Video sound",
+	[Key.videoSoundOn]: "Sound on",
+	[Key.videoSoundOff]: "Muted",
 };

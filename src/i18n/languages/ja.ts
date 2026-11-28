@@ -402,4 +402,7 @@ export const ja: Translation = {
 	[Key.videoCycleLoop]: "現在の動画をループ",
 	[Key.videoCycleNext]: "再生後に次へ",
 	[Key.videoPlaying]: "再生中",
+	[Key.videoSound]: "動画の音声",
+	[Key.videoSoundOn]: "音声オン",
+	[Key.videoSoundOff]: "ミュート",
 };

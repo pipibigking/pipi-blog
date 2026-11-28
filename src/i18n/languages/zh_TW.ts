@@ -394,4 +394,7 @@ export const zh_TW: Translation = {
 	[Key.videoCycleLoop]: "循環播放目前影片",
 	[Key.videoCycleNext]: "播完自動下一個",
 	[Key.videoPlaying]: "正在播放",
+	[Key.videoSound]: "影片聲音",
+	[Key.videoSoundOn]: "開啟聲音",
+	[Key.videoSoundOff]: "靜音播放",
 };

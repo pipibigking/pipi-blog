@@ -46,6 +46,9 @@ const tVideoPrev = i18n(I18nKey.videoPrev);
 const tVideoNext = i18n(I18nKey.videoNext);
 const tVideoPlay = i18n(I18nKey.videoPlay);
 const tVideoPause = i18n(I18nKey.videoPause);
+const tVideoSound = i18n(I18nKey.videoSound);
+const tVideoSoundOn = i18n(I18nKey.videoSoundOn);
+const tVideoSoundOff = i18n(I18nKey.videoSoundOff);
 
 // 获取导航栏透明模式配置
 const navbarTransparentMode =
@@ -99,7 +102,7 @@ function filterLinks(link: NavBarLink): NavBarLink | null {
 	const filteredChildren = link.children.filter(isPageEnabled);
 
 	if (filteredChildren.length === 0) return null;
-	// 保留「文章」「关于」这类分组标题，单子项时不再摊平成「分类」「打赏」
+	// 保留「文章」这类分组标题，单子项时不再摊平成「分类」
 	if (filteredChildren.length === 1 && link.url !== "#")
 		return filteredChildren[0];
 	return { ...link, children: filteredChildren };
@@ -180,6 +183,16 @@ if (isLocalSrcLogo) {
                     client:load
                 />
                 <FontSwitch client:load />
+                {siteConfig.pages.sponsor !== false && (
+                    <a
+                        aria-label={i18n(I18nKey.sponsor)}
+                        title={i18n(I18nKey.sponsor)}
+                        href={url("/sponsor/")}
+                        class="theme-btn btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 text-(--primary)"
+                    >
+                        <Icon is:inline name="material-symbols:favorite" class="text-[1.25rem]" />
+                    </a>
+                )}
                 {musicPlayerConfig.showInNavbar && (
                     <button aria-label={i18n(I18nKey.music)} class="theme-btn btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="music-player-switch">
                         <Icon is:inline name="material-symbols:music-note-rounded" class="text-[1.25rem]"></Icon>
@@ -226,6 +239,9 @@ if (isLocalSrcLogo) {
                 data-i18n-playing={tVideoPlaying}
                 data-i18n-play={tVideoPlay}
                 data-i18n-pause={tVideoPause}
+                data-i18n-sound={tVideoSound}
+                data-i18n-sound-on={tVideoSoundOn}
+                data-i18n-sound-off={tVideoSoundOff}
             >
                 <div class="px-2 pb-2 max-h-[72vh] overflow-y-auto custom-scrollbar">
                     <div class="flex items-center justify-between gap-2 mb-2 text-sm font-bold">
@@ -267,7 +283,14 @@ if (isLocalSrcLogo) {
                             </div>
                         </div>
                     )}
-                    <div class="text-[0.7rem] font-semibold text-(--content-meta) mb-1.5">{tVideoCycleMode}</div>
+                    <div class="text-[0.7rem] font-semibold text-(--content-meta) mb-1.5">{tVideoSound}</div>
+                    <button type="button" id="bg-panel-sound-btn" class="bg-player-sound-btn w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-xs transition-colors btn-regular">
+                        <Icon is:inline name="material-symbols:volume-up-rounded" class="bg-player-sound-on-icon text-[1rem] text-(--primary)" />
+                        <Icon is:inline name="material-symbols:volume-off-rounded" class="bg-player-sound-off-icon text-[1rem] text-(--primary) hidden" />
+                        <span class="flex-1" id="bg-panel-sound-label">{tVideoSoundOff}</span>
+                        <Icon is:inline name="material-symbols:check-rounded" class="bg-player-sound-check text-[1rem] text-(--primary) opacity-0" />
+                    </button>
+                    <div class="text-[0.7rem] font-semibold text-(--content-meta) mb-1.5 mt-2">{tVideoCycleMode}</div>
                     <div class="flex flex-col gap-1.5" role="radiogroup" aria-label={tVideoCycleMode}>
                         <button type="button" data-cycle="loop" class="bg-player-cycle-btn w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-xs transition-colors btn-regular">
                             <Icon is:inline name="material-symbols:repeat-rounded" class="text-[1rem] text-(--primary)" />
@@ -294,7 +317,7 @@ if (isLocalSrcLogo) {
 function loadButtonScript() {
     // 桥接背景播放器：赋值式函数由 BackgroundPlayer 定义，切页/重复执行天然幂等
     const bgBridge = window as Window & {
-        __bgPlayerState?: () => { playing: boolean; index: number; cycle: string };
+        __bgPlayerState?: () => { playing: boolean; index: number; cycle: string; muted?: boolean };
         __bgPlayerCommand?: (cmd: string, data?: string | number) => void;
     };
 
@@ -304,7 +327,7 @@ function loadButtonScript() {
     const PLAY_ICON_PATH = "M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475t-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712";
     const PAUSE_ICON_PATH = "M16 19q-.825 0-1.412-.587T14 17V7q0-.825.588-1.412T16 5t1.413.588T18 7v10q0 .825-.587 1.413T16 19m-8 0q-.825 0-1.412-.587T6 17V7q0-.825.588-1.412T8 5t1.413.588T10 7v10q0 .825-.587 1.413T8 19";
 
-    function syncVideoPanelUI(detail?: { playing: boolean; index: number; cycle: string }) {
+    function syncVideoPanelUI(detail?: { playing: boolean; index: number; cycle: string; muted?: boolean }) {
         const panel = document.getElementById("bg-player-panel");
         if (!panel) return;
         const state = detail || (bgBridge.__bgPlayerState ? bgBridge.__bgPlayerState() : null);
@@ -336,6 +359,22 @@ function loadButtonScript() {
             const check = btn.querySelector(".bg-player-cycle-check");
             if (check) (check as HTMLElement).style.opacity = active ? "1" : "0";
         });
+
+        const soundOn = state.muted === false;
+        const labelSoundOn = panel.getAttribute("data-i18n-sound-on") || "开启声音";
+        const labelSoundOff = panel.getAttribute("data-i18n-sound-off") || "静音播放";
+        const soundLabel = document.getElementById("bg-panel-sound-label");
+        if (soundLabel) soundLabel.textContent = soundOn ? labelSoundOn : labelSoundOff;
+        const onIcon = document.querySelector("#bg-panel-sound-btn .bg-player-sound-on-icon");
+        const offIcon = document.querySelector("#bg-panel-sound-btn .bg-player-sound-off-icon");
+        if (onIcon) onIcon.classList.toggle("hidden", !soundOn);
+        if (offIcon) offIcon.classList.toggle("hidden", soundOn);
+        const soundBtn = document.getElementById("bg-panel-sound-btn");
+        if (soundBtn) {
+            soundBtn.classList.toggle("active", soundOn);
+            const check = soundBtn.querySelector(".bg-player-sound-check");
+            if (check) (check as HTMLElement).style.opacity = soundOn ? "1" : "0";
+        }
     }
 
     function setMobileMenuOpen(open: boolean) {
@@ -488,6 +527,11 @@ function loadButtonScript() {
     document.querySelectorAll(".bg-player-cycle-btn").forEach(function (btn) {
         (btn as HTMLElement).onclick = function () { videoCmd("cycle", btn.getAttribute("data-cycle") || undefined); };
     });
+    const soundBtn = document.getElementById("bg-panel-sound-btn");
+    if (soundBtn) soundBtn.onclick = function () {
+        const state = bgBridge.__bgPlayerState ? bgBridge.__bgPlayerState() : null;
+        videoCmd("sound", state && state.muted === false ? "off" : "on");
+    };
 }
 
 loadButtonScript();

@@ -26,6 +26,7 @@ import { i18n } from "@/i18n/translation";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
 import { getImageQuality } from "@/utils/image-utils";
 import { getBackgroundImages, isHomePage } from "@/utils/layout-utils";
+import { url } from "@/utils/url-utils";
 import {
 	generateGridClasses,
 	generateMainContentClasses,
@@ -136,6 +137,13 @@ const shouldRenderGradient =
 // 检查是否为首页
 const isHomePageCheck = isHomePage(Astro.url.pathname);
 
+// 分类胶囊栏只在文章分类页（/categories 及其子页）显示，其他页面隐藏。
+// 容器始终渲染，保证 Swup 切页时 JS 可以统一切换可见性。
+const categoriesBasePath = url("/categories/").replace(/\/+$/, "");
+const currentPathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isCategoryPage =
+	currentPathname === categoriesBasePath ||
+	currentPathname.startsWith(`${categoriesBasePath}/`);
 const shouldRenderCategoryBar = !!siteConfig.categoryBar;
 
 // 检查是否在文章详情页
@@ -1051,8 +1059,12 @@ const hasMultipleImages =
                     
             {/* 主内容区包装器 - 包含静态栏位和swup容器，作为单个grid item */}
             <div class={staticBarClass}>
-                {/* 分类导航栏 - 全站渲染并显示 */}
-                {shouldRenderCategoryBar && <div id="category-bar-wrapper"><CategoryBar currentPostCategory={postCategory} /></div>}
+                {/* 分类导航栏 - 仅在文章分类页显示 */}
+                {shouldRenderCategoryBar && (
+                    <div id="category-bar-wrapper" class={isCategoryPage ? "" : "hidden"}>
+                        <CategoryBar currentPostCategory={postCategory} />
+                    </div>
+                )}
                 {/* 主内容区 - 始终渲染，确保 Swup 容器存在 */}
                 <main
                     id="swup-container"

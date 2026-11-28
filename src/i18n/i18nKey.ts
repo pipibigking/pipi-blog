@@ -388,6 +388,9 @@ enum I18nKey {
 	videoCycleLoop = "videoCycleLoop",
 	videoCycleNext = "videoCycleNext",
 	videoPlaying = "videoPlaying",
+	videoSound = "videoSound",
+	videoSoundOn = "videoSoundOn",
+	videoSoundOff = "videoSoundOff",
 }
 
 export default I18nKey;

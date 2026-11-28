@@ -1103,12 +1103,18 @@ function disableAnimation() {
     window.scrollTo({ top: pageOneTop, left: 0, behavior });
   };
 
-  // Swup 和页面组件都可能在不同时间触发滚动恢复。用短时间的多次校正，
-  // 确保异步组件完成后仍遵守同一套页面 0/页面 1 规则。
+  // Swup 的多个钩子都会请求滚动定位；只保留最近一次请求，并压缩为两次即时校正。
+  // 之前的 0/80/220/500/900ms 五次 window.scrollTo 会在切页后反复拉动视口，
+  // 正是“顿一下、上下震动”的主要来源。
   let pageScrollScheduleId = 0;
-  // 用户主动滚动检测：切页后的多次校正若仍在执行，用户一旦自己滚动
+  let pageScrollTimers: number[] = [];
+  // 用户主动滚动检测：切页后的校正若仍在执行，用户一旦自己滚动
   // （滚轮/触摸/翻页键），就取消剩余校正，避免把用户拉回页首壁纸位置。
   let userScrollCancel: (() => void) | null = null;
+  const clearScrollTimers = () => {
+    pageScrollTimers.forEach((timer) => window.clearTimeout(timer));
+    pageScrollTimers = [];
+  };
   const clearScrollCancelListeners = () => {
     if (userScrollCancel) userScrollCancel();
     userScrollCancel = null;
@@ -1118,16 +1124,20 @@ function disableAnimation() {
     behavior: ScrollBehavior = "auto",
     onlyIfAtTop = false,
   ) => {
-    // 每次重新调度前，先解绑上一轮的用户滚动监听
+    // 每次重新调度前，先取消上一轮的定时器和用户滚动监听
     clearScrollCancelListeners();
+    clearScrollTimers();
     const scheduleId = ++pageScrollScheduleId;
-    const delays = [0, 80, 220, 500, 900];
+    const delays = [0, 120];
+    // 切页期间强制瞬时定位；平滑滚动会和 Swup 的淡入淡出叠加成抖动
+    const scrollBehavior: ScrollBehavior = behavior === "smooth" ? "auto" : behavior;
 
     let cancelled = false;
     const cancelByUser = () => {
       if (cancelled) return;
       cancelled = true;
       pageScrollScheduleId++; // 使本轮所有待执行校正失效
+      clearScrollTimers();
       clearScrollCancelListeners();
     };
     const onKey = (e: KeyboardEvent) => {
@@ -1145,14 +1155,18 @@ function disableAnimation() {
     };
 
     delays.forEach((delay, index) => {
-      window.setTimeout(() => {
+      const timer = window.setTimeout(() => {
         if (cancelled || scheduleId !== pageScrollScheduleId) return;
         if (!pathsEqual(window.location.pathname, pathname) || window.location.hash) return;
         if (onlyIfAtTop && window.scrollY > 1) return;
-        scrollToPage(pathname, index === 0 ? behavior : "auto");
-        // 最后一次校正完成后解绑用户滚动监听
-        if (index === delays.length - 1) clearScrollCancelListeners();
+        scrollToPage(pathname, scrollBehavior);
+        // 最后一次校正完成后解绑用户滚动监听与定时器
+        if (index === delays.length - 1) {
+          pageScrollTimers = [];
+          clearScrollCancelListeners();
+        }
       }, delay);
+      pageScrollTimers.push(timer);
     });
   };
 
@@ -1196,7 +1210,20 @@ function disableAnimation() {
   // visit:start 阶段使用旧 DOM，直接定位主网格会在替换后被新布局覆盖。
   let pendingScrollPath: string | null = null;
 
+  // 分类胶囊栏只保留在文章分类页；容器是静态的，切页时需要手动同步显隐。
+  const categoriesBasePath = url("/categories/").replace(/\/+$/, "");
+  const syncCategoryBarVisibility = (pathname: string) => {
+    const wrapper = document.getElementById("category-bar-wrapper");
+    if (!wrapper) return;
+    const normalized = pathname.replace(/\/+$/, "") || "/";
+    const isCategoryPage =
+      normalized === categoriesBasePath ||
+      normalized.startsWith(`${categoriesBasePath}/`);
+    wrapper.classList.toggle("hidden", !isCategoryPage);
+  };
+
   const setup = () => {
+    syncCategoryBarVisibility(window.location.pathname);
     // 由目标页面决定进入页面 0 还是页面 1。
     window.swup.hooks.replace("scroll:top", (visit: { to: { url: string } }, args: { options: ScrollIntoViewOptions }) => {
       const targetPathname = (() => {
@@ -1372,6 +1399,7 @@ function disableAnimation() {
       pendingScrollPath = targetPathname;
       syncWallpaperWrapperClasses(targetPathname);
       syncPostListPageClass(targetPathname);
+      syncCategoryBarVisibility(targetPathname);
 
       // 禁用 #main-grid 的过渡动画，防止 lg:is-home 切换时 transform 产生 700ms 动画
       const mainGrid = document.getElementById("main-grid");
@@ -1387,11 +1415,7 @@ function disableAnimation() {
         bodyElement!.classList.remove("is-home");
       }
 
-      // 强制回流，确保 transform 立即生效，然后恢复过渡动画
-      if (mainGrid) {
-        void mainGrid.offsetWidth;
-        mainGrid.style.removeProperty("transition");
-      }
+      // 保持禁用直到 page:view，避免内容替换阶段 grid transform 触发 700ms 位移动画。
 
       // 同步壁纸模式的 body 类（防止 enable-banner 从初始加载残留到全屏/overlay/none 模式）
       const currentWallpaperMode = document.documentElement.getAttribute("data-wallpaper-mode");
@@ -1529,6 +1553,7 @@ function disableAnimation() {
     });
     window.swup.hooks.on("page:view", () => {
       syncPostListPageClass();
+      syncCategoryBarVisibility(window.location.pathname);
       // 恢复 #main-grid 的过渡动画（visit:start 中禁用了）
       const mainGrid = document.getElementById("main-grid");
       if (mainGrid) {
@@ -1686,6 +1711,11 @@ function disableAnimation() {
 
         // 移除页面切换保护，恢复过渡动画
         document.documentElement.classList.remove("is-page-transitioning");
+        // 兜底：若 page:view 未触发，也要恢复 #main-grid 的过渡
+        const finalMainGrid = document.getElementById("main-grid");
+        if (finalMainGrid && finalMainGrid.style.transition === "none") {
+          finalMainGrid.style.removeProperty("transition");
+        }
         scrollFunction();
       }, 200);
     });

@@ -27,8 +27,7 @@ function isPageEnabled(link: NavBarLink): boolean {
 }
 
 function filterLinks(link: NavBarLink): NavBarLink | null {
-	// 简洁阅读模式不展示打赏入口：入口本身从导航中剔除，
-	// 避免只剩一个子项时被 filterLinks 摊平成顶级「打赏」链接。
+	// 打赏入口已迁移到导航栏的小图标，菜单里不再重复展示。
 	const isSponsor = (item: NavBarLink) => item.url === "/sponsor/";
 	if (isSponsor(link)) return null;
 	if (!link.children) return isPageEnabled(link) ? link : null;
@@ -199,6 +198,16 @@ const avatarUrl =
 			>
 				<Icon is:inline name="material-symbols:search-rounded" />
 			</a>
+			{siteConfig.pages.sponsor !== false && (
+				<a
+					class="pure-icon-btn pure-sponsor-btn"
+					href={url("/sponsor/")}
+					aria-label="打赏"
+					title="打赏"
+				>
+					<Icon is:inline name="material-symbols:favorite" />
+				</a>
+			)}
 			<LightDarkSwitch client:load />
 			<SiteThemeSwitch client:load />
 			<button

@@ -26,8 +26,9 @@ description: 把 pipibigking/pipi-blog 仓库最新 main 分支部署到 Trae �
 3. pnpm install + 补复制 `.astro/fonts` 和 `node_modules/.astro` 字体缓存
 4. `pnpm run build`
 5. 只在临时副本压缩 `dist/assets/videos` 和 `dist/assets/music`，原仓库素材**不碰**
-6. `prepare-static-function.mjs` 适配 → `trae-deploy create` → `trae-deploy wait`
-7. 打印 `DEPLOY_OK id=... commit=... url=...`
+6. `rewrite-assets.mjs` 把 HTML 里 `script/link/img/source/video/audio/iframe/embed/object/input` 的 `src/href/poster/data` 改写到 `/_assets/<version_id>/` 前缀，并在源目录写 `assets-version.json`（插件 0.0.52 起强制校验，缺失会报 `STATIC_RESOURCE_BASE_REQUIRED`）
+7. `prepare-static-function.mjs` 适配 → `trae-deploy create` → `trae-deploy wait`
+8. 打印 `DEPLOY_OK id=... commit=... url=...`
 
 ## 执行方式
 

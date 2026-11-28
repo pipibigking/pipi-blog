@@ -77,8 +77,8 @@ const tLoadError = i18n(I18nKey.videoLoadError);
   播放逻辑只负责控制视频。设置面板已移到 Navbar.astro，和音乐/设置面板
   使用同一套 float-panel 开关机制，避免跨组件自定义事件导致的开关时序问题。
   Navbar 通过下面两个赋值式桥接函数与播放器通信（赋值天然幂等，切页不会重复绑定）：
-    window.__bgPlayerCommand(cmd, data)  -> "toggle" | "play" | "pause" | "prev" | "next" | "track" | "cycle"
-    window.__bgPlayerState()             -> { playing, index, cycle }
+    window.__bgPlayerCommand(cmd, data)  -> "toggle" | "play" | "pause" | "prev" | "next" | "track" | "cycle" | "sound"
+    window.__bgPlayerState()             -> { playing, index, cycle, muted }
 -->
 <script is:inline define:vars={{ urls: JSON.stringify(urls), names: JSON.stringify(displayNames), playerMode, cycleMode: cycleMode, hasMultiple }}>
 	(() => {
@@ -98,7 +98,9 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		if (!videoA || !videoB) return;
 
 		var CYCLE_KEY = "rainzt.bg-player.cycle-mode.v1";
+		var SOUND_KEY = "rainzt.bg-player.sound.v1";
 		var isPlaying = false;
+		var isMuted = true;
 		var currentIndex = 0;
 		var activeVideo = videoA;
 		var idleVideo = videoB;
@@ -111,6 +113,9 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		try {
 			var stored = localStorage.getItem(CYCLE_KEY);
 			if (stored === "loop" || stored === "next") currentCycle = stored;
+			// 声音偏好：默认静音（与原行为一致），用户可在设置面板开启
+			var storedSound = localStorage.getItem(SOUND_KEY);
+			if (storedSound === "on" || storedSound === "off") isMuted = storedSound === "off";
 		} catch (e) {}
 
 		function showToast() {
@@ -126,7 +131,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 
 		function emitState() {
 			window.dispatchEvent(new CustomEvent("bg-player-state-change", {
-				detail: { playing: isPlaying, index: currentIndex, cycle: currentCycle }
+				detail: { playing: isPlaying, index: currentIndex, cycle: currentCycle, muted: isMuted }
 			}));
 		}
 
@@ -145,7 +150,7 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		}
 
 		function playVideo(video, src) {
-			video.muted = true;
+			video.muted = isMuted;
 			if (video.getAttribute("src") !== src) video.setAttribute("src", src);
 			video.currentTime = 0;
 			return video.play();
@@ -288,6 +293,14 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 			emitState();
 		}
 
+		function setSound(on) {
+			isMuted = !on;
+			videoA.muted = isMuted;
+			videoB.muted = isMuted;
+			try { localStorage.setItem(SOUND_KEY, on ? "on" : "off"); } catch (e) {}
+			emitState();
+		}
+
 		// 赋值式桥接：Navbar 面板调用；赋值会覆盖旧函数，切页/重复执行都不会累积监听器
 		window.__bgPlayerCommand = function (cmd, data) {
 			switch (cmd) {
@@ -298,10 +311,11 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 				case "next": switchTrack(pickIndex(currentIndex)); break;
 				case "track": switchTrack(Number(data)); break;
 				case "cycle": setCycle(data); break;
+				case "sound": setSound(data === "on"); break;
 			}
 		};
 		window.__bgPlayerState = function () {
-			return { playing: isPlaying, index: currentIndex, cycle: currentCycle };
+			return { playing: isPlaying, index: currentIndex, cycle: currentCycle, muted: isMuted };
 		};
 
 		// 壁纸模式变化时若正在播放则停止
@@ -320,6 +334,8 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 		if (nextBtn) nextBtn.addEventListener("click", function () { switchTrack(pickIndex(currentIndex)); });
 
 		updateTrackInfo();
+		videoA.muted = isMuted;
+		videoB.muted = isMuted;
 		activeVideo.setAttribute("src", urlList[currentIndex]);
 		activeVideo.load();
 		emitState();

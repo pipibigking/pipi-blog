@@ -1,9 +1,9 @@
 import type { BackgroundWallpaperConfig } from "@/types/backgroundWallpaper";
 
-// 首页轮播壁纸（洛克王国主题，10 张）
+// 首页轮播壁纸（洛克王国主题，14 张）
 // 后续添加新壁纸：把图片放进 public/assets/images/wallpaper/，在下面数组加一行路径即可
 const desktopWallpaperImages = Array.from(
-	{ length: 10 },
+	{ length: 14 },
 	(_, index) =>
 		`/assets/images/wallpaper/my-wallpaper-${String(index + 1).padStart(2, "0")}.webp`,
 );
@@ -60,20 +60,18 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 背景视频播放地址
 		// 支持单个视频路径（字符串）或多个视频循环（数组）
 		// 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
-		// 11 段动态视频已与 C:\Users\280738\Pictures\动态 对齐，放在 public/assets/videos/ 下
+		// 9 段动态视频，放在 public/assets/videos/ 下
 		playerUrl: [
-			// 灵笼组放最前面
+			// 洛克王国概念短片放最前面
+			"/assets/videos/luoke-world-summer-breeze.mp4",
+			"/assets/videos/luoke-world-demonbell-friendship.mp4",
 			"/assets/videos/linglong-yuekui-sword.mp4",
 			"/assets/videos/linglong-yuekui-sheath.mp4",
-			"/assets/videos/linglong-yuekui-slash.mp4",
 			"/assets/videos/linglong-feixue.mp4",
 			"/assets/videos/linglong-maiduo.mp4",
-			"/assets/videos/yiren.mp4",
 			"/assets/videos/your-name.mp4",
 			"/assets/videos/jujutsu-youta-moon.mp4",
 			"/assets/videos/jujutsu-youta-eyes.mp4",
-			"/assets/videos/big-fish.mp4",
-			"/assets/videos/ace.mp4",
 		],
 	},
 	// 横幅壁纸和全屏壁纸共享配置

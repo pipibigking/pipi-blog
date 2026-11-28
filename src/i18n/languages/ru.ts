@@ -405,4 +405,7 @@ export const ru: Translation = {
 	[Key.videoCycleLoop]: "Повторять текущее",
 	[Key.videoCycleNext]: "Следующее после завершения",
 	[Key.videoPlaying]: "Сейчас играет",
+	[Key.videoSound]: "Звук видео",
+	[Key.videoSoundOn]: "Звук включён",
+	[Key.videoSoundOff]: "Без звука",
 };

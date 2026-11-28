@@ -392,4 +392,7 @@ export const zh_CN: Translation = {
 	[Key.videoCycleLoop]: "循环播放当前",
 	[Key.videoCycleNext]: "播完自动下一个",
 	[Key.videoPlaying]: "正在播放",
+	[Key.videoSound]: "视频声音",
+	[Key.videoSoundOn]: "开启声音",
+	[Key.videoSoundOff]: "静音播放",
 };

@@ -460,7 +460,7 @@ function getStoredIntroBannerId(position: "top" | "bottom", defaultId: string) {
 	}
 }
 
-function dispatchIntroSettingsChange(preview = false) {
+function dispatchIntroSettingsChange(preview = false, reason = "settings") {
 	window.dispatchEvent(
 		new CustomEvent("home-portfolio-intro-settings-change", {
 			detail: {
@@ -469,6 +469,7 @@ function dispatchIntroSettingsChange(preview = false) {
 				topBannerId: selectedIntroTopBannerId,
 				bottomBannerId: selectedIntroBottomBannerId,
 				preview,
+				reason,
 			},
 		}),
 	);
@@ -505,7 +506,7 @@ function selectIntroCharacter(characterId: string) {
 	} catch {
 		// 私有浏览模式下无法持久化时，仍让当前页面立即响应切换。
 	}
-	dispatchIntroSettingsChange(true);
+	dispatchIntroSettingsChange(true, "character");
 }
 
 function selectIntroBanner(position: "top" | "bottom", bannerId: string) {
@@ -525,7 +526,8 @@ function selectIntroBanner(position: "top" | "bottom", bannerId: string) {
 	} catch {
 		// 私有浏览模式下无法持久化时，仍让当前页面立即响应切换。
 	}
-	dispatchIntroSettingsChange(true);
+	// 横幅变更只同步画面，不重播开屏动画
+	dispatchIntroSettingsChange(false, "banner");
 }
 
 function resetIntroSettings() {
@@ -1229,7 +1231,7 @@ $effect(() => {
                 </div>
             </button>
             <p class="-mt-1 mb-2 px-1 text-xs font-normal text-neutral-500 dark:text-neutral-400">
-                在主页切换角色或横幅，会立即播放一次动画预览
+                在主页切换角色会播放一次动画预览，切换横幅仅更新画面
             </p>
             <div class="flex items-center gap-2 px-1 text-xs font-semibold text-neutral-700 dark:text-neutral-300">
                 <Icon icon="material-symbols:person-outline-rounded" class="text-[1rem] shrink-0"></Icon>

@@ -444,6 +444,8 @@ const initialStyle = initialHome
 			syncCharacter(intro);
 			syncBanners(intro);
 			const detail = event instanceof CustomEvent ? event.detail : undefined;
+			// 切换横幅只更新画面，不重播开屏动画；切换角色仍会预览动画
+			if (detail?.reason === "banner") return;
 			if (!isIntroEnabled()) {
 				resetIntro(intro);
 				notifyIntroComplete(intro);

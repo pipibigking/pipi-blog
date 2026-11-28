@@ -48,9 +48,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 			// 简历
 			LinkPresets.Resume,
 
-			// 相册
-			LinkPresets.Gallery,
-
 			// 追番
 			LinkPresets.Anime,
 
@@ -60,19 +57,11 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 			// 工具
 			LinkPresets.Tools,
 
+			// 相册
+			LinkPresets.Gallery,
+
 			// 内容管理（密码保护）
 			LinkPresets.Admin,
-		],
-	});
-
-	// 关于及其子菜单（打赏只在壁纸主题出现，阅读模式不展示）
-	links.push({
-		name: "关于",
-		url: "#",
-		icon: "material-symbols:info",
-		children: [
-			// 打赏
-			LinkPresets.Sponsor,
 		],
 	});
 

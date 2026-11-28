@@ -56,6 +56,7 @@ const managerConfigStr = JSON.stringify({
 	meting: config.meting,
 	localPlaylist: localPlaylist,
 	volume: config.volume ?? 0.7,
+	autoplay: config.autoplay ?? false,
 	playMode: config.playMode ?? "list",
 	showLyrics: config.showLyrics ?? true,
 	i18n: {
@@ -269,12 +270,34 @@ const managerConfigStr = JSON.stringify({
                 emitPlayState();
                 if (e.name === 'AbortError') return; // interrupted by new load
                 console.warn('Autoplay blocked:', e);
+                // Browsers block unmuted autoplay until the user interacts.
+                // Retry once on the first interaction so the track still starts.
+                if (config.autoplay) scheduleAutoplayFallback();
             });
         } else {
             setLoading(false);
             state.isPlaying = false;
             emitPlayState();
         }
+    }
+
+    // Some browsers refuse autoplay with sound until a user gesture occurs.
+    // Listen once for the first interaction and start the pending track.
+    var autoplayFallbackBound = false;
+    function scheduleAutoplayFallback() {
+        if (autoplayFallbackBound) return;
+        autoplayFallbackBound = true;
+        var tryStart = function () {
+            document.removeEventListener('pointerdown', tryStart, true);
+            document.removeEventListener('keydown', tryStart, true);
+            document.removeEventListener('touchstart', tryStart, true);
+            if (state.initialized && !state.isPlaying && audio.src && state.playlist.length) {
+                togglePlay();
+            }
+        };
+        document.addEventListener('pointerdown', tryStart, true);
+        document.addEventListener('keydown', tryStart, true);
+        document.addEventListener('touchstart', tryStart, true);
     }
 
     // ── Playback controls ────────────────────────────────────
@@ -470,7 +493,7 @@ const managerConfigStr = JSON.stringify({
                     isMuted: state.isMuted
                 });
 
-                loadTrack(startIndex, false);
+                loadTrack(startIndex, config.autoplay === true);
             } else {
                 state.initialized = true;
                 emit('fm:init', {
