@@ -171,6 +171,12 @@ export const homePortfolioIntroSettings = {
 			src: "/images/home-stickers/miaomiao.webp",
 			thumbnail: "/images/home-stickers/miaomiao.webp",
 		},
+		{
+			id: "character-13",
+			label: "凌乱宝儿",
+			src: "/images/home-stickers/lingluanbaoer.webp",
+			thumbnail: "/images/home-stickers/lingluanbaoer.webp",
+		},
 	],
 } as const;
 

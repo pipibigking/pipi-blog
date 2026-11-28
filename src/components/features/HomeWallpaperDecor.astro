@@ -87,6 +87,12 @@ const stickerImages = [
 		src: url("/images/home-stickers/dianci.webp"),
 		initialStyle: "inset: 72% auto auto 89%;",
 	},
+	// —— 凌乱宝儿（右侧中部，避开其他角色）——
+	{
+		key: "lingluanbaoer",
+		src: url("/images/home-stickers/lingluanbaoer.webp"),
+		initialStyle: "inset: 44% auto auto 90%;",
+	},
 ];
 
 const quoteSticker = stickerImages.find((sticker) => sticker.key === "quote");
@@ -106,6 +112,7 @@ const mobileStickerKeys = [
 	"ailun",
 	"leisei",
 	"dianci",
+	"lingluanbaoer",
 ];
 ---
 
@@ -222,7 +229,7 @@ const mobileStickerKeys = [
 <script is:inline>
 	(() => {
 		// 移动端贴纸随机区：适配「媒体带顶部 16:9 + 卡片在其下方」的布局，
-		// 12 个角色立绘全部上屏（用户要求主页多展示角色）。
+		// 13 个角色立绘全部上屏（用户要求主页多展示角色）。
 		// 布局参考（390×844 实测）：媒体带 ≈ 8%~34%Y；左右切换按钮
 		// ≈ 18%~24%Y / X <18% 与 >82%；卡片 ≈ 36%~61%Y（几乎全宽）；
 		// 滚动箭头 ≈ 40%~60%X / 79%~88%Y。
@@ -241,6 +248,8 @@ const mobileStickerKeys = [
 			{ minX: 78, maxX: 95, minY: 79, maxY: 88 },
 			{ minX: 26, maxX: 37, minY: 80, maxY: 89 },
 			{ minX: 62, maxX: 73, minY: 80, maxY: 89 },
+			// 第 13 位（凌乱宝儿）：媒体带下沿右侧空档，避开切换按钮与卡片
+			{ minX: 78, maxX: 93, minY: 28, maxY: 33 },
 		];
 
 		const shuffled = (items) => {

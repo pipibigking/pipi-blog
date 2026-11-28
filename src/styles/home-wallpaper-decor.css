@@ -785,6 +785,12 @@ html.is-page-transitioning #wallpaper-wrapper.homepage-fullscreen-decor {
 	width: min(190px, 10vw, 21vh);
 	transform: rotate(var(--home-wallpaper-sticker-rotation));
 }
+.home-wallpaper-sticker--lingluanbaoer {
+	--home-wallpaper-sticker-delay: 1220ms;
+	--home-wallpaper-sticker-rotation: 2deg;
+	width: min(160px, 8.5vw, 18vh);
+	transform: rotate(var(--home-wallpaper-sticker-rotation));
+}
 
 @media (min-width: 768px) and (max-width: 1199px) {
 	.home-wallpaper-card {
