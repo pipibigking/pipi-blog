@@ -20,7 +20,7 @@ const socialLinks = [...profileConfig.links];
 //   右上 白月魁：top 13%，left 89%
 //   左下 洛克王国组（小洛克/火花/水蓝蓝/喵喵）：top 82%，left 5%~26%
 //   中下 进击的巨人组（三笠/艾伦）：top 80%，left 44%~51%
-//   右下 电锯人组（蕾塞/电次）：top 69%/72%（两人尺寸大，上移保证脚部完整），left 82%~89%
+//   右下 电锯人组（秋/玛琪玛/蕾塞/电次）：top 67%~72%（尺寸大，上移保证脚部完整），left 68%~89%
 const stickerImages = [
 	// —— 一人之下组（左上，三人紧密相邻）——
 	{
@@ -76,7 +76,17 @@ const stickerImages = [
 		src: url("/images/home-stickers/ailun.webp"),
 		initialStyle: "inset: 80% auto auto 51%;",
 	},
-	// —— 电锯人组（右下）——
+	// —— 电锯人组（右下，按用户要求：秋/玛琪玛在蕾塞与电次左侧）——
+	{
+		key: "qiu",
+		src: url("/images/home-stickers/qiu.webp"),
+		initialStyle: "inset: 67% auto auto 68%;",
+	},
+	{
+		key: "maqima",
+		src: url("/images/home-stickers/maqima.webp"),
+		initialStyle: "inset: 68% auto auto 75%;",
+	},
 	{
 		key: "leisei",
 		src: url("/images/home-stickers/leisei.webp"),
@@ -104,6 +114,8 @@ const mobileStickerKeys = [
 	"miaomiao",
 	"sanli",
 	"ailun",
+	"qiu",
+	"maqima",
 	"leisei",
 	"dianci",
 ];
@@ -221,7 +233,7 @@ const mobileStickerKeys = [
 
 <script is:inline>
 	(() => {
-		// 手机端立绘：12 个角色整齐排成两行，全部落在卡片下方的底部空余区。
+		// 手机端立绘：14 个角色整齐排成两行，全部落在卡片下方的底部空余区。
 		// 不再随机散落到视频画面上——用户要求「底部空余区域整齐排布」。
 		// 布局参考（390×844 实测）：媒体带 8%~33%Y（不放立绘）、卡片 36%~56%Y、
 		// 两行立绘 58%~80%Y、滚动箭头约 69%Y（夹在两行之间）、底部翻页 >88%Y。
@@ -236,13 +248,15 @@ const mobileStickerKeys = [
 				"baiyuekui",
 				"sanli",
 				"ailun",
-				"leisei",
+				"qiu",
 			],
 			[
 				"xiaoluoke",
 				"huohua",
 				"shuilannan",
 				"miaomiao",
+				"maqima",
+				"leisei",
 				"dianci",
 			],
 		];

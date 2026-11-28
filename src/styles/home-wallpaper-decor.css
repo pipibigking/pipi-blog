@@ -747,6 +747,18 @@ html.is-page-transitioning #wallpaper-wrapper.homepage-fullscreen-decor {
 	width: min(104px, 5.4vw, 11.4vh);
 	transform: rotate(var(--home-wallpaper-sticker-rotation));
 }
+.home-wallpaper-sticker--qiu {
+	--home-wallpaper-sticker-delay: 1080ms;
+	--home-wallpaper-sticker-rotation: -2deg;
+	width: min(160px, 8.5vw, 18vh);
+	transform: rotate(var(--home-wallpaper-sticker-rotation));
+}
+.home-wallpaper-sticker--maqima {
+	--home-wallpaper-sticker-delay: 1100ms;
+	--home-wallpaper-sticker-rotation: 2deg;
+	width: min(160px, 8.5vw, 18vh);
+	transform: rotate(var(--home-wallpaper-sticker-rotation));
+}
 .home-wallpaper-sticker--dianci {
 	--home-wallpaper-sticker-delay: 1175ms;
 	--home-wallpaper-sticker-rotation: 2deg;

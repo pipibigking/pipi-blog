@@ -80,10 +80,11 @@ export const homePortfolioIntroSettings = {
 	topBannerStorageKey: "rainzt.home-portfolio-intro-top-banner.v1",
 	bottomBannerStorageKey: "rainzt.home-portfolio-intro-bottom-banner.v1",
 	defaultEnabled: true,
-	// 开屏角色默认使用张楚岚立绘占位
-	defaultCharacterId: "character-03",
-	defaultTopBannerId: "card-01",
-	defaultBottomBannerId: "card-02",
+	// 开屏角色默认使用小洛克立绘
+	defaultCharacterId: "character-01",
+	// 横屏（桌面）默认横幅：迪莫麻球 + 鸡牛部队
+	defaultTopBannerId: "card-09",
+	defaultBottomBannerId: "card-11",
 	defaultMobileTopBannerId: "card-01",
 	defaultMobileBottomBannerId: "card-02",
 	banners: {
@@ -101,7 +102,7 @@ export const homePortfolioIntroSettings = {
 	characters: [
 		{
 			id: "character-01",
-			label: "小洛克",
+			label: "小洛克（默认）",
 			src: "/images/home-stickers/xiaoluoke.webp",
 			thumbnail: "/images/home-stickers/xiaoluoke.webp",
 		},
@@ -113,7 +114,7 @@ export const homePortfolioIntroSettings = {
 		},
 		{
 			id: "character-03",
-			label: "张楚岚（默认）",
+			label: "张楚岚",
 			src: "/images/home-stickers/zhangchulan.webp",
 			thumbnail: "/images/home-stickers/zhangchulan.webp",
 		},
@@ -173,9 +174,15 @@ export const homePortfolioIntroSettings = {
 		},
 		{
 			id: "character-13",
-			label: "凌乱宝儿",
-			src: "/images/home-stickers/lingluanbaoer.webp",
-			thumbnail: "/images/home-stickers/lingluanbaoer.webp",
+			label: "秋",
+			src: "/images/home-stickers/qiu.webp",
+			thumbnail: "/images/home-stickers/qiu.webp",
+		},
+		{
+			id: "character-14",
+			label: "玛琪玛",
+			src: "/images/home-stickers/maqima.webp",
+			thumbnail: "/images/home-stickers/maqima.webp",
 		},
 	],
 } as const;
