@@ -785,12 +785,6 @@ html.is-page-transitioning #wallpaper-wrapper.homepage-fullscreen-decor {
 	width: min(190px, 10vw, 21vh);
 	transform: rotate(var(--home-wallpaper-sticker-rotation));
 }
-.home-wallpaper-sticker--lingluanbaoer {
-	--home-wallpaper-sticker-delay: 1220ms;
-	--home-wallpaper-sticker-rotation: 2deg;
-	width: min(160px, 8.5vw, 18vh);
-	transform: rotate(var(--home-wallpaper-sticker-rotation));
-}
 
 @media (min-width: 768px) and (max-width: 1199px) {
 	.home-wallpaper-card {
@@ -903,6 +897,15 @@ html.is-page-transitioning #wallpaper-wrapper.homepage-fullscreen-decor {
 	.home-wallpaper-sticker[data-home-wallpaper-mobile="true"] {
 		display: grid;
 		width: clamp(44px, 14vw, 64px);
+	}
+
+	/* 滚动箭头移到两行立绘之间的空隙（约 72%Y），不再被第二行立绘盖住。
+	 * 加 body 提升特异性：main.css 中同选择器规则后加载，会覆盖普通写法。 */
+	html[data-wallpaper-mode="fullscreen"]
+		body
+		#wallpaper-wrapper.wallpaper-fullscreen
+		.scroll-down-indicator {
+		bottom: 22% !important;
 	}
 
 }

@@ -87,12 +87,6 @@ const stickerImages = [
 		src: url("/images/home-stickers/dianci.webp"),
 		initialStyle: "inset: 72% auto auto 89%;",
 	},
-	// —— 凌乱宝儿（右侧中部，避开其他角色）——
-	{
-		key: "lingluanbaoer",
-		src: url("/images/home-stickers/lingluanbaoer.webp"),
-		initialStyle: "inset: 44% auto auto 90%;",
-	},
 ];
 
 const quoteSticker = stickerImages.find((sticker) => sticker.key === "quote");
@@ -112,7 +106,6 @@ const mobileStickerKeys = [
 	"ailun",
 	"leisei",
 	"dianci",
-	"lingluanbaoer",
 ];
 ---
 
@@ -228,74 +221,59 @@ const mobileStickerKeys = [
 
 <script is:inline>
 	(() => {
-		// 移动端贴纸随机区：适配「媒体带顶部 16:9 + 卡片在其下方」的布局，
-		// 13 个角色立绘全部上屏（用户要求主页多展示角色）。
-		// 布局参考（390×844 实测）：媒体带 ≈ 8%~34%Y；左右切换按钮
-		// ≈ 18%~24%Y / X <18% 与 >82%；卡片 ≈ 36%~61%Y（几乎全宽）；
-		// 滚动箭头 ≈ 40%~60%X / 79%~88%Y。
-		// 前 4 区落在媒体带画面上（避开切换按钮），后 8 区分布在
-		// 卡片下方的左右两侧与中缝（避开卡片与箭头）。
-		const mobileStickerZones = [
-			{ minX: 6, maxX: 24, minY: 9, maxY: 15 },
-			{ minX: 76, maxX: 94, minY: 9, maxY: 15 },
-			{ minX: 6, maxX: 24, minY: 24, maxY: 27 },
-			{ minX: 76, maxX: 94, minY: 24, maxY: 27 },
-			{ minX: 4, maxX: 22, minY: 64, maxY: 71 },
-			{ minX: 78, maxX: 95, minY: 64, maxY: 71 },
-			{ minX: 27, maxX: 38, minY: 63, maxY: 71 },
-			{ minX: 61, maxX: 72, minY: 63, maxY: 71 },
-			{ minX: 4, maxX: 22, minY: 79, maxY: 88 },
-			{ minX: 78, maxX: 95, minY: 79, maxY: 88 },
-			{ minX: 26, maxX: 37, minY: 80, maxY: 89 },
-			{ minX: 62, maxX: 73, minY: 80, maxY: 89 },
-			// 第 13 位（凌乱宝儿）：媒体带下沿右侧空档，避开切换按钮与卡片
-			{ minX: 78, maxX: 93, minY: 28, maxY: 33 },
+		// 手机端立绘：12 个角色整齐排成两行，全部落在卡片下方的底部空余区。
+		// 不再随机散落到视频画面上——用户要求「底部空余区域整齐排布」。
+		// 布局参考（390×844 实测）：媒体带 8%~33%Y（不放立绘）、卡片 36%~56%Y、
+		// 两行立绘 58%~80%Y、滚动箭头约 69%Y（夹在两行之间）、底部翻页 >88%Y。
+		// 箭头位置由 home-wallpaper-decor.css 手机端覆盖为 bottom:22%（≈72%Y）。
+		// 第一行放人形角色 7 个，第二行 5 个，
+		// 每行水平等距居中对齐（格子中心 = 立绘中心，左右各留 4% 边距）。
+		const mobileStickerRows = [
+			[
+				"zhangchulan",
+				"fengbaobao",
+				"wangye",
+				"baiyuekui",
+				"sanli",
+				"ailun",
+				"leisei",
+			],
+			[
+				"xiaoluoke",
+				"huohua",
+				"shuilannan",
+				"miaomiao",
+				"dianci",
+			],
 		];
+		const mobileRowTops = [58, 74]; // 每行顶部（相对 wrapper 高度的百分比）
 
-		const shuffled = (items) => {
-			const copy = [...items];
-			for (let index = copy.length - 1; index > 0; index -= 1) {
-				const swapIndex = Math.floor(Math.random() * (index + 1));
-				[copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
-			}
-			return copy;
-		};
-
-		const randomizeMobileStickers = (decor) => {
+		const arrangeMobileStickers = (decor) => {
 			if (!window.matchMedia("(max-width: 767px)").matches) return;
 
 			const wallpaper = decor.closest("#wallpaper-wrapper") || decor;
 			const wallpaperRect = wallpaper.getBoundingClientRect();
-			const stickers = [
-				...decor.querySelectorAll(
-					'[data-home-wallpaper-sticker][data-home-wallpaper-mobile="true"]',
-				),
-			];
-			if (!wallpaperRect.width || !wallpaperRect.height || stickers.length === 0) {
-				return;
-			}
+			if (!wallpaperRect.width || !wallpaperRect.height) return;
 
-			shuffled(stickers).forEach((sticker, index) => {
-				const zone = mobileStickerZones[index % mobileStickerZones.length];
-				const stickerRect = sticker.getBoundingClientRect();
-				const stickerWidth = (stickerRect.width / wallpaperRect.width) * 100;
-				const stickerHeight = (stickerRect.height / wallpaperRect.height) * 100;
-				const maxLeft = Math.max(2, 96 - stickerWidth);
-				const maxTop = Math.max(2, 96 - stickerHeight);
-				const left = Math.min(
-					maxLeft,
-					zone.minX + Math.random() * (zone.maxX - zone.minX),
-				);
-				const top = Math.min(
-					maxTop,
-					zone.minY + Math.random() * (zone.maxY - zone.minY),
-				);
+			mobileStickerRows.forEach((keys, rowIndex) => {
+				keys.forEach((key, colIndex) => {
+					const sticker = decor.querySelector(
+						`.home-wallpaper-sticker--${key}[data-home-wallpaper-mobile="true"]`,
+					);
+					if (!sticker) return;
 
-				sticker.style.inset = "auto";
-				sticker.style.left = `${left}%`;
-				sticker.style.top = `${top}%`;
-				sticker.style.right = "auto";
-				sticker.style.bottom = "auto";
+					// 用 offsetWidth（不含 transform 缩放）算中心偏移，避免动画期间抖动
+					const stickerWidthPct =
+						(sticker.offsetWidth / wallpaperRect.width) * 100;
+					const centerPct = 4 + (colIndex + 0.5) * (92 / keys.length);
+					const leftPct = centerPct - stickerWidthPct / 2;
+
+					sticker.style.inset = "auto";
+					sticker.style.left = `${leftPct}%`;
+					sticker.style.top = `${mobileRowTops[rowIndex]}%`;
+					sticker.style.right = "auto";
+					sticker.style.bottom = "auto";
+				});
 			});
 		};
 
@@ -315,7 +293,7 @@ const mobileStickerKeys = [
 			const mediaQuery = window.matchMedia("(max-width: 767px)");
 			const applyLayout = () => {
 				if (mediaQuery.matches) {
-					window.requestAnimationFrame(() => randomizeMobileStickers(decor));
+					window.requestAnimationFrame(() => arrangeMobileStickers(decor));
 				} else {
 					restoreDesktopStickerPositions(decor);
 				}
